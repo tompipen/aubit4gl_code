@@ -19,9 +19,12 @@
 
 #include <QObject>
 #include <QDomDocument>
+#include <QVector>
+#include <QVariant>
 
+class ProtocolHandler;
 class FglForm;
-//#include <models/fglform.h>
+
 #include <context.h>
 #include <models/ringmenu.h>
 #include <models/actionmenu.h>
@@ -29,27 +32,22 @@ class FglForm;
 #include <models/dialog.h>
 #include <models/prompt.h>
 #include <include/vdc.h>
-#ifdef KDChart_Version
-#include "models/charts/chartInterface.h"
-#include "models/charts/chartTableModel.h"
-#include "models/charts/ganttTable.h"
-#include "models/charts/ganttnode.h"
-#include "models/charts/ganttWidget.h"
-#endif
 #include "models/webbrowser.h"
 #include "models/progress.h"
 #include "models/texteditor.h"
 #include "tools/htmleditor.h"
-class ProtocolHandler;
-#include <QVector>
-#include <QVariant>
-//#include <poppler/qt4/poppler-qt4.h>
+#include "dashboard/dashboardview.h"
 
 class ScreenHandler : public QObject
 {
    Q_OBJECT
 
 public:
+   bool isMainModule = false;
+   DashboardView* getDashboard() { return mDashboard; }
+   bool b_isFieldChanged;
+   void clearKeyboardBuffer();
+   QList<FglForm*> fglFormList;
    static int cnt_screenhandler;
    ScreenHandler(QObject *parent = 0);
    ~ScreenHandler();
@@ -101,16 +99,24 @@ public:
    //void setInterfaceText(QString);
    int stdOfficeProg;
 
+   bool getIgnoreActionsCheck() { return b_ingoreActionsCheck; }
+   void setIgnoreActionsCheck(bool value) { b_ingoreActionsCheck = value; }
+
+
+   QList<QKeyEvent*> ql_keybuffer;
 
       FglForm *p_fglform;
    typedef QVector<QVariant> chartVector;
 
       void closeAllWindows();
+
+      QHash<QString,QString> getMenuIcons () { return menuIcons; }
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
-
+   DashboardView *mDashboard;
+   bool b_keybufferrunning;
    Dialog *mDummyMessageDialogBox;
    QComboBox *mOfficeComboBox;
    #ifdef KDChart_Version
@@ -159,6 +165,7 @@ private:
    void checkFields();
    void checkColors();
    bool b_newForm;
+   bool b_ingoreActionsCheck;
 
    QWidget *p_screenRecord;
    void initForm(int);
@@ -166,8 +173,15 @@ private:
    QString clearEventsForField;
 
    bool clearFieldEvents;
+
+   QHash<QString, QString> menuIcons;
+   QHash<QString, QString> menuShortcuts;
+
+   QHash<QString, QHash<QString, QString> > menuCommand;
 public slots:
 
+   void sendBeforeEvents();
+   void replayKeyboard();
    void checkFglformState();
    void getItemCountComboBox(int);
 
@@ -200,13 +214,14 @@ public slots:
    void readCsv(int, QString);
    void openChartWindow(QString);
    #endif
-   //void openChartWindow(QString, QString);
+   void openChartWindow(QString, QString);
    void createTextEditor(QString, QString, int, bool);
    void createEditor(QString);
    void createBrowser();
-   void setUrl(int id, const QUrl &http);
+   void setUrl(int id, const QUrl &http, bool isoEncoding);
    void closeBrowser(int id);
    void handleXMLStyles(QString);
+   void displayAt(int, int, bool clearLine, QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);
    void clearFieldBuffer(QString);
@@ -221,6 +236,7 @@ public slots:
    void setScrLine(int);
    void setFieldEnabled(QString, bool, bool, int = 0);
    void setFieldFocus(QString);
+   void setFieldFocus();
    void setNewTabName(QString, QString);
    void setAttributes(QString, QString, QString);
    void setFieldHidden(QString, bool);
@@ -229,6 +245,7 @@ public slots:
    void createMenu(QString, QString, QString, QString);
    void createMenuButton(int, QString, QString, QStringList);
    void createMenuAction(int, QString);
+   void setIconForCommand(QString);
    void setMenuEnabled(bool);
    void setScreenRecordEnabled(QString, bool, bool);
    void createActionMenu();
@@ -259,8 +276,9 @@ public slots:
    void fileBrowser(QString, QString, QString, QString, QString);
 
    void setUpdatesEnabled(bool);
-   void setCurrentFocus(QWidget*, QWidget*);
+//   void setCurrentFocus(QWidget*, QWidget*);
    void checkForUpdate();
+   void showUpdateError();
    void setInterfaceText(QString);
    //ui.progress
 
@@ -300,10 +318,17 @@ public slots:
 
    void openLocalFile(QString);
    void openEmailWithAttach(QString);
+   void openEmailWithTobit(QString);
    void openEmail(QString);
 
    void getFileBrowser(QString, QString);
 
+   void parseXmlFile(QDomDocument);
+
+   void getAbonnements();
+   void dial(QString number);
+   void playSound(QString file);
+   void addDashboardItem(QString aktivitaet, QString icon, QString text, QString runtxt);
 signals:
    void fglFormResponse(QString);
    void windowCreated();

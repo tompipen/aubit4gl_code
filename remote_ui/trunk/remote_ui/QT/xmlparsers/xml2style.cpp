@@ -55,7 +55,7 @@ MainFrame::vdcdebug("XML2Style","outputTree", "const QDomNode& domNode");
    QDomNodeList children = domNode.childNodes();
 
    // checking domNodes childNodes for relevant form elements
-   // and handle theire attributes 
+   // and handle their attributes
    //
    
    QString styleName;

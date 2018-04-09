@@ -26,7 +26,7 @@
 // Filename     : actionmenu.cpp
 // Description  : Constructs the ActionMenu for the MenuButtons
 //------------------------------------------------------------------------------
-ActionMenu::ActionMenu(QWidget *parent) : QGroupBox(parent)
+/*ActionMenu::ActionMenu(QWidget *parent) : QGroupBox(parent)
 {
 MainFrame::vdcdebug("ActionMenu","ActionMenu", "QWidget *parent");
 
@@ -40,18 +40,12 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QWidget *parent");
    layout->setAlignment(Qt::AlignTop);
 
    buttonGroup = new QButtonGroup(this);
-   /*b_disabledi = false;
-   b_disabledp = false;
-
-   connect(buttonGroup, SIGNAL(buttonClicked(int)), 
-           this, SLOT(buttonClicked(int)));
-*/
 
    this->layout = layout;
    setLayout(this->layout);
   // layout->setSizeConstraint(QLayout::SetFixedSize);
 
-}
+}*/
 
 //------------------------------------------------------------------------------
 // Method       : ActionMenu()
@@ -76,10 +70,14 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QString title, QString style, QW
 
 
    QVBoxLayout *layout = new QVBoxLayout;
-   layout->setAlignment(Qt::AlignTop);
+   layout->setAlignment(Qt::AlignRight | Qt::AlignTop);
+   layout->setContentsMargins(4,21,11,11);
+   //layout->insertSpacing(0,61); //NS
+   QGroupBox::setStyleSheet("QGroupBox {border: 0px; }");
 
    buttonGroup = new QButtonGroup(this);
 
+   this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)), 
            this, SLOT(buttonClicked(QAbstractButton*)));
@@ -116,10 +114,21 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
    QPushButton *button = new QPushButton(text.trimmed(), this);
    button->setFocusPolicy(Qt::NoFocus);
    button->setShortcut(shortcut);
-   button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIconSize(QSize(40,25));
-   button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+   button->setIcon(QIcon(QString(":pics/blank.png")));
+   button->setIconSize(QSize(53,37));
+   //button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
+   if (pic == "ende" || pic == "nein" || pic == "abbruch" || pic == "quit" || pic == "no" || pic == "cancel" || pic == "cancelar" || pic == "fin" || pic == "non" || pic == "interrompre") {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_rot.png);}"
+                                            "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_gelb.png);}"
+                                            "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_rot_grau.png);}"
+                                            "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_gelb_grau.png);}");
+   } else if (pic == "ok" || pic == "ja" || pic == "yes" || pic == "si" || pic == "oui") {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_gruen.png);}"
+                                             "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_gelb.png);}"
+                                             "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_gruen_grau.png);}"
+                                             "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_gelb_grau.png);}");
+   }
 
    qh_buttonpals[text.trimmed()] = button->palette();
 

@@ -29,11 +29,11 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
     {
         if(displayErrorDialog == 1)
         {
-            Dialog *dialog = new Dialog(tr("VDC Update"), tr("Could not connect to the Update Server.\n Please check your Network connection"), "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog(tr("VDC Update"), tr("Could not connect to the update server.\n Please check your network connection"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
             dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             dialog->getAction("OK")->setShortcut(Qt::Key_F12);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -70,13 +70,12 @@ void VentasUpdate::checkServerClient()
 
         if(clientVars.at(3) < XmlVersionServer)
                 {
-                    Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Incompatible VDC Version found.\n\nIt's strongly recommended to update the VDC.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de")).arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
+                    Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Incompatible VDC version found.\n\nIt is strongly recommended to update the VDC.\n\nClient version: %1 \nServer version %2 \n\nPlease contact the VENTAS support team: support@ventas.de")).arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
                     QPalette palette;
-                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                     dialog->setPalette(palette);
-                    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-                    dialog->createButton(1, "Update", "UPDATE", "ok_gruen.png");
-                    dialog->createButton(1, "CANCEL", "CANCEL", "escape.png");
+                    dialog->createButton(1, "Update", "UPDATE", "ok_gruen.png", "QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
+                    dialog->createButton(1, "CANCEL", "CANCEL", "escape.png", "QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                     dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
                     connect(dialog->getAction("UPDATE"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
                     connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), this, SLOT(closeVdc()));
@@ -113,12 +112,11 @@ void VentasUpdate::checkServerClient()
                                 {
                                     Dialog *dialog = new Dialog(tr("VDC Update"), tr("There is a new VDC version available.\n Do you want to download and install it?"), "", "information", this, Qt::WindowStaysOnTopHint);
                                     QPalette palette;
-                                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                                     dialog->setPalette(palette);
-                                    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-                                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png", "QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                                     dialog->getAction("OK")->setShortcut(Qt::Key_F12);
-                                    dialog->createButton(2, "Cancel", "Cancel", "escape.png");
+                                    dialog->createButton(1, "Cancel", "Cancel", "escape.png", "QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                                     dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
                                     connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
                                     connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -129,11 +127,11 @@ void VentasUpdate::checkServerClient()
                                 } else {
                                     if(displayErrorDialog == 1)
                                     {
-                                        Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new Version for this XML Version!"), "", "information", this, Qt::WindowStaysOnTopHint);
+                                        Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new version for this XML version!"), "", "information", this, Qt::WindowStaysOnTopHint);
                                         QPalette palette;
-                                        palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                                        palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                                         dialog->setPalette(palette);
-                                        dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+                                        dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                                         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                                         dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                                         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -146,11 +144,11 @@ void VentasUpdate::checkServerClient()
                             } else {
                                 if(displayErrorDialog == 1)
                                 {
-                                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new Update found for this A4GL Version."), "", "information", this, Qt::WindowStaysOnTopHint);
+                                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new update found for this A4GL version."), "", "information", this, Qt::WindowStaysOnTopHint);
                                     QPalette palette;
-                                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                                     dialog->setPalette(palette);
-                                    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+                                    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                                     dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -162,11 +160,11 @@ void VentasUpdate::checkServerClient()
                         } else {
                             if(displayErrorDialog == 1)
                             {
-                                Dialog *dialog = new Dialog(tr("VDC Update"), tr("The Client is up to date!"), "", "information", this, Qt::WindowStaysOnTopHint);
+                                Dialog *dialog = new Dialog(tr("VDC Update"), tr("The client is already up to date!"), "", "information", this, Qt::WindowStaysOnTopHint);
                                 QPalette palette;
-                                palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                                palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                                 dialog->setPalette(palette);
-                                dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+                                dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                                 dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                                 dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                                 connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -179,11 +177,11 @@ void VentasUpdate::checkServerClient()
                     } else {
                         if(displayErrorDialog == 1)
                         {
-                            Dialog *dialog = new Dialog(tr("VDC Update"), tr("The Client is up to date!"), "", "information", this, Qt::WindowStaysOnTopHint);
+                            Dialog *dialog = new Dialog(tr("VDC Update"), tr("The Client is already up to date!"), "", "information", this, Qt::WindowStaysOnTopHint);
                             QPalette palette;
-                            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                             dialog->setPalette(palette);
-                            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+                            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                             dialog->getAction("OK")->setShortcut(Qt::Key_F12);
@@ -194,11 +192,11 @@ void VentasUpdate::checkServerClient()
                         }
                     }
                 } else {
-                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("Cannot find Serverinformations."), "", "information", this, Qt::WindowStaysOnTopHint);
+                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("Cannot find server information."), "", "information", this, Qt::WindowStaysOnTopHint);
                     QPalette palette;
-                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+                    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
                     dialog->setPalette(palette);
-                    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+                    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                     dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -220,9 +218,9 @@ void VentasUpdate::checkServerClient()
             #endif
             Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Cannot open File: %1")).arg(filePath), "", "information", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
             dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->getAction("OK")->setShortcut(Qt::Key_F12);
@@ -249,12 +247,11 @@ void VentasUpdate::checkOpenConnections()
 
             Dialog *dialog = new Dialog(tr("VDC Update"), tr("There are modules running.\n They will be terminated. \n Do you really want to continue?"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
             dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png", "QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
             dialog->getAction("OK")->setShortcut(Qt::Key_F12);
-            dialog->createButton(2, "Cancel", "Cancel", "escape.png");
+            dialog->createButton(1, "Cancel", "Cancel", "escape.png", "QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
             dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(downloadBinarie()));
             connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -353,9 +350,9 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
         {
             Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Failed to Open: %1")).arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_11_bg.png")));
             dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(pics:VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(pics:VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(pics:VENTAS_11_btn_dialog_gelb_grau.png);}");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             dialog->getAction("OK")->setShortcut(Qt::Key_F12);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));

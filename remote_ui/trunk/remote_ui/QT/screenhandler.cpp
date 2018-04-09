@@ -22,6 +22,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QSettings>
+#include <QtMultimedia/QMediaPlayer>
+//#include <QSpacerItem>
 
 #include "screenhandler.h"
 #include "mainframe.h"
@@ -35,6 +37,9 @@
 #include <QMutex>
 #include "tools/vdcupdate.h"
 #include "masterupdate.h"
+
+#include "dashboard/dashboardview.h"
+#include "dashboard/dashboarditem.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
@@ -50,6 +55,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    this->setObjectName(test);
    //QList<ScreenHandler*> *l_ql_screenhandler =  QList<ScreenHandler*> MainFrame::ql_screenhandler;
    MainFrame::ql_screenhandler->append(this);
+   b_isFieldChanged = false;
    p_pid_p = 0;
    i_mode = 0;
    p_pid = 0;
@@ -72,7 +78,10 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    protocolTimer = NULL;
    sendWaitForServer = 1;
    this->installEventFilter(this);
+   b_ingoreActionsCheck = false;
+   b_keybufferrunning = false;
    //QApplication::processEvents();
+   mDashboard = NULL;
  }
 
 
@@ -83,25 +92,25 @@ void ScreenHandler::closeAllWindows()
     }
 
 }
+// unused
+//void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
+//{
+//    Q_UNUSED(old);
+//    Q_UNUSED(current);
 
-void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
-{
-    Q_UNUSED(old);
-    Q_UNUSED(current);
+//    return;
+//    if(p_fglform == NULL)
+//      return;
+//  QWidget *qw_form = (QWidget*) p_fglform;
+//  qApp->setActiveWindow(qw_form);
+//  if(!p_fglform->isEnabled())
+//  {
+//      return;
+//  }
 
-    return;
-    if(p_fglform == NULL)
-      return;
-  QWidget *qw_form = (QWidget*) p_fglform;
-  qApp->setActiveWindow(qw_form);
-  if(!p_fglform->isEnabled())
-  {
-      return;
-  }
-
-  p_fglform->activateWindow();
-  p_fglform->raise();
-}
+//  p_fglform->activateWindow();
+//  p_fglform->raise();
+//}
 
 //------------------------------------------------------------------------------
 // Method       : ~ScreenHandler()
@@ -157,6 +166,71 @@ MainFrame::vdcdebug("ScreenHandler","initForm", "int i_Frm");
    qh_formActionMenus.remove(i_Frm);
 }
 
+void ScreenHandler::sendBeforeEvents()
+{
+    if(p_fglform->inputArray() || p_fglform->displayArray())
+    {
+        TableView *tableView = qobject_cast<TableView*> (p_fglform->currentField());
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+        TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+        Fgl::Event beforeField, beforeRow;
+        QList<Fgl::Event> ql_events = p_fglform->ql_contextEvents.last();
+        QList<Fgl::Event> ql_responseevents;
+
+        beforeRow.type = Fgl::BEFORE_ROW_EVENT;
+        beforeRow.attribute = table->qsl_colNames.at(tableView->currentIndex().column());
+
+        for(int i = 0; i<ql_events.size(); i++) {
+            if(ql_events.at(i).type == beforeRow.type) {
+                qDebug() << "sende before row";
+                ql_responseevents << ql_events.at(i);
+                break;
+            }
+        }
+
+        beforeField.type = Fgl::BEFORE_FIELD_EVENT;
+        beforeField.attribute = table->qsl_colNames.at(tableView->currentIndex().column());
+
+        for(int i = 0; i<ql_events.size(); i++) {
+            if(ql_events.at(i).type == beforeField.type &&
+               ql_events.at(i).attribute == beforeField.attribute) {
+                qDebug() << "sende before field";
+                ql_responseevents << ql_events.at(i);
+                break;
+            }
+        }
+
+        qDebug() << "sending event...";
+
+        p_fglform->context->refreshInputArrayAttributes();
+
+        /*if(key == 16777235) {
+            p_fglform->context->setOption("SCRLINE", tableView->currentIndex().row()+1);
+            p_fglform->context->setOption("ARRLINE", tableView->currentIndex().row()+1);
+        }
+
+        if(key == 16777237) {
+            p_fglform->context->setOption("SCRLINE", tableView->currentIndex().row()-1);
+            p_fglform->context->setOption("ARRLINE", tableView->currentIndex().row()-1);
+        }*/
+
+        if(!ql_responseevents.isEmpty())
+        {
+            Fgl::Event summary;
+            int resp_cnt = ql_responseevents.size();
+            for(int i = 0; i<resp_cnt; i++)
+            {
+
+                summary.id += ql_responseevents.at(i).id;
+                if(i+1 != resp_cnt)
+                   summary.id += ",";
+            }
+
+           p_fglform->addToQueue(summary);
+        }
+    }
+}
+
 //------------------------------------------------------------------------------
 // Method       : ~ScreenHandler()
 // Filename     : screenhandler.cpp
@@ -182,8 +256,6 @@ MainFrame::vdcdebug("ScreenHandler","getCurrWindow", "");
 void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y, int h, int w, QString formfile, QString id)
 {
 MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString style, int x, int y, int h, int w, QString id");
-   Q_UNUSED(x);
-   Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
 
@@ -204,10 +276,11 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    }
    //p_fglform = new FglForm(windowTitle, parentWidget);
    //p_fglform = new FglForm(windowTitle, p_fglform);
-   p_fglform = new FglForm(windowTitle);
+   p_fglform = new FglForm(windowTitle, x, y);
    p_fglform->setFormName(formfile);
    p_fglform->installEventFilter(this);
    p_fglform->setScreenHandler(this);
+
    if(windowTitle == "dummy_ventas")
    {
        p_fglform->hide();
@@ -237,71 +310,165 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    {
       p_fglform->setStartMenu(startMenu);
       startMenu.clear();
-   }
-   if(style.isEmpty()){
-      style = "default";
+
+       if(style.isEmpty()){
+          style = "default";
+       }
+
+       p_fglform->setProperty("style", style);
+
+       if(formsToolBar.hasChildNodes()){
+          p_fglform->setToolBar(formsToolBar);
+       }
    }
 
-   p_fglform->setProperty("style", style);
-
+   p_fglform->setActions(formsActions);
+   p_fglform->setStyles(formsStyles);
    ql_fglForms << p_fglform;
 
-   if(formsToolBar.hasChildNodes()){
-      p_fglform->setToolBar(formsToolBar);
+   if(ql_fglForms.count() == 1) {
+       isMainModule = true;   //used in FglForm::showEvent to decide whether to call readSettingsLocal() or not
    }
-
-   p_fglform->setStyles(formsStyles);
-
-   p_fglform->initActions();
-   //this->handleIconFile(xmlIconDoc);
-   //this->handleShortcutsFile(xmlShortcutDoc);
-     if(formsActions.hasChildNodes())
-     {
-         p_fglform->setActions(formsActions);
-     }
-     if(formsActions1.hasChildNodes())
-     {
-         p_fglform->setActions(formsActions1);
-     }
-
-     if(formsActions2.hasChildNodes())
-     {
-         p_fglform->setActions(formsActions2);
-     }
-     if(xmlIconDocDe.hasChildNodes())
-     {
-         p_fglform->setActions(xmlIconDocDe);
-     }
-
-     if(xmlIconDocEn.hasChildNodes())
-     {
-         p_fglform->setActions(xmlIconDocEn);
-     }
-
-     if(xmlIconDocSp.hasChildNodes())
-     {
-         p_fglform->setActions(xmlIconDocSp);
-     }
-
-     if(xmlIconDocFr.hasChildNodes())
-     {
-         p_fglform->setActions(xmlIconDocFr);
-     }
-
-     if(xmlShortcutDoc.hasChildNodes())
-     {
-         p_fglform->setActions(xmlShortcutDoc);
-     }
-
-
-
-   checkColors();
 }
 
 FglForm* ScreenHandler::currForm()
 {
 MainFrame::vdcdebug("ScreenHandler","currForm", "");
    return p_fglform;
+}
+
+void ScreenHandler::parseXmlFile(QDomDocument doc)
+{
+    QDomElement domElement = doc.documentElement();
+
+    //QDomNode domNode = domElement.firstChild();
+
+    for (int i=0; i < domElement.childNodes().count(); i++) {
+        QDomNode child = domElement.childNodes().at(i);
+        QDomElement childElement = child.toElement();
+        QString tagName = childElement.tagName();
+        QString name = childElement.attribute("name");
+        QString text = childElement.attribute("text");
+        QString icon = childElement.attribute("icon");
+
+        if(tagName == "Icon") {
+            if(name.isEmpty()) {
+                QHash<QString, QString> commandText;
+                commandText.insert(text, icon);
+                menuCommand.insert(text, commandText);
+            } else {
+                QHash<QString, QString> commandText;
+                commandText.insert(text, icon);
+                menuCommand.insert(name, commandText);
+            }
+        }
+
+        if(tagName == "Shortcut") {
+            QString shortcut = childElement.attribute("shortcut");
+            if(!name.isEmpty()) {
+                menuShortcuts.insert(name, shortcut);
+            } else {
+                menuShortcuts.insert(text, shortcut);
+            }
+        }
+    }
+
+    /*while(!domNode.isNull()) {
+        QDomElement childDomElement = domNode.toElement();
+        QString test = childDomElement.tagName();
+        qDebug() << "domNode: " << test;
+
+        domNode = domNode.nextSibling();
+    }*/
+
+}
+
+void ScreenHandler::dial(QString number)
+{
+
+}
+
+void ScreenHandler::playSound(QString file)
+{
+
+    bool success = true;
+    QDir mediaDir(QApplication::applicationDirPath());
+    mediaDir.cd("media");
+    QString mediaDirFile = mediaDir.absolutePath() + "/" + file;
+
+
+    if(!QFile::exists(mediaDirFile)) {
+       success = false;
+    } else {
+        QMediaPlayer *player = new QMediaPlayer();
+
+        player->setMedia(QUrl::fromLocalFile(mediaDirFile));
+        player->setVolume(100);
+        player->play();
+
+        if(!player->errorString().isEmpty()) {
+            success = false;
+        }
+    }
+
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(success) + "</SV></SVS></TRIGGERED>";
+    if(this->ph) {
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    } else {
+      fglFormResponse(qs_resp);
+    }
+
+}
+
+// sends list of abonnements from settings.ini to 4gl
+void ScreenHandler::getAbonnements() {
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + VDC::getAllKeysFromGroup("Dashboard") + "</SV></SVS></TRIGGERED>";
+    if(this->ph) {
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    } else {
+      fglFormResponse(qs_resp);
+    }
+}
+
+void ScreenHandler::addDashboardItem(QString aktivitaet, QString icon, QString text, QString runtxt)
+{
+
+    if(getDashboard() == NULL) {
+        qWarning("Dashboard not initialized...");
+        return;
+    }
+    qDebug() << "adding item: ";
+
+    DashboardItem *item = new DashboardItem(aktivitaet, icon, text, runtxt);
+    int posX = getDashboard()->getLastPosFromItem().x() + 20;
+    int posY = getDashboard()->getLastPosFromItem().y();
+
+    if((posX + 195) > getDashboard()->width()) {
+        posX = 21;
+        posY = posY + 100;
+    }
+    // updates l_dashboard_text for subscribed widgets
+    QList<QGraphicsItem*> graphicsItemList = getDashboard()->getScene()->items();
+    foreach(QGraphicsItem* pGraphicsItems, graphicsItemList)
+    {
+        QGraphicsProxyWidget* pProxy = qgraphicsitem_cast<QGraphicsProxyWidget*>(pGraphicsItems);
+        if(pProxy)
+        {
+            DashboardItem* pLineEdit = qobject_cast<DashboardItem*>(pProxy->widget());
+            if(pLineEdit) {
+                if(pLineEdit->objectName() == item->objectName()) {
+                    qDebug() << "[INFO] Widget found in Scene. Updating widget.";
+                    getDashboard()->updateWidgetFromScene(pProxy, icon, text, runtxt);
+                    getDashboard()->getScene()->addItemToConfig(item->objectName(), text, icon, runtxt);
+                    return;
+                }
+            }
+        }
+    }
+
+    if(!getDashboard()->getScene()->getItemList().contains(item->objectName())) {
+        getDashboard()->addWidgetToScene(item, QPoint(posX,posY), runtxt);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -571,6 +738,104 @@ MainFrame::vdcdebug("ScreenHandler","handleXMLStyles", "QString xmlFileString");
    formsStyles = xmlFile;
 }
 
+void ScreenHandler::displayAt(int row, int column, bool clearLine, QString displayText)
+{
+    QList<QLabel *> widgets = p_fglform->findChildren<QLabel *>();
+    bool foundField = false;
+    foreach(QLabel *widget, widgets) {
+        int fieldId = -1;
+            if(widget->property("fieldId").isValid()) {
+                fieldId = widget->property("fieldId").toInt();
+            }
+        int posX = widget->property("posX").toInt();
+        //qDebug() << "fieldId: " << fieldId << " -  " << posX << " - " << widget;
+
+        if(row < 0) {
+            return;
+        }
+
+        if(fieldId == row) {
+            if(column < posX) {
+                if(QGridLayout *grid = qobject_cast<QGridLayout*> (widget->parentWidget()->layout())) {
+                    if(!grid->itemAtPosition(row, column)) {
+                        QLabel *label = new QLabel(displayText.mid(0, posX-1));
+                        //qDebug() << "row: " << row;
+                        grid->addWidget(label, row, 1, 1, posX-1);
+                        column = posX;
+                    } else {
+                        QLabel *label = qobject_cast<QLabel*> (grid->itemAtPosition(row, column)->widget());
+                        QString text = label->text();
+                        text.replace(column, displayText.length(), displayText);
+                        label->setText(text);
+                    }
+                }
+            }
+
+           if(column >= posX) {
+               int textCount = widget->text().length();
+               int displayCount = displayText.count();
+               QString text = widget->text();
+
+               if(widget->text() == "OVR") {
+                   return;
+               }
+
+               if(!clearLine) {
+                   if(textCount <= 1) {
+                       text = displayText;
+                   } else {
+                       //wenn Text in der Maske kleiner ist als der Text der angezeigt werden soll
+                       int replace = column - posX;
+                       if( textCount < displayCount) {
+                           text.replace(replace, textCount, displayText.mid(0, textCount));
+                           displayText.remove(0, textCount);
+                           text.append(displayText);
+                       } else {
+                            //wenn Text in der Maske gleich oder größer ist als der Text der angezeigt werden soll
+                            text.replace(replace, displayText.count(), displayText);
+                       }
+                   }
+               } else {
+                   //leer die komplette zeile an der Position
+                   if(text.count() >= 1) {
+                       int remove = column - posX;
+                       text.remove(remove, text.count());
+                   }
+
+                   if(text.count() == 1) {
+                       QList<QLabel *> columns = p_fglform->findChildren<QLabel *>();
+                       int columnFieldId = 0;
+                       int counter = 0;
+                       foreach(QLabel *label, columns) {
+                           if(label->property("fieldId").isValid()) {
+                               columnFieldId = label->property("fieldId").toInt();
+                           }
+
+                           if(fieldId == row) {
+                               counter++;
+                               if(QGridLayout *grid = qobject_cast<QGridLayout*> (label->parentWidget()->layout())) {
+                                   if(counter >= column) {
+                                       grid->removeItem(grid->itemAtPosition(row,counter));
+                                   }
+                               }
+                           }
+                       }
+                   }
+               }
+
+               qDebug() << "text after: " << text;
+
+               widget->setText(text);
+               qDebug() << "column: " << column << " - widget->text(): " << widget->text() << " - textCount: " << textCount << " - displayCount: " << displayCount;
+           }
+        }
+    }
+
+    if(!foundField) {
+        //displayError("DISPLAY AT is only allowed on blank lines.");
+    }
+}
+
 //------------------------------------------------------------------------------
 // Method       : createMenu(QString title, QString FieldValue)
 // Filename     : screenhandler.cpp
@@ -589,6 +854,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString commen
    // If menustyle is dialog
    if(style == "dialog"){
       createDialog(title, comment, style, image);
+      setIgnoreActionsCheck(false);
       return;
    }
    if(style == "pulldown")
@@ -697,6 +963,67 @@ MainFrame::vdcdebug("ScreenHandler","createMenuAction", "int buttonId, QString t
 
 }
 
+void ScreenHandler::setIconForCommand(QString command)
+{
+    if(!p_fglform->ql_actions)
+    {
+        p_fglform->ql_actions = new Actions(this);
+    }
+
+    if(menuCommand.contains(command)) {
+        QHash<QString,QString> test = menuCommand.value(command);
+
+        QList<QString> text = test.keys();
+        QList<QString> icon = test.values();
+
+        /*foreach (QString value, test) {
+            if(!value.contains(".png")) {
+                text = value;
+            } else {
+                icon = value;
+            }
+        }*/
+
+        Action *action = new Action(command.toLower(), text.at(0), p_fglform);
+        if(!icon.isEmpty()) {
+            action->setImage(icon.at(0));
+        }
+
+        if(menuShortcuts.contains(command)) {
+            QString shortcut = menuShortcuts.value(command);
+            if(command != "cancel") {
+                action->setAcceleratorName(shortcut);
+            }
+        }
+
+        p_fglform->addFormAction(action);
+    }
+
+    /*if(menuIcons.contains(value)) {
+        if(!p_fglform->ql_actions)
+        {
+            p_fglform->ql_actions = new Actions(this);
+        }
+
+        QString image = menuIcons.value(value);
+
+        Action *action = new Action(value.toLower(), value, p_fglform);
+        if(!image.isEmpty()) {
+            action->setImage(image);
+        }
+
+        if(menuShortcuts.contains(value)) {
+            QString shortcut = menuShortcuts.value(value);
+            action->setAcceleratorName(shortcut);
+            action->setShortcut(shortcut);
+        }
+
+        p_fglform->addFormAction(action);
+        p_fglform->ql_actions->ql_actions << action;
+    }*/
+
+}
+
 //------------------------------------------------------------------------------
 // Method       : enableMenu(bool enable)
 // Filename     : screenhandler.cpp
@@ -770,37 +1097,44 @@ MainFrame::vdcdebug("ScreenHandler","showOption", "QString name");
 }
 
 //------------------------------------------------------------------------------
-// Method       : hideOption(QString name)
-// Filename     : screenhandler.cpp
-// Description  : hide menu commands
+// Method         : nextOption(QString name)
+// Filename      : screenhandler.cpp
+// Description  : Set focus on the button set via "NEXT OPTION" in a4gl
 //------------------------------------------------------------------------------
 void ScreenHandler::nextOption(QString name, int i_context)
 {
-MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name, int context");
-
-   Context *context = this->getContext(i_context);
-
-   for(int i=0; i<ql_fglForms.size(); i++){
-      if(ql_fglForms.at(i)->context == context){
-         this->activeWindow(ql_fglForms.at(i)->windowName);
-      }
-   }
-
-   if(p_fglform == NULL)
-      return;
-
-   if(p_fglform->dialog() != NULL){
-      return;
-   }
-   if(p_fglform->ringMenuPulldown() != NULL){
+MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name");
+   Q_UNUSED(i_context);
+   if(p_fglform->menu() == NULL) {
        return;
    }
 
-   if(p_fglform->menu() != NULL){
-      // p_fglform->menu()->selectButton(name);
-       p_fglform->menu()->setFocusName(name.trimmed());
-       return;
-    }
+   p_fglform->menu()->nextOptionName = name;
+   //p_fglform->menu()->setFocusName(name);
+
+//   Context *context = this->getContext(i_context);
+
+//   for(int i=0; i<ql_fglForms.size(); i++){
+//      if(ql_fglForms.at(i)->context == context){
+//         this->activeWindow(ql_fglForms.at(i)->windowName);
+//      }
+//   }
+
+//   if(p_fglform == NULL)
+//      return;
+
+//   if(p_fglform->dialog() != NULL){
+//      return;
+//   }
+//   if(p_fglform->ringMenuPulldown() != NULL){
+//       return;
+//   }
+
+//   if(p_fglform->menu() != NULL){
+//       //p_fglform->menu()->selectButton(name);
+//       p_fglform->menu()->setFocusName(name.trimmed());
+//       return;
+//    }
  }
 
 //------------------------------------------------------------------------------
@@ -1028,7 +1362,8 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
       if(index < 0){
          QWidget *widget = p_fglform->findFieldByName(fieldName);
          if(widget == NULL){
-            return;
+            displayError("ERROR in DISPLAYTO: Field not found: "+ fieldName);
+            continue;
          }
 
          if(LineEditDelegate *led = qobject_cast<LineEditDelegate *> (widget)){
@@ -1079,13 +1414,15 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
                for(int k=0; k<ql_fields.count(); k++){
                   values << fieldValues.at(value_cnt+k);
                }
-               WidgetHelper::setDisplayAttributes(attr, widget);
+               //Not working for Display input arrays
+               //WidgetHelper::setDisplayAttributes(attr, widget);
                setArrayBuffer(row, fieldName, values);
                value_cnt = ql_fields.count();
                break;
             }
             else{
-               WidgetHelper::setDisplayAttributes(attr, widget);
+               //Not working for Display input arrays
+               //WidgetHelper::setDisplayAttributes(attr, widget);
                WidgetHelper::setFieldText(widget, fieldValues.at(value_cnt));
                value_cnt++;
             }
@@ -1284,13 +1621,13 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
                int col = table->columnCount(QModelIndex())-1;
                if(col > 0)
                   col = i;
-   
+
                /*
                if(table->rowCount(QModelIndex()) < row+1){
                   table->insertRow(row, QModelIndex());
                }
                */
-   
+
                QString fieldValue = fieldValues.at(i);
                tableView->setText(fieldValue, row, col);
             }
@@ -1403,7 +1740,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
    Context *context = getCurrentContext();
    if(context == NULL)
       return;
-   
+
    // For fieldlist = table.*
    int index = fieldName.indexOf(".*");
    QWidget *widget = NULL;
@@ -1447,6 +1784,17 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
 
 }
 
+void ScreenHandler::setFieldFocus()
+{
+    for(int i=0; i < p_fglform->context->fieldList().size(); i++) {
+        QWidget *next = p_fglform->context->fieldList().at(i);
+        if(!next->isHidden()) {
+            p_fglform->jumpToField(p_fglform->context->fieldList().at(i), false);
+            return;
+        }
+    }
+}
+
 //------------------------------------------------------------------------------se
 // Method       : setFieldFocus(QString FieldName )
 // Filename     : screenhandler.cpp
@@ -1461,6 +1809,14 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
 
    if(i_Frm < 0)
       return;
+
+   QWidget *focusWidget = p_fglform->findFieldByName(fieldName);
+
+   if(focusWidget != NULL) {
+       if(focusWidget->isHidden()) {
+            displayError(QString("Next Field %1 is required field!").arg(fieldName));
+       }
+   }
 
    clearEvents();
    p_fglform->nextclick = NULL;
@@ -1492,8 +1848,8 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
               //bool isFieldnoEntry = p_fglform->ql_formFields.at(i)->property("noEntry").toBool();
               if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
               {
-                     p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
-                     return;
+                 p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
+                 return;
               }
           }
       }
@@ -1515,7 +1871,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
          qFatal("No Field found to set Focus: %s", qPrintable(fieldName));
          return;
       }
-    
+
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
          if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
             int index = fieldName.indexOf(".");
@@ -1555,7 +1911,9 @@ void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
 
 void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
 {
-
+    if(attribute.toLower() == "logo") {
+        p_fglform->setLogo(value);
+    }
     if(attribute.toLower() == "setwindowicon")
     {
         if(value == "TRAINING") {
@@ -1571,10 +1929,54 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
         {
             widget->setPicture(value);
         }
+
         if(attribute.toLower() == "hidden")
         {
             bool bValue = value.toInt();
             widget->setHidden(bValue);
+        }
+
+        if(attribute.toLower() == "noshow")
+        {
+            int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(widget->colName + "/hideColumn"), "-1").toInt();
+
+            if(hideColumn == -1) {
+                bool bValue = value.toInt();
+                widget->setHidden(bValue);
+                widget->setNoShow(bValue);
+            }
+        }
+
+        if(attribute.toLower() == "noentry")
+        {
+            bool bValue = value.toInt();
+            widget->setDisabled(!bValue);
+            widget->setNoEntry(bValue);
+        }
+    }
+
+    if(DateEdit *widget = qobject_cast<DateEdit*> (p_fglform->findFieldByName(fieldName.toLower())))
+    {
+        if(attribute.toLower() == "picture")
+        {
+            widget->setPicture(value);
+        }
+
+        if(attribute.toLower() == "hidden")
+        {
+            bool bValue = value.toInt();
+            widget->setHidden(bValue);
+        }
+
+        if(attribute.toLower() == "noshow")
+        {
+            int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(widget->colName + "/hideColumn"), "-1").toInt();
+
+            if(hideColumn == -1) {
+                bool bValue = value.toInt();
+                widget->setHidden(bValue);
+                widget->setNoShow(bValue);
+            }
         }
 
         if(attribute.toLower() == "noentry")
@@ -1583,6 +1985,7 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
             widget->setEnabled(!bValue);
         }
     }
+
     if(TextEdit *widget = qobject_cast<TextEdit*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
 
@@ -1641,20 +2044,69 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
     {
         if(attribute.toLower() == "defaultimage")
         {
-            QFile currentPath(QApplication::applicationDirPath() + "/pics/%1");
+            QFile currentPath(QApplication::applicationDirPath() + QString("/pics/%1").arg(value));
             if(currentPath.exists())
             {
-                QPixmap pix(QString("pics/%1").arg(value));
+                QPixmap pix(QApplication::applicationDirPath() + QString("/pics/%1").arg(value));
                 widget->setPixmap(pix);
             } else {
-                QPixmap pix(QString(":pics/%1").arg(value));
+                QPixmap pix(QString(":/pics/%1").arg(value));
                 widget->setPixmap(pix);
             }
         }
-        if(attribute.toLower() == "hidden")
+
+        if(attribute.toLower() == "dashboard") {
+
+            //widget->setPixmap(QPixmap());
+            mDashboard = new DashboardView();
+
+            //Add directly to QSplitter for dynamic resize.
+            //for(int i=0; i < p_fglform->getSplitter()->count(); i++ ){
+                //QWidget *childWidget = p_fglform->getSplitter()->widget(i);
+
+                //if(childWidget->inherits("XmlParser")) {
+                    //childWidget->hide();
+
+                    QVBoxLayout *layout = new QVBoxLayout();
+                    QWidget *layoutWidget = new QWidget;
+
+                    //layout->addSpacerItem(new QSpacerItem(500, 50, QSizePolicy::Expanding, QSizePolicy::Minimum));
+                    layout->insertSpacing(0, 18);
+                    layout->addWidget(mDashboard);
+                    layout->setAlignment(Qt::AlignBottom);
+                    layoutWidget->setLayout(layout);
+                    mDashboard->setSceneRect(mDashboard->getScene()->sceneRect());
+
+                    //p_fglform->gethLayout()->addLayout(layout);
+                    mDashboard->setContentsMargins(0,35,0,0);
+                    p_fglform->getSplitter()->addWidget(layoutWidget);
+
+                    //p_fglform->getFormWidget()->hide();
+
+                    isMainModule = true;  //used in FglForm::showEvent to decide whether to call readSettingsLocal() or not
+
+                //}
+            //}
+//            DashboardItem *item = new DashboardItem("neue-aufgabe", "neue-aufgabe", "", "");
+//            getDashboard()->addWidgetToScene(item, QPoint(0,0), "");
+
+        }
+
+        if(attribute.toLower() == "hidden" || attribute.toLower() == "noshow")
         {
             bool bValue = value.toInt();
             widget->setHidden(bValue);
+        }
+
+        if(attribute.toLower() == "noshow")
+        {
+            int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(widget->colName + "/hideColumn"), "-1").toInt();
+
+            if(hideColumn == -1) {
+                bool bValue = value.toInt();
+                widget->setHidden(bValue);
+                widget->setNoShow(bValue);
+            }
         }
     }
 
@@ -1665,6 +2117,8 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
             if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->ql_formFields.at(i)))
             {
 
+                bool bValue = value.toInt();
+
                 if(attribute.toLower() == "noentry")
                 {
                     bool value1 = value.toInt();
@@ -1673,10 +2127,28 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
 
                 if(attribute.toLower() == "hidden")
                 {
+                    if(bValue) {
+                        if(TableView *view = qobject_cast<TableView*> (le->parent()))
+                        {
+                            view->hideColumn(le->column());
+                        }
+                    } else {
+                        if(TableView *view = qobject_cast<TableView*> (le->parent()))
+                        {
+                            view->showColumn(le->column());
+                        }
+                    }
+                }
+
+                if(attribute.toLower() == "setcolor")
+                {
+                    le->setColor(value.toLower());
+
                     if(TableView *view = qobject_cast<TableView*> (le->parent()))
                     {
-                        view->hideColumn(le->column());
+                        view->viewport()->update();
                     }
+
                 }
             }
         }
@@ -1715,7 +2187,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
          }
       }
    }
-   
+
 }
 
 //------------------------------------------------------------------------------
@@ -1749,7 +2221,7 @@ MainFrame::vdcdebug("ScreenHandler","setElementHidden", "QString fieldName, bool
          }
       }
    }
-   
+
 }
 
 //------------------------------------------------------------------------------
@@ -1805,7 +2277,7 @@ MainFrame::vdcdebug("ScreenHandler","clearEvents", "");
    if(p_fglform->ql_responseQueue.size() > 0){
       p_fglform->ql_responseQueue.clear();
    }
-   p_fglform->clearKeyboardBuffer();
+   clearKeyboardBuffer();
 
    this->clearFieldEvents = false;
 }
@@ -1950,6 +2422,46 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
       return;
    }
 
+   if(event == "BEFORE_INSERT_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_INSERT_EVENT;
+      event.id = id;
+
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
+      return;
+   }
+
+   if(event == "AFTER_INSERT_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::AFTER_INSERT_EVENT;
+      event.id = id;
+
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
+      return;
+   }
+
+   if(event == "BEFORE_DELETE_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_DELETE_EVENT;
+      event.id = id;
+
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
+      return;
+   }
+
+   if(event == "AFTER_DELETE_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::AFTER_DELETE_EVENT;
+      event.id = id;
+
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
+      return;
+   }
+
    if(event == "ONKEY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::ONKEY_EVENT;
@@ -1976,6 +2488,9 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
       Action *action = new Action(attribute, "", p_fglform);
       action->setDefaultView("yes");
       p_fglform->addFormAction(action);
+      if(Fgl::keyToString(attribute) == "return") {
+          action->setAcceleratorName2("Enter");
+      }
       action->setEnabled(true);
 
       //p_fglform->ql_formEvents << event;
@@ -2002,25 +2517,23 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
 void ScreenHandler::createActionMenu()
 {
 MainFrame::vdcdebug("ScreenHandler","createActionMenu", "");
-   int i_Frm = getCurrForm();
+    int i_Frm = getCurrForm();
 
-   if(i_Frm < 0)
-      return;
+    if(i_Frm < 0)
+        return;
 
-   if(p_fglform == NULL){
-      return;
-   }
+    if(p_fglform == NULL){
+        return;
+    }
 
-   if(qh_formActionMenus[i_Frm] == NULL){
-      ActionMenu *actionMenu = new ActionMenu("", "");
-      qh_formActionMenus[i_Frm] = actionMenu;
-      p_fglform->setActionMenu(qh_formActionMenus[i_Frm]);
-      p_fglform->setMenuEnabled(false);
+    ActionMenu *actionMenu = new ActionMenu("", "");
+    qh_formActionMenus[i_Frm] = actionMenu;
+    p_fglform->setActionMenu(qh_formActionMenus[i_Frm]);
+    p_fglform->setMenuEnabled(false);
 
-      Context *context = getCurrentContext();
-      if(context == NULL)
-         return;
-   }
+    Context *context = getCurrentContext();
+    if(context == NULL)
+        return;
 
 }
 
@@ -2048,13 +2561,26 @@ MainFrame::vdcdebug("ScreenHandler","createActionMenuButton", "QString text, QSt
 
    Action *fAction = new Action(Fgl::stringToKey(desc), text);
    fAction->setAcceleratorName(desc);
-   /*
+
    if(desc.toLower().trimmed() != "insert" && desc.toLower().trimmed() != "delete")
    {
       fAction->setAcceleratorName(desc);
-   }*/
+   }
+
    fAction->setDefaultView("yes");
    fAction->setVisible(false);
+   QHash<QString,QString> test = menuCommand.value(desc);
+
+   QList<QString> icon = test.values();
+
+   if(icon.count() <= 0) {
+       return;
+   }
+
+   if(!icon.at(0).isEmpty()) {
+       fAction->setImage(icon.at(0));
+   }
+
    p_fglform->addFormAction(fAction);
 
 }
@@ -2102,12 +2628,14 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
      }*/
    p_fglform->context = context;
 
+   setIgnoreActionsCheck(false);
 
    if(value){
 
       if(type == "MENU"){
          p_fglform->setState(Fgl::MENU);
          context->setState(Fgl::MENU);
+         setIgnoreActionsCheck(false);
       }
 
       if(type == "INPUT"){
@@ -2118,7 +2646,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
          event.id = "-1";
-         event.attribute = "accept"; 
+         event.attribute = "accept";
 
          p_fglform->addFormEvent(event);
 
@@ -2127,6 +2655,8 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
+         setIgnoreActionsCheck(false);
+         p_fglform->initActions();
       }
 
       if(type == "CONSTRUCT"){
@@ -2136,7 +2666,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
          event.id = "-1";
-         event.attribute = "accept"; 
+         event.attribute = "accept";
 
          p_fglform->addFormEvent(event);
 
@@ -2145,6 +2675,8 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
+         setIgnoreActionsCheck(false);
+         p_fglform->initActions();
       }
 
       if(type == "DISPLAYARRAY"){
@@ -2155,7 +2687,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
          event.id = "-1";
-         event.attribute = "accept"; 
+         event.attribute = "accept";
 
          p_fglform->addFormEvent(event);
 
@@ -2164,7 +2696,8 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
-
+         setIgnoreActionsCheck(false);
+         p_fglform->initActions();
      }
 
       if(type == "INPUTARRAY"){
@@ -2175,7 +2708,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
          event.id = "-1";
-         event.attribute = "accept"; 
+         event.attribute = "accept";
 
          p_fglform->addFormEvent(event);
 
@@ -2197,15 +2730,8 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "delete";
 
          p_fglform->addFormEvent(event);
-
-         for(int i=0; i<context->fieldList().count(); i++){
-             if(TableView *tv = qobject_cast<TableView*> (context->fieldList().at(i)))
-             {
-                 tv->setIgnoreRowChange(false);
-            }
-         }
-
-
+         setIgnoreActionsCheck(false);
+         p_fglform->initActions();
       }
    }
    else{
@@ -2218,6 +2744,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
             p_fglform->ql_dialogEvents.clear();
+            setIgnoreActionsCheck(false);
             return;
          }
          if(p_fglform->ringMenuPulldown() != NULL){
@@ -2227,6 +2754,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
             p_fglform->ql_pulldownEvents.clear();
+            setIgnoreActionsCheck(false);
             return;
          }
          else{
@@ -2234,6 +2762,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
             p_fglform->ql_menuEvents.clear();
+            setIgnoreActionsCheck(false);
          }
       }
 
@@ -2267,6 +2796,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
             p_fglform->revertState(Fgl::INPUTARRAY);
             freeContext(i_context);
+            setIgnoreActionsCheck(false);
             p_fglform->ql_responseQueue.clear();
             p_fglform->ql_formEvents.clear();
             QList<QAction*> ql_actions = p_fglform->actions();
@@ -2285,47 +2815,21 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
                   }
                }
             }
-            return;
          }
       }
 
       if(type == "CONSTRUCT"){
          p_fglform->revertState(Fgl::CONSTRUCT);
-//         QList<QWidget*> ql_fields = p_fglform->formElements();
-/*
-         QList<QWidget*> ql_fields = p_fglform->ql_formFields;
-         for(int i=0; i<ql_fields.size(); i++){
-            QWidget *widget = (QWidget*) ql_fields.at(i);
-
-            if(widget->isEnabled()){
-               if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_fields.at(i))){
-                  lineEdit->setEnabled(false);
-               }
-
-            if(TextEdit *textEdit = qobject_cast<TextEdit *> (ql_fields.at(i))){
-               textEdit->setEnabled(false);
-            }
-         }
-*/
+         setIgnoreActionsCheck(false);
          freeContext(i_context);
       }
 
    if(type == "DISPLAY"){
-//      QList<QWidget*> ql_fields = p_fglform->formElements();
-/*
-      for(int i=0; i<context->fieldList().count(); i++){
-         QWidget *widget = p_fglform->findFieldByName(context->fieldList().at(i));
-         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-               tableView->setEnabled(false);
-               }
-         }
-      }
-*/
+      setIgnoreActionsCheck(false);
       p_fglform->revertState(Fgl::DISPLAYARRAY);
    }
 
-
+   setIgnoreActionsCheck(false);
    p_fglform->ql_responseQueue.clear();
    p_fglform->ql_formEvents.clear();
    p_fglform->qsl_activeFields.clear();
@@ -2364,61 +2868,36 @@ void ScreenHandler::waitForEvent()
 {
 
 MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
-if(qsl_triggereds.size() > 0)
-{
-    if(p_fglform)
+    if(qsl_triggereds.size() > 0)
     {
-       p_fglform->b_getch_swin = true;
+        if(p_fglform)
+        {
+            p_fglform->b_getch_swin = true;
+        }
+        sendDirect(qsl_triggereds.takeFirst());
+        return;
     }
-   sendDirect(qsl_triggereds.takeFirst());
-   return;
-}
 
    FglForm *saveactive = p_fglform;
    if(p_fglform == NULL)
       return;
 
-   if(p_fglform->context != getCurrentContext()){
+   if(p_fglform->context != getCurrentContext())
+   {
       p_fglform->context = getCurrentContext();
       connect(p_fglform->context, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
    }
 
-
-   //for(int i= 0; i < this->ql_fglForms.count(); i++)
-   //{
       p_fglform = ql_fglForms.last();
 
-      if(!p_fglform->input() && !p_fglform->inputArray())
-      {
-          p_fglform->checkState();
-      }
-
-     //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
-      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->ringMenuPulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
+      //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
+      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->ringMenuPulldown() == NULL && ( (p_fglform->menu() == NULL && p_fglform->actionMenu() == NULL) || saveactive->state() != Fgl::IDLE) && !p_fglform->b_dummy){
          p_fglform->b_newForm = false;
-         p_fglform->checkState();
+         checkColors();
+         checkFglformState();
 
-         //Load the Actions again, before display the form
-          //p_fglform->checkActions();
-        // p_fglform->adjustSize();
-         //p_fglform->resize(500,500);
-         int maximized = VDC::readSettingsFromIni(p_fglform->formName(), "windowIsMaximized").toInt();
-
-         if(maximized == 1)
-         {
-             p_fglform->show();
-             p_fglform->showMaximized();
-         } else {
-             QSize widgetSize (VDC::readSettingsFromIni(p_fglform->formName(), "width").toInt(), VDC::readSettingsFromIni(p_fglform->formName(), "height").toInt());
-             if(!widgetSize.isEmpty())
-             {
-                 p_fglform->resize(widgetSize);
-                 p_fglform->show();
-             } else {
-                 p_fglform->show();
-                 p_fglform->adjustSize();
-             }
-         }
+         //Resizing and positioning in FglForm::showEvent
+         p_fglform->show();
 
          if(p_fglform->context != NULL)
          {
@@ -2431,23 +2910,22 @@ if(qsl_triggereds.size() > 0)
                     tableView->restoreSortOrder();
              }
          }
-
-         if(p_fglform->construct())
-         {
-             if(p_fglform->getConstrained())
-             {
-                 p_fglform->context->setConstrained(p_fglform->getConstrained());
-                 p_fglform->context->ql_formFields = p_fglform->getConstrainList();
-                 QWidget *myWidget = p_fglform->context->fieldList().first();
-                 p_fglform->setCurrentField(myWidget->objectName(), false);
-             }
-         }
-
          emit windowCreated();
-      }
-      else{
-         if(p_fglform->dialog() != NULL){
-         //   p_fglform->checkActions(); allready in checkState
+      } else {
+
+         //if(!p_fglform->input() && !p_fglform->inputArray()) {
+             //p_fglform->checkActions();
+             //p_fglform->checkState();
+         //}
+
+          if(!getIgnoreActionsCheck()) {
+              p_fglform->checkState();
+              p_fglform->checkActions();
+              setIgnoreActionsCheck(true);
+          }
+
+         if(p_fglform->dialog() != NULL)
+         {
               //Not needed under mac, cause the dialog i opend in top of the qmainwindow
               #ifndef Q_OS_MAC
              //Noch moven solange es unsichtbar ist
@@ -2475,87 +2953,93 @@ if(qsl_triggereds.size() > 0)
             p_fglform->dialog()->adjustSize();
             p_fglform->dialog()->activateWindow();
             p_fglform->dialog()->raise();
+            p_fglform->dialog()->setFocusOnButton();
          }
 
-         if(p_fglform->ringMenuPulldown() != NULL){
-        //    p_fglform->checkActions(); allredy in checkState
-            /*QString style = QString("QMenu::item:disabled { width: 20px; background-image: url(none); padding-left: 110px; height: 26px; color: #000000;}") + " " + p_fglform->styleSheet();
-            p_fglform->setStyleSheet(style);
-
-            int cnt = 0;
-            for(int i = 0; i < p_fglform->pulldown()->actions().count(); i++){
-                if(Action *action = qobject_cast<Action*> (p_fglform->pulldown()->getAction(p_fglform->pulldown()->actions().at(i)->text()))) {
-                    if(action->isVisible()) {
-                        if(action->text() == "Ende" || action->text() == "Exit") {
-                            action->setIcon((QIcon(QString(":pics/pulldown-esc.png"))));
-                        } else {
-                            action->setIcon((QIcon(QString(":pics/%1.png").arg(cnt))));
-                        }
-                        cnt++;
-                    }
-                }
-            }*/
-            //p_fglform->ringMenuPulldown()->showWindow();
-             //Noch moven solange es unsichtbar ist
+         if(p_fglform->ringMenuPulldown() != NULL)
+         {
+            //  aligns the pulldown menu to the top right of the previous window, unless it's a dummy then centered
              if(!p_fglform->ringMenuPulldown()->isVisible())
              {
-                 QRect rect;
-                 int pulldownCnt = p_fglform->ringMenuPulldown()->getButtons()->buttons().count();
                  if(p_fglform->b_dummy || !p_fglform->isVisible())
                  {
-                   rect = QApplication::desktop()->screenGeometry();
+                   QRect rect = QApplication::desktop()->screenGeometry();
                    QRect w_p_rect = QRect(0,0, p_fglform->ringMenuPulldown()->sizeHint().width(), p_fglform->ringMenuPulldown()->sizeHint().height());
                    p_fglform->ringMenuPulldown()->move(rect.center() - w_p_rect.center());
+                 } else {
+                   int marginWidth = p_fglform->frameGeometry().right() - p_fglform->geometry().right();
 
-                 }
-                 else
-                 {
+                   int posX = p_fglform->geometry().right() - (p_fglform->ringMenuPulldown()->geometry().width() + marginWidth);
 
-                     if(pulldownCnt <= 10)
-                     {
-                         QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
-                         p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center());
-                     } else {
-                         pulldownCnt = pulldownCnt - 10;
-                         QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
-                         QPoint posHeight = QPoint(0, (25 * pulldownCnt) + 25);
-                         p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center() - posHeight);
-                     }
-                 }
+                   int posY;
+                   int screenHeight = QApplication::desktop()->availableGeometry().height();
+                   int topToBottom = screenHeight - p_fglform->geometry().top();
+
+                   if (topToBottom >= p_fglform->ringMenuPulldown()->height()) {
+                       posY = p_fglform->geometry().top();
+                   } else {
+                       int marginHeight = p_fglform->geometry().height() - p_fglform->frameGeometry().height();
+                       posY = screenHeight - (p_fglform->ringMenuPulldown()->frameGeometry().height() - marginHeight);
+                   }
+
+                    p_fglform->ringMenuPulldown()->move(posX, posY);
+                   }
              }
+//            int marginHeight = p_fglform->frameGeometry().height() - p_fglform->geometry().height();
+//            int pulldownMiddle = (marginHeight + p_fglform->ringMenuPulldown()->geometry().height()) / 2;
+
+//            if (posY > pulldownMiddle) {
+//               posY = (posY - pulldownMiddle);
+//            } else {
+//                posY = 0;
+//            }
+
+
+             //Noch moven solange es unsichtbar ist
+
+//             if(!p_fglform->ringMenuPulldown()->isVisible())
+//             {
+//                 QRect rect;
+//                 int pulldownCnt = p_fglform->ringMenuPulldown()->getButtons()->buttons().count();
+//                 if(p_fglform->b_dummy || !p_fglform->isVisible())
+//                 {
+//                   rect = QApplication::desktop()->screenGeometry();
+//                   QRect w_p_rect = QRect(0,0, p_fglform->ringMenuPulldown()->sizeHint().width(), p_fglform->ringMenuPulldown()->sizeHint().height());
+//                   p_fglform->ringMenuPulldown()->move(rect.center() - w_p_rect.center())
+//                 } else {
+//                     if(pulldownCnt <= 10)
+//                     {
+//                         QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+//                         p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center());
+//                     } else {
+//                         pulldownCnt = pulldownCnt - 10;
+//                         QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+//                         QPoint posHeight = QPoint(0, (25 * pulldownCnt) + 25);
+//                         p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center() - posHeight);
+//                     }
+//                 }
+//             }
             p_fglform->ringMenuPulldown()->show();
+            p_fglform->ringMenuPulldown()->setFocusOnButton();
+
+            #ifdef Q_OS_MAC
+                p_fglform->ringMenuPulldown()->raise();
+            #endif
          }
 
-         if(p_fglform->menu() != NULL)
-         {
-             if(p_fglform->state() == Fgl::MENU )
-             {
-                 if(!p_fglform->menu()->getFocusName().isEmpty())
-                 {
-                     p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
-                 }
-             }
-         }
+//         if(p_fglform->menu() != NULL)
+//         {
+//             if(p_fglform->state() == Fgl::MENU )
+//             {
+//                 if(!p_fglform->menu()->getFocusName().isEmpty())
+//                 {
+//                     p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
+//                 }
+//             }
+//         }
       }
-   //}
    p_fglform = saveactive;
-   /*
-   if(p_fglform->inputArray() || p_fglform->construct() || p_fglform->input() || p_fglform->displayArray())
-   {
 
-       if(p_fglform->actionMenu())
-       {
-          p_fglform->actionMenu()->setButtonIcons();
-          p_fglform->actionMenu()->setButtonPalette();
-       }
-
-   }*/
-   checkFields();
-
-/*
-   if(p_fglform->context != NULL)
-      p_fglform->context->checkOptions();
-*/
     //Mac needs the raise here to start in front of the terminal
     #ifdef Q_OS_MAC
         p_fglform->raise();
@@ -2571,62 +3055,33 @@ if(qsl_triggereds.size() > 0)
      if(p_fglform->ql_responseQueue.size() > 0)
      {
          p_fglform->b_getch_swin = true;
-         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
+         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField()))
+         {
              if(p_fglform->inputArray())
              {
                  tableView->eventfield = QModelIndex();
                  tableView->b_ignoreFocus = false;
-
-
-                 if(tableView->curr_editor != NULL)
-                 {
-              //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
-                    //p_fglform->setFocusOnWidget(tableView->curr_editor);
-                 }
              }
          }
          processResponse();
          return;
      }
-      //setUpdatesEnabled(true);
-
-      QTableView *myTable = p_fglform->findChild<QTableView*>();
-
-      if(myTable)
-      {
-          //Unter Mac enfernt er das gesammte TableView wenn nen PaintEvent kommt... Das sieht noch beschissener aus als so eine dumme Feldselektierung. Deswegen für Mac raus
-          #ifndef Q_OS_MAC
-          //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
-          //myTable->setUpdatesEnabled(true);
-          #endif
-      }
-
-
-   if(p_fglform->currentField() == NULL)
-   {
-
-   }
-   else
-   {
-       if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
+    if(p_fglform->currentField() != NULL)
+    {
+       if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField()))
+       {
            if(p_fglform->inputArray())
            {
                tableView->eventfield = QModelIndex();
-
                tableView->b_ignoreFocus = false;
-             //  tableView->edit(tableView->currentIndex());
+
                if(tableView->curr_editor != NULL)
                {
-            //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
-                  //p_fglform->setFocusOnWidget(tableView->curr_editor);
+                  tableView->curr_editor->setFocus(Qt::OtherFocusReason);
                }
-           } else if(p_fglform->displayArray())
-           {
-                  //tableView->restoreSortOrder();
+               tableView->setUpdatesEnabled(true);
            }
-       }
-       else
-       {
+       } else {
            p_fglform->setFocusOnWidget(p_fglform->currentField());
 
            if(p_fglform->nextclick != NULL)
@@ -2634,48 +3089,45 @@ if(qsl_triggereds.size() > 0)
                if(ButtonEdit *be = qobject_cast<ButtonEdit*> (p_fglform->nextclick->parentWidget()))
                {
                    if(p_fglform->currentField() == p_fglform->nextclick->parentWidget())
-                      be->buttonClicked();
+                   {
+                        be->buttonClicked();
+                   }
                }
                if(DateEdit *de = qobject_cast<DateEdit*> (p_fglform->nextclick->parentWidget()))
                {
                    if(p_fglform->currentField() == p_fglform->nextclick->parentWidget())
-                      de->buttonClicked();
+                   {
+                        de->buttonClicked();
+                   }
                }
-
-                   p_fglform->nextclick = NULL;
+               p_fglform->nextclick = NULL;
            }
        }
-   }
-   if(p_fglform->ql_responseQueue.size() == 0)
-   {
-       if(p_fglform->state() == Fgl::INPUTARRAY)
-       {
-           if(TableView *tv = qobject_cast<TableView*> (p_fglform->currentWidget))
-           {
-               int col = tv->currentIndex().column();
-               if(tv->isReadOnlyColumn(col) || tv->isColumnHidden(col))
-               {
-                   p_fglform->b_getch_swin = true;
-                   p_fglform->nextfield();
-                   return;
-               }
+    }
 
-           }
-       }
-
-
-     p_fglform->b_getch_swin = true;
-     p_fglform->replayKeyboard();
-
-   p_fglform->setCursor(Qt::ArrowCursor);
-}
-   else
-   {
-   p_fglform->b_getch_swin = true;
-   processResponse();
-   }
-
-
+    if(p_fglform->ql_responseQueue.size() == 0)
+    {
+        if(p_fglform->state() == Fgl::INPUTARRAY)
+        {
+            if(TableView *tv = qobject_cast<TableView*> (p_fglform->currentWidget))
+            {
+            int col = tv->currentIndex().column();
+                if(tv->isReadOnlyColumn(col) || tv->isColumnHidden(col))
+                {
+                    p_fglform->b_getch_swin = true;
+                    p_fglform->nextfield();
+                    return;
+                }
+            }
+        }
+        p_fglform->b_getch_swin = true;
+        replayKeyboard();
+        p_fglform->setCursor(Qt::ArrowCursor);
+        setUpdatesEnabled(true);
+    } else {
+        p_fglform->b_getch_swin = true;
+        processResponse();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -2832,18 +3284,22 @@ MainFrame::vdcdebug("ScreenHandler","free", "QString type");
    if(p_fglform == NULL)
       return;
 
+   setIgnoreActionsCheck(false);
+
    if(type == "MENU"){
       if(p_fglform->dialog() != NULL){
          p_fglform->dialog()->b_allowCloseDialog = true;
          p_fglform->dialog()->close();
          p_fglform->setDialog(NULL);
          p_fglform->revertState(Fgl::MENU);
+         setIgnoreActionsCheck(false);
          return;
       }
       if(p_fglform->ringMenuPulldown() != NULL){
          //p_fglform->ringMenuPulldown()->close();
          p_fglform->setRingMenuPulldown(NULL);
          p_fglform->revertState(Fgl::MENU);
+         setIgnoreActionsCheck(false);
          return;
       }
       else{
@@ -2915,7 +3371,7 @@ MainFrame::vdcdebug("ScreenHandler","free", "QString type");
    //if(p_fglform->finalWidget != NULL){
   //     p_fglform->nextfield();
   // }
-
+   setIgnoreActionsCheck(false);
    p_fglform->ql_responseQueue.clear();
    p_fglform->ql_formEvents.clear();
    p_fglform->qsl_activeFields.clear();
@@ -2931,29 +3387,24 @@ void ScreenHandler::displayError(QString text)
 {
 MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
 
+if(text.isEmpty()) {
+    return;
+}
+
    if(!p_fglform->b_dummy)
    {
-      StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
-      statusBar->displayError(text);
-   }
-   else
-   {
-
-      if(text.isEmpty())
-        return;
-      if(FglForm *form = qobject_cast<FglForm*> (QApplication::activeWindow()))
-    //  if(FglForm *form = qobject_cast<FglForm*> (MainFrame::getTopLevelPointerOfParent(this->p_pid_p)))
-      {
-         StatusBar *sb = (StatusBar*) form->statusBar();
-         sb->displayError(text);
-         return;
-      }
+       FglForm *form = p_fglform;
+       if(p_fglform->isVisible()) {
+           StatusBar *sb = (StatusBar*) form->statusBar();
+           sb->displayError(text);
+           return;
+       }
 
       if(!mDummyMessageDialogBox)
       {
           mDummyMessageDialogBox = new Dialog(tr("Error"), "", "dialog", "stop", NULL);
           mDummyMessageDialogBox->setModal(true);
-          mDummyMessageDialogBox->createButton(1, "OK", "OK", "ok.png");
+          mDummyMessageDialogBox->createButton(1, "OK", "OK", "ok_gruen.png");
           QPushButton *qpb = (QPushButton *) mDummyMessageDialogBox->getAction("OK")->parent();
           QString shortcut = "F12";
           qpb->setShortcut(shortcut);
@@ -2970,11 +3421,6 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
           mDummyMessageDialogBox->raise();
       }
       mDummyMessageDialogBox->setText(text);
-
-      QTimer *dummyBoxTimer = new QTimer();
-      dummyBoxTimer->start(5000);
-
-      connect(dummyBoxTimer, SIGNAL(timeout()), mDummyMessageDialogBox, SLOT(close()));
    }
 
 }
@@ -2988,10 +3434,17 @@ void ScreenHandler::displayMessage(QString text)
 {
 MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
 
+if(text.isEmpty()) {
+    return;
+}
 
    if(!p_fglform->b_dummy)
    {
       StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
+
+      if(statusBar == NULL) {
+          return;
+      }
       statusBar->displayMessage(text);
    }
    else
@@ -3002,35 +3455,14 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
 //       if(FglForm *form = qobject_cast<FglForm*> (MainFrame::getTopLevelPointerOfParent(this->p_pid_p)))
        {
           StatusBar *sb = (StatusBar*) form->statusBar();
-          sb->displayError(text);
+
+          if(sb == NULL) {
+              return;
+          }
+
+          sb->displayMessage(text);
           return;
        }
-       /*if(!mDummyMessageDialogBox){
-          mDummyMessageDialogBox = new Dialog(tr("Message"), "", "dialog", "info", NULL);
-          mDummyMessageDialogBox->setModal(true);
-          mDummyMessageDialogBox->createButton(1, "OK", "OK", "ok.png");
-          QPushButton *qpb = (QPushButton *) mDummyMessageDialogBox->getAction("OK")->parent();
-          QString shortcut = "F12";
-          qpb->setShortcut(shortcut);
-          XML2Style *xml2Style = new XML2Style();
-          xml2Style->readXML(formsStyles);
-          mDummyMessageDialogBox->setStyleSheet(xml2Style->getStyleSheet());
-          xml2Style->deleteLater();
-          connect(mDummyMessageDialogBox->getAction("OK"), SIGNAL(triggered()), mDummyMessageDialogBox, SLOT(close()));
-          connect(mDummyMessageDialogBox->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeErrorDialog()));
-          connect(this, SIGNAL(windowCreated()), mDummyMessageDialogBox, SLOT(close()));
-          connect(mDummyMessageDialogBox, SIGNAL(finished(int)), mDummyMessageDialogBox, SLOT(deleteLater()));
-          mDummyMessageDialogBox->setAttribute(Qt::WA_DeleteOnClose, true);
-          mDummyMessageDialogBox->setWindowFlags(Qt::WindowStaysOnTopHint);
-          mDummyMessageDialogBox->show();
-          mDummyMessageDialogBox->raise();
-       }
-
-       mDummyMessageDialogBox->setText(text);
-       QTimer *dummyBoxTimer = new QTimer();
-       dummyBoxTimer->start(5000);
-
-       connect(dummyBoxTimer, SIGNAL(timeout()), mDummyMessageDialogBox, SLOT(close()));*/
    }
 }
 
@@ -3158,7 +3590,9 @@ int ScreenHandler::cnt_screenhandler = 0;
 //------------------------------------------------------------------------------
 void ScreenHandler::closeWindow(QString windowName)
 {
-    MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
+MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
+   mDashboard = NULL; //initalise to null to avoid segmentation faults
+
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
 
@@ -3199,7 +3633,7 @@ MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
 
    if(p_fglform == NULL)
       return;
-   
+
    // p_fglform->setEnabled(false);
 
    for(int i=0; i<ql_fglForms.size(); i++){
@@ -3208,7 +3642,11 @@ MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
       if(form->windowName == windowName){
          p_fglform = form;
          form->setEnabled(true);
-         form->setMenuEnabled(true);
+         if(form->state() != Fgl::MENU) {
+             form->setActionMenuEnabled(true);
+         } else {
+             form->setMenuEnabled(true);
+         }
          form->raise();
       }
 
@@ -3283,9 +3721,14 @@ MainFrame::vdcdebug("ScreenHandler","setScreenRecordEnabled", "QString fieldName
 
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
             tableView = qobject_cast<TableView *> (de->parent());
-            if(tableView)
+            context->addScreenRecord(tableView, input);
+            if(!input)
             {
-                context->addScreenRecord(tableView, input);
+                QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tableView->model());
+                TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
+                tableView->setCurrentIndex(table->index(0,0));
+                tableView->selectionModel()->select(table->index(0,0), QItemSelectionModel::Select);
+                tableView->setFocus();
                 break;
             }
       }
@@ -3497,7 +3940,7 @@ MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
        {
            if(p_fglform->context)
            {
-               p_fglform->context->ql_pandingevents += p_fglform->ql_responseQueue;
+               p_fglform->context->ql_pendingEvents += p_fglform->ql_responseQueue;
                p_fglform->ql_responseQueue.clear();
            }
        }
@@ -3580,15 +4023,14 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
       context = getCurrentContext();
       if(context)
       {
-          if(!context->ql_pandingevents.isEmpty())
-             p_fglform->ql_responseQueue += context->ql_pandingevents;
-             context->ql_pandingevents.clear();
+          if(!context->ql_pendingEvents.isEmpty())
+             p_fglform->ql_responseQueue += context->ql_pendingEvents;
+             context->ql_pendingEvents.clear();
       }
 
       p_fglform->context = context;
 
-      if(p_fglform)
-         p_fglform->clearFieldFocus();
+      if(p_fglform) p_fglform->clearFieldFocus();
 
       if(context)
       {
@@ -3765,6 +4207,15 @@ for(int i=0; i<ql_fglForms.size(); i++){
 void ScreenHandler::setEnv(QString name, QString env)
 {
 MainFrame::vdcdebug("ScreenHandler","setEnv", "QString name, QString env");
+
+   if(env == "DBMONEY") {
+       QString dbmoney = VDC::readSettingsFromLocalIni("","setDBMONEY");
+
+       if(dbmoney != "-1") {
+           env = dbmoney;
+       }
+   }
+
    Fgl::env[name] = env;
 }
 
@@ -3776,13 +4227,18 @@ void ScreenHandler::activeFocus()
         return;
     }
 
-    if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL && !p_fglform->isActiveWindow()){
-        p_fglform->raise();
-        QApplication::setActiveWindow((QWidget*) p_fglform);
-        p_fglform->activateWindow();
-        //Qt3 weg, static QMetaobject::invokeoMethod in zukunft
-        QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
+    if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL){
+        //rebuild window stack
+        foreach(FglForm *widget, ql_fglForms) {
+            widget->raise();
+        }
+
+        if(!p_fglform->isActiveWindow()) {
+            QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
+            p_fglform->activateWindow();
+        }
     }
+
     if(p_fglform->dialog() != NULL)
     {
         QApplication::setActiveWindow((QWidget*) p_fglform->dialog());
@@ -3790,6 +4246,7 @@ void ScreenHandler::activeFocus()
         p_fglform->dialog()->activateWindow();
     }
 }
+
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
@@ -3823,8 +4280,6 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
   }
 */
 
-
-
     if(event->type() == QEvent::WindowActivate)
       {
 
@@ -3841,6 +4296,19 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
                     if(this->b_runinfo && this->p_pid_p > 0)
                     {
                         MainFrame::setFocusOn(this->p_pid_p);
+                    } else if(this->b_runinfo && this->p_pid_p == 0 && !this->p_fglform->isEnabled()) {
+                        for (int i=0; i <  MainFrame::ql_screenhandler->count(); i++) {
+                            ScreenHandler *screen = MainFrame::ql_screenhandler->at(i);
+
+                            if(screen->programm_name == this->programm_name_run) {
+#ifdef Q_OS_MAC
+                                screen->p_fglform->raise();
+#endif
+                                QApplication::setActiveWindow(screen->p_fglform);
+                                break;
+                            }
+                        }
+
                     }
                 }
                 else
@@ -3891,6 +4359,179 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 */
    return QObject::eventFilter(obj, event);
 
+}
+
+/*!
+ * \brief Method to replay the Keyboardbuffer.
+ */
+
+void ScreenHandler::replayKeyboard()
+{
+
+  if(!p_fglform->currentField() && p_fglform->state() != Fgl::MENU)
+  {
+      if(ql_keybuffer.size() > 0)
+      {
+          clearKeyboardBuffer();
+      }
+     return;
+  }
+  b_keybufferrunning = true;
+
+  foreach(QKeyEvent *key, ql_keybuffer)
+  {
+      //Response? Break hart, send keys in next scope
+      if(!p_fglform->b_getch_swin)
+      {
+         break;
+      }
+
+      if(p_fglform->inputArray() || p_fglform->displayArray())
+      {
+          TableView *tableView = qobject_cast<TableView*> (p_fglform->currentField());
+          tableView->b_ignoreFocus = key->isAutoRepeat();
+          tableView->setAutoRepeat(key->isAutoRepeat());
+
+      }
+
+      //qDebug() << "Simuliere key: " << QKeySequence(key->key()).toString();
+
+      if(p_fglform->state() == Fgl::MENU)
+      {
+          if(p_fglform->menu()) {
+             QApplication::sendEvent(p_fglform->menu(), key);
+          }
+      }
+      else
+      {
+          TableView *tableView = qobject_cast<TableView*> (p_fglform->currentField());
+
+          switch(key->key()) {
+            case Qt::Key_Up:
+              if(p_fglform->inputArray() || p_fglform->displayArray()) {
+                  p_fglform->prevrow(!key->isAutoRepeat());
+              } else {
+                  if(TextEdit *te = qobject_cast<TextEdit *> (p_fglform->currentField()))
+                  {
+                     if(te->wantReturns())
+                     {
+                         QApplication::postEvent(p_fglform->currentField(), key);
+                     } else {
+                         p_fglform->prevfield(!key->isAutoRepeat());
+                         break;
+                     }
+                  }
+
+                 if(!p_fglform->currentField()->inherits("QComboBox")) {
+                      p_fglform->prevfield(!key->isAutoRepeat());
+                  } else {
+                     //Workaroung for combobox
+                     QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+                     QApplication::postEvent(p_fglform->currentField(), key);
+                     QApplication::postEvent(p_fglform->currentField(), event);
+                  }
+              }
+              break;
+            case Qt::Key_Down:
+              if(p_fglform->inputArray() || p_fglform->displayArray()) {
+                  p_fglform->nextrow(!key->isAutoRepeat());
+              } else {
+                  if(TextEdit *te = qobject_cast<TextEdit *> (p_fglform->currentField()))
+                  {
+                     if(te->wantReturns())
+                     {
+                         QApplication::postEvent(p_fglform->currentField(), key);
+                     } else {
+                         p_fglform->nextfield(!key->isAutoRepeat());
+                         break;
+                     }
+                  }
+
+                  if(!p_fglform->currentField()->inherits("QComboBox")) {
+                      p_fglform->nextfield(!key->isAutoRepeat());
+                  } else {
+                      //Workaroung for combobox
+                      QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+                      QApplication::postEvent(p_fglform->currentField(), key);
+                      QApplication::postEvent(p_fglform->currentField(), event);
+
+                  }
+              }
+              break;
+
+            case Qt::Key_Enter:
+            case Qt::Key_Return:
+            case Qt::Key_Tab:
+              b_isFieldChanged = true;
+              if(TextEdit *te = qobject_cast<TextEdit *> (p_fglform->currentField()))
+              {
+                 if(te->wantReturns())
+                 {
+                     QApplication::postEvent(p_fglform->currentField(), key);
+                 } else {
+                     p_fglform->nextfield(!key->isAutoRepeat());
+                     break;
+                 }
+              }
+
+              if(!p_fglform->currentField()->inherits("QComboBox")) {
+                  p_fglform->nextfield(!key->isAutoRepeat());
+              } else {
+                  QApplication::postEvent(p_fglform->currentField(), key);
+              }
+
+              break;
+          case Qt::Key_Backtab:
+              b_isFieldChanged = true;
+              if(TextEdit *te = qobject_cast<TextEdit *> (p_fglform->currentField()))
+              {
+                 if(te->wantReturns())
+                 {
+                     QApplication::postEvent(p_fglform->currentField(), key);
+                 } else {
+                     p_fglform->prevfield(!key->isAutoRepeat());
+                     break;
+                 }
+              }
+
+              if(!p_fglform->currentField()->inherits("QComboBox")) {
+                  p_fglform->prevfield(!key->isAutoRepeat());
+              } else {
+                  QApplication::postEvent(p_fglform->currentField(), key);
+              }
+              break;
+            default:
+              QObject *receiver;
+              if(!p_fglform->inputArray()) {
+                  receiver = p_fglform->currentField();
+              } else {
+                  receiver = tableView->curr_editor;
+
+              }
+
+              QApplication::sendEvent(receiver, key);
+              break;
+          }
+      }
+
+      if(ql_keybuffer.contains(key))
+      {
+            ql_keybuffer.removeOne(key);
+      }
+  }
+
+  b_keybufferrunning = false;
+
+}
+/*!
+ * \brief Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet.
+ */
+void ScreenHandler::clearKeyboardBuffer()
+{
+  if(ql_keybuffer.size() > 0)
+  {
+     //ql_keybuffer.clear();
+  }
 }
 
 void ScreenHandler::setInterfaceText(QString text)
@@ -3999,6 +4640,7 @@ void ScreenHandler::getItemNameComboBox(int id, int pos)
 void ScreenHandler::checkFglformState()
 {
    p_fglform->checkState();
+   p_fglform->checkActions();
 }
 
 void ScreenHandler::getItemCountComboBox(int id)
@@ -4140,6 +4782,10 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
     void ScreenHandler::setProgramName(QString pn)
     {
 
+        if(pn.contains("./")) {
+            pn.remove("./");
+        }
+
         this->programm_name = pn;
         MainFrame::check_new_pids();
     }
@@ -4253,9 +4899,25 @@ void ScreenHandler::openChartWindow(QString filename)
 
 #endif
 
+void ScreenHandler::openChartWindow(QString type, QString fileName)
+{
+
+       int exitcode = 0;
+       QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) + "</SV></SVS></TRIGGERED>";
+
+       if(this->ph)
+       {
+           QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+       }
+       else
+       {
+            fglFormResponse(qs_resp);
+       }
+}
+
 void ScreenHandler::createTextEditor(QString fileName, QString wrap, int digits, bool setEncodingToIso)
 {
-    mTextEditor = new TextEditorWidget;
+    mTextEditor = new TextEditorWidget(this);
     mTextEditor->setFileName(fileName);
     mTextEditor->setIsoEncoding(setEncodingToIso);
     mTextEditor->loadFileFromLocal();
@@ -4266,6 +4928,16 @@ void ScreenHandler::createTextEditor(QString fileName, QString wrap, int digits,
     }
 
     mTextEditor->show();
+
+    /*QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(1) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+    {
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    }
+    else
+    {
+         fglFormResponse(qs_resp);
+    }*/
 }
 
 void ScreenHandler::createEditor(QString fileName)
@@ -4291,7 +4963,7 @@ void ScreenHandler::createBrowser()
       fglFormResponse(qs_resp);
 
 }
-void ScreenHandler::setUrl(int id, const QUrl &http)
+void ScreenHandler::setUrl(int id, const QUrl &http, bool isoEncoding)
 {
   int code = 408; //Browser not initialised
 
@@ -4304,6 +4976,10 @@ void ScreenHandler::setUrl(int id, const QUrl &http)
             code = 0;
             p_browser->loadUrl(http);
             p_fglform->getBrowser()->show();
+
+            if(!isoEncoding) {
+                p_fglform->getBrowser()->getView()->settings()->setDefaultTextEncoding("UTF-8");
+            }
             break;
         }
     }
@@ -4340,16 +5016,22 @@ void ScreenHandler::makeFglFormResponse(QString bla)
 
 void ScreenHandler::checkForUpdate()
 {
-    QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
-    if(!a4gl_version_client.isNull())
-    {
-        MasterUpdate *mUpdate = new MasterUpdate;
-        mUpdate->run();
-        mUpdate->wait();
+    return;
+}
 
-        DownloadManager *dlManager = new DownloadManager(false);
-        dlManager->searchForUpdate();
-    }
+void ScreenHandler::showUpdateError()
+{
+    Dialog *dialog = new Dialog(tr("VDC Update"), tr("VDC update available. Windows 7 or higher needed."), "", "stop", NULL, Qt::WindowStaysOnTopHint);
+    dialog->setVentasStyle();
+
+    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+    dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+
+    connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+
+    dialog->move(600,400);
+    dialog->show();
 }
 
 void ScreenHandler::setProgressTitle(int obj, QString title)
@@ -4541,9 +5223,9 @@ void ScreenHandler::setOptions(QString type, QString value)
 
 void ScreenHandler::createStdProgWindow()
 {
-    stdOfficeProg = VDC::readSettingsFromIni("","officeStdProg").toInt();
+    stdOfficeProg = VDC::readSettingsFromLocalIni("","officeStdProg").toInt();
 
-    if(stdOfficeProg == 0)
+    if(stdOfficeProg <= 0)
     {
         QWidget *widget = new QWidget();
         mOfficeComboBox = new QComboBox;
@@ -4586,13 +5268,14 @@ void ScreenHandler::saveOfficeInstallation()
     {
         if(mOfficeComboBox->currentIndex() > 0)
         {
-            VDC::saveSettingsToIni("","officeStdProg", QString::number(mOfficeComboBox->currentIndex()));
+            VDC::saveSettingsToLocalIni("","officeStdProg", QString::number(mOfficeComboBox->currentIndex()));
             stdOfficeProg = mOfficeComboBox->currentIndex();
         } else {
             emit createStdProgWindow();
         }
     }
 }
+
 void ScreenHandler::showWindow()
 {
     if(p_fglform->windowName == "dummy_ventas")
@@ -4601,7 +5284,7 @@ void ScreenHandler::showWindow()
     }
 
     p_fglform->show();
-    p_fglform->checkState();
+    //p_fglform->checkState();
     if(p_fglform->menu() != NULL)
     {
         p_fglform->menu()->setEnabled(false);
@@ -4632,7 +5315,7 @@ void ScreenHandler::startProtocolTimer()
 
     if(!protocolTimer->isActive())
     {
-        protocolTimer->start();
+        QMetaObject::invokeMethod(protocolTimer, "start", Qt::QueuedConnection);
     }
 }
 
@@ -4641,7 +5324,7 @@ void ScreenHandler::protocolTimeout()
 
     if(protocolCnt == 0 && sendWaitForServer == 1)
     {
-        QMetaObject::invokeMethod(p_fglform, "setMessageWithIcon", Qt::QueuedConnection, Q_ARG(QString, "Waiting for Server."), Q_ARG(QString, "pics:progressbar.gif"));
+        QMetaObject::invokeMethod(p_fglform, "setMessageWithIcon", Qt::QueuedConnection, Q_ARG(QString, "Waiting for Server."), Q_ARG(QString, ":pics/progressbar.gif"));
     }
     protocolCnt++;
 }
@@ -4653,7 +5336,7 @@ void ScreenHandler::stopProtocolTimer()
     {
         if(protocolTimer->isActive())
         {
-            protocolTimer->stop();
+            QMetaObject::invokeMethod(protocolTimer, "stop", Qt::QueuedConnection);
         }
     }
     protocolCnt = 0;
@@ -4719,6 +5402,7 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
         }
     }
 
+    qDebug() << "starte Prozess: " << emailProgram;
     process.startDetached(emailProgram);
 #endif
 #ifdef Q_OS_MAC
@@ -4755,6 +5439,15 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
     process->start(prog);
     waitTimer::msleep(5000);
 #endif
+}
+
+void ScreenHandler::openEmailWithTobit(QString runtxt)
+{
+    QProcess process;
+
+    runtxt.replace("&attachment=", "&attachment=" + QDir::toNativeSeparators(QDir::tempPath() + "/"));
+    process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( runtxt));
+    qDebug() << "runtxt: " << runtxt;
 }
 
 void ScreenHandler::openEmail(QString mailtoUrl)
@@ -4808,23 +5501,10 @@ void ScreenHandler::getFileBrowser(QString function, QString filename)
     if(function == "openfile")
     {
 
-        int a = 10000;
-        int b = 99999;
         QString filePath = QFileDialog::getOpenFileName(p_fglform, "Open File",
                                                         QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
 
-        QFileInfo oldFile(filePath);
-        QString tmpFileName = QDir::tempPath() + "/" + QString::number(qrand() % ((a + 1) - b) + b) + "." + oldFile.completeSuffix();
-        QFile tmpFile(tmpFileName);
-        qDebug() << "tmpFileName: " << tmpFileName;
-
-        if(tmpFile.exists()) {
-            tmpFile.remove();
-        }
-
-        QFile::copy(filePath, tmpFileName);
-
-        QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) +  "</SV><SV>" + tmpFileName + "</SV></SVS></TRIGGERED>";
+        QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) +  "</SV><SV>" + VDC::removeUmlauts(filePath) + "</SV></SVS></TRIGGERED>";
         if(this->ph)
         {
             QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));

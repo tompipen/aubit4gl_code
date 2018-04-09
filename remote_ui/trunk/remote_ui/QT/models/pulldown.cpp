@@ -90,30 +90,31 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
-   button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+   button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
    button->setToolTip(tooltip);
    button->setFlat(true);
    button->installEventFilter(this);
    button->setStyleSheet("QPushButton {text-align:left;}");
 //   QPushButton *button = new QPushButton(text.trimmed());
-   //button->setIcon(QIcon(QString("pics:blank.png")));
+   //button->setIcon(QIcon(QString(":pics/blank.png")));
    if(button->text() == "&Ende")
    {
-       button->setIcon(QIcon("pics:pulldown-abbrechen.png"));
+       button->setIcon(QIcon(":pics/pulldown-abbrechen.png"));
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_rot.png);}"
+                                            "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_gelb.png);}"
+                                            "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_rot_grau.png);}"
+                                            "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_gelb_grau.png);}");
    } else {
        if(id <= 9)
        {
-          button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
+          button->setIcon(QIcon(QString(":pics/%1.png").arg(id)));
        } else {
           id = id + 55;
-          button->setIcon(QIcon(QString("pics:%1.png").arg(QChar(id).toLower())));
+          button->setIcon(QIcon(QString(":pics/%1.png").arg(QChar(id).toLower())));
        }
    }
-   button->setIconSize(QSize(40,25));
+   button->setIconSize(QSize(53,37));
    button->setShortcut(QString("&%1").arg(id));
-   button->setMinimumWidth(text.length() + 200);
-   this->setMinimumWidth(text.length() + 200);
-
    /*if(text.toLower() == "abbruch" || text.toLower() == "ende")
    {
        connect(button, SIGNAL(clicked()), this, SLOT(close()));
@@ -148,6 +149,8 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    }
 
    buttonGroup->addButton(button, id);
+   button->adjustSize();
+   this->adjustSize();
 }
 
 void RingMenuPulldown::hideButton(QString name)
@@ -187,7 +190,7 @@ MainFrame::vdcdebug("RingMenu","showButton", "QString name");
             if(b_hideButtons){
                button->setVisible(true);
                ql_buttons << button;
-               button->setIcon(QIcon(QString("pics:%1.png").arg(ql_buttons.count())));
+               button->setIcon(QIcon(QString(":pics/%1.png").arg(ql_buttons.count())));
             }
             else{
                button->setEnabled(true);
@@ -241,26 +244,29 @@ void RingMenuPulldown::moveToPos(QPoint const pos)
     this->move(pos);
 }
 
+void RingMenuPulldown::setFocusOnButton()
+{
+MainFrame::vdcdebug("RingMenuPulldown","selectButton", "QString name");
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))) {
+         if(button->isVisible()){
+            QMetaObject::invokeMethod(button, "setFocus", Qt::QueuedConnection);
+            return;
+         }
+      }
+   }
+}
+
 bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
 {
     if(event->type() == QEvent::MouseButtonPress)
     {
-        if(QPushButton *button = qobject_cast<QPushButton *> (obj))
-        {
-            if(button->text() == "&Ende")
+        if(QPushButton *button = qobject_cast<QPushButton *> (obj)){
+            if(button->isVisible())
             {
-                //closeWindowInt = 0;
-                this->close();
+                closeWindowInt = 0;
+                button->click();
                 return true;
-            }
-
-            if(QPushButton *button = qobject_cast<QPushButton *> (obj)){
-                if(button->isVisible())
-                {
-                    closeWindowInt = 0;
-                    button->click();
-                    return true;
-                }
             }
         }
     }
@@ -269,53 +275,71 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     {
         QKeyEvent *keyEvent = (QKeyEvent*) event;
 
-        if(keyEvent->key() == Qt::Key_Up) {
-            if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
-            {
-                if(buttonGroup->buttons().first()->text() == bt->text())
-                {
-                    if(!buttonGroup->buttons().last()->isVisible())
-                    {
-                        for(int i=buttonGroup->buttons().size()-1; i > 0; i--)
-                        {
-                            if(buttonGroup->buttons().at(i)->isVisible())
-                            {
-                                QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
-                                break;
-                            }
+        if(keyEvent->key() == Qt::Key_Down) {
+            if(QPushButton *bt = qobject_cast<QPushButton*> (obj)) {
+                QPushButton *lastButton;
+                for(int i=buttonGroup->buttons().count()-1; i > 0; i--) {
+                    if(buttonGroup->buttons().at(i)->isVisible()) {
+                        lastButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i));
+                        break;
+                    }
+                }
+
+                if(bt == lastButton) {
+                    for(int k=0; k < buttonGroup->buttons().count(); k++) {
+                        QPushButton *firstButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(k));
+
+                        if(!firstButton->isVisible()) {
+                            continue;
                         }
-                    } else {
-                        QMetaObject::invokeMethod(buttonGroup->buttons().last(), "setFocus", Qt::QueuedConnection);
+
+                        QMetaObject::invokeMethod(firstButton, "setFocus", Qt::QueuedConnection);
+                        break;
+                    }
+                } else {
+                    int buttonIndex = buttonGroup->buttons().indexOf(bt);
+                    while(buttonIndex < buttonGroup->buttons().count()) {
+                        buttonIndex++;
+                        QPushButton *nextButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(buttonIndex));
+                        if(nextButton->isVisible()) {
+                            QMetaObject::invokeMethod(nextButton, "setFocus", Qt::QueuedConnection);
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        if(keyEvent->key() == Qt::Key_Down) {
-            if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
-            {
-                for(int j=buttonGroup->buttons().size()-1; j > 0; j--)
-                {
-                    if(buttonGroup->buttons().at(j)->isVisible())
-                    {
-                        if(buttonGroup->buttons().at(j)->text() == bt->text())
-                        {
-                            if(!buttonGroup->buttons().first()->isVisible())
-                            {
-                                for(int i=0; i < buttonGroup->buttons().size()-1; i++)
-                                {
-                                    qDebug() << i;
-                                    if(buttonGroup->buttons().at(i)->isVisible())
-                                    {
-                                        QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
-                                        break;
-                                    }
-                                }
-                            } else {
-                                QMetaObject::invokeMethod(buttonGroup->buttons().first(), "setFocus", Qt::QueuedConnection);
-                            }
-                        }
+        if(keyEvent->key() == Qt::Key_Up ) {
+            if(QPushButton *bt = qobject_cast<QPushButton*> (obj)) {
+                QPushButton *firstButton;
+                for(int i=0; i < buttonGroup->buttons().count(); i++) {
+                    if(buttonGroup->buttons().at(i)->isVisible()) {
+                        firstButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i));
                         break;
+                    }
+                }
+
+                if(bt == firstButton) {
+                    for(int k=buttonGroup->buttons().count()-1; k > 0; k--) {
+                        QPushButton *lastButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(k));
+
+                        if(!lastButton->isVisible()) {
+                            continue;
+                        }
+
+                        QMetaObject::invokeMethod(lastButton, "setFocus", Qt::QueuedConnection);
+                        break;
+                    }
+                } else {
+                    int buttonIndex = buttonGroup->buttons().indexOf(bt);
+                    while(buttonIndex < buttonGroup->buttons().count()) {
+                        buttonIndex--;
+                        QPushButton *nextButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(buttonIndex));
+                        if(nextButton->isVisible()) {
+                            QMetaObject::invokeMethod(nextButton, "setFocus", Qt::QueuedConnection);
+                            break;
+                        }
                     }
                 }
             }
@@ -441,9 +465,9 @@ MainFrame::vdcdebug("RingMenu","createAction", "int id, QString text");
    QPushButton *button = new QPushButton(text.trimmed());
    button->setVisible(false);
 //   button->setShortcut(shortcut);
-   button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIconSize(QSize(40,25));
-   button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+   button->setIcon(QIcon(QString(":pics/blank.png")));
+   button->setIconSize(QSize(53,37));
+   //button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
    Action *action = new Action(text.toLower(), text, button);
    action->setImage("blank.png");
@@ -512,16 +536,16 @@ Q_UNUSED(icon);
           this->addAction(action1);
    }
 
-  /* QFile img(QString("pics:%1").arg(image));
+  /* QFile img(QString(":pics/%1").arg(image));
    if (!img.open(QIODevice::ReadOnly))
        image = "blank.png";
-   qDebug()<<QString("pics:%1").arg(image);*/
+   qDebug()<<QString(":pics/%1").arg(image);*/
 
    Action *action = new Action(text.toLower(), text);
    //action->setIcon(QIcon(QString(":pics/%1.png").arg(id)));
    action->setIconVisibleInMenu(true);
 
-   //action->setImage(QString("pics:%1").arg(image));
+   //action->setImage(QString(":pics/%1").arg(image));
    //Hide the default close action.(Calls fgl_exit_menu action)
 
    if(text.toLower().trimmed() == "fgl_exit_menu")

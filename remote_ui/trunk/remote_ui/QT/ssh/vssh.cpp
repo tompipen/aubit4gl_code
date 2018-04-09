@@ -127,7 +127,10 @@ void VSSH::run()
          }
          else
          {
-         QMetaObject::invokeMethod(MainFrame::lastmainframe, "close", Qt::QueuedConnection);
+         QStringList args = QApplication::arguments();
+         if(!args.contains("-squish")) {
+             QMetaObject::invokeMethod(MainFrame::lastmainframe, "close", Qt::QueuedConnection);
+         }
          this->execute(port);
          break;
          }
@@ -201,13 +204,7 @@ int VSSH::auth()
       return -1;
   }
 
-
   rc = ssh_userauth_none(session, NULL);
-  if (rc == SSH_AUTH_ERROR) {
-    qDebug() << "SSH Error 121: ", ssh_get_error(session);
-    return rc;
-  }
-
   method = ssh_userauth_list(session, NULL);
 
   qDebug() << "method: " << QString::number(method);
@@ -482,7 +479,7 @@ int VSSH::execute(int port = 0)
 
     QString qs_buffer(ba_buffertest);
 
-    if(qs_buffer.contains("not found") && qs_buffer.contains(executeCommand()))
+    if(qs_buffer.contains(executeCommand() + ": command not found"))
     {
        emit commandnotfound(0, executeCommand());
        emit fail();
@@ -646,12 +643,6 @@ void VSSH::loadSettings()
       return;
   }
 
-  int port = VDC::readSettingsFromIni("", "sshport").toInt();
-
-  if(port == 0) {
-      port = 22;
-  }
-
   int verbose = SSH_LOG_NOLOG;
 
   //Set connection details
@@ -659,21 +650,40 @@ void VSSH::loadSettings()
   const char* user;
   const char* compression;
 
+  int port    = 22; //Todo: Eingabemaske
+
+  QSettings settings;
+  QString username = settings.value("user").toString();
+  QString password = settings.value("password").toString();
+
+
+  if(username == "demovm" && password == "demovm")
+  {
+      server = "1.78.143.248";
+      this->setHost("1.78.143.248");
+
+      user = "demouser";
+      this->setUser("demouser");
+
+      this->setPassword("bB$12g%23=)assa");
+
+  }
+
   QByteArray ba_compression = QString::number(VDC::getSSHCompressionLevel()).toLocal8Bit();
   compression = ba_compression.constData();
   qDebug() << "USING COMPRESSIONS LEVEL: " << QString::number(VDC::getSSHCompressionLevel());
 
   QByteArray ba_host = this->host().toLocal8Bit();
   QByteArray ba_user = this->user().toLocal8Bit();
-  //std::string server = host().toStdString();
   server = ba_host.constData();
   user   = ba_user.constData();
+
   ssh_options_set(session, SSH_OPTIONS_HOST, server);
   ssh_options_set(session, SSH_OPTIONS_USER, user);
   ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbose);
   ssh_options_set(session, SSH_OPTIONS_PORT, &port);
 
-  if(VDC::readSettingsFromIni("", "compression").toInt() != 1)
+  if(VDC::readSettingsFromLocalIni("", "compression").toInt() != 1)
   {
       qDebug() << "Enabling compression...";
       ssh_options_set(session, SSH_OPTIONS_COMPRESSION, "zlib@openssh.com");

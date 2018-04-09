@@ -12,17 +12,11 @@ ZipUnzip::~ZipUnzip()
 
 bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFilePath)
 {
-    qDebug() << "file: " << QDir::tempPath() + "/" + fileName;
-    qDebug() << "destFilePath: " << destFilePath;
-    //QFile fileBaseName(QDir::tempPath() + "/" + fileName);
-    QFile fileBaseName(destFilePath + "/" + fileName);
-    QFileInfo infoFileBaseName(fileBaseName);
-
     QuaZip zipArchiv(QString(filePath + "/" + fileName));
 
     if( !zipArchiv.open( QuaZip::mdUnzip ) )
     {
-        qWarning ( "(unzipArchiv()): Datei konnte nicht geoeffnet werden. Fehlermeldung: " );
+        qDebug() << QString("(unzipArchiv()): Datei konnte nicht geoeffnet werden. Fehlermeldung: %1").arg(filePath + "/" + fileName);
         return false;
     }
 
@@ -52,12 +46,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
 
         if(destdir->exists())
         {
-            if(QFile::remove(destdir->fileName()))
-            {
-                qDebug() << "erfolgreich" << destdir->fileName();
-            } else {
-                qDebug() << "fehlgeschlagen" << destdir->fileName();
-            }
+            QFile::remove(destdir->fileName());
         }
 
         if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )

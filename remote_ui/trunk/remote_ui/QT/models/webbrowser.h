@@ -5,8 +5,7 @@
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtWebKit>
 #else
-#include <QtWebKitWidgets/QWebView>
-#include <QtWebKitWidgets/QWebFrame>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 #endif
 #include <QUrl>
 #include <QLineEdit>
@@ -19,7 +18,7 @@
 #include <QAction>
 #include <QFileDialog>
 
-class MyWebBrowser : public QWebView
+class MyWebBrowser : public QWebEngineView
 {
     Q_OBJECT;
 public:
@@ -41,6 +40,8 @@ public:
     void closeBrowser();
 
     void setNavigationIcons();
+
+    QWebEngineView* getView() { return WebView; }
 
 protected slots:
     void printpage();
@@ -68,8 +69,9 @@ protected slots:
     void removeEmbeddedElements();*/
 
 private:
-    QString jQuery;
-    QWebView* WebView;
+
+    QString m_file;
+    QWebEngineView* WebView;
     QLineEdit *locationEdit;
     QAction *rotateAction;
 

@@ -15,7 +15,7 @@ class TextEditorWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    TextEditorWidget(QMainWindow *parent = 0);
+    TextEditorWidget(QObject *parentObj, QMainWindow *parent = 0);
     ~TextEditorWidget();
     void initToolBar();
     void loadFileFromLocal();
@@ -32,8 +32,10 @@ public:
     void setWrapMode(int);
 
     void setIsoEncoding(bool encoding ) { mSetIsoEncoding = encoding; }
+    void saveWindowSettings();
 
 public slots:
+        void readWindowSettings();
         void textIsChanged();
         void saveAsFile();
         void saveFile();
@@ -56,6 +58,8 @@ private:
     int mCloseTextEdit;
 
     bool mSetIsoEncoding;
+
+    QObject *m_parentObj;
 
 };
 

@@ -64,6 +64,7 @@ public:
    QAction* getAction(QString);
    bool isActionButton(QPushButton*);
    bool eventFilter(QObject *obj, QEvent *event);
+   QString nextOptionName;
 
 
 private:

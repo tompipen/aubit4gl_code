@@ -29,6 +29,7 @@
 #include <QHostInfo>
 #include <QTableWidget>
 #include <QSystemTrayIcon>
+#include <QKeyEvent>
 
 #include "clienttcp.h"
 #include "include/fgl.h"
@@ -66,6 +67,7 @@ public:
    QProcess *p_currOpenNetwork;
    ClientTcp *clientTcp;
    bool adminMenu;
+   static QString progName;
    static bool b_debugmodus;
    static MainFrame *lastmainframe;
    static void vdcdebug(QString, QString, QString);
@@ -74,9 +76,11 @@ public:
    static void check_new_pids();
    static bool setFocusOn(int);
    void requestScreenHandler(int, int);
-   QString getUserName() { return userName; };
+   QString getUserName() { return userName; }
    bool debugVDC;
    int closeSSH;
+   bool listenToPort(quint16 Port);
+   void addSystemProxy();
 
    //QSystemTrayIcon getSystemTray() {return mTray; }
 
@@ -89,11 +93,12 @@ public slots:
    void debugText(QString text);
    void closeVDC();
    void setSystemTrayMessage(QString title, QString text) { mTray->showMessage(title, text); }
+   void enableDebugModus();
 
 private:
+   bool b_lastAutoRepeat;
    QTabWidget *tabWidget;
    QErrorMessage *errorMessageMainFrame;
-   void tcpListener(int Port);
    void createStatusBar();
    QAction *exitAction;
    QToolBar *mainFrameToolBar;

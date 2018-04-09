@@ -1,7 +1,86 @@
-Ventas Desktop Client README
+1. WINDOWS
+----------
+1.1 Preparation
+---------------
+You need to download Qt from 
 
-Linux:
-You can use the VDC.sh script to start the Client or you have to set the environment variable LD_LIBRARY_PATH to the path where you extract the VDC. You can set
-it in your .bashrc in your home directory. 
-For example:
-export LD_LIBRARY_PATH="/home/ventas/VDC/:$LD_LIBRARY_PATH"
+https://www.qt.io/download-qt-installer
+
+and install Qt 5.10.1 MSVC 2013 or MSVC 2015
+
+after installing Qt you can add the Qt bin and lib folder to your %PATH% enviroment variable to run qmake without absolute path
+
+1.2. Dependencies
+-----------------
+
+If you want to build VDC with SSH you need to compile zlib (https://zlib.net/) and libssh (https://www.libssh.org/)
+
+1.3. Bulding VDC
+----------------
+1.3.1 Creating Visual Studio Project with QMAKE
+-----------------------------------------------
+
+If you have added the QTBIN folder to your %PATH% variable you can run:
+
+cd /path/to/your/VDC
+
+If you want to build VDC with ssh you need to set 2 enviroment variables:
+set %VSSH%=YES
+set %VREPGEN%=YES
+
+after this you can run:
+qmake -tp vc VDC.pro
+
+Now qmake created a new file named "VDC.vcxproj". You can open this file with the Visual Studio IDE and build the project. (Build -> Build Solution)
+
+
+OTHERWISE if you don't have added the Qtbin to your %PATH% Variable:
+
+
+cd /path/to/your/VDC
+/path/to/your/qt/installation/bin/qmake -tp vc VDC.pro
+nmake
+
+1.3.1.2 Download and install Qt VS Addin for Visual Studio
+----------------------------------------------------------
+
+Download Qt VS Addin from https://download.qt.io/official_releases/vsaddin/ and install it.
+
+
+1.3.1.3 Build VDC with Qt VS Addin for Visual Studio
+----------------------------------------------------
+If you have installed Qt VS Addin there i a new Tab in the Visual Studio IDE. Under Qt VS Addin -> Qt Options you must ad the path to your Qt Installation.
+Now the Qt VS Addin build a Visual Studio Project. If the creation was successfull you can run "Build -> Build Solution"
+
+
+2. LINUX
+--------
+2.1 Preparation
+----------------
+You need to download Qt from https://www.qt.io/download-qt-installer
+
+After installing Qt, chefk if the symlink /usr/bin/qmake is correct to your Qt directory.
+
+
+2.2. Dependencies
+-----------------
+
+If you want to build VDC with SSH you need to compile zlib (https://zlib.net/) and libssh (https://www.libssh.org/)
+
+Under debian you can run: apt-get install libssh-4 libssh-dev zlib1g zlib1g-dev
+
+2.3 Buildung VDC
+----------------
+
+cd /path/to/your/VDC/directory
+
+If you want to build VDC with ssh you need to set 2 enviroment variables:
+export VSSH=YES
+export VREPGEN=YES
+
+qmake vdc-app.pro
+make
+
+2.4 Starting VDC
+----------------
+Under Unix you need to run the Script VDC.sh

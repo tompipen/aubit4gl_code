@@ -25,11 +25,11 @@
 #include <QLineEdit>
 #include <QTcpSocket>
 #include "masterupdate.h"
-#include "tools/vdcupdate.h"
 #include <qtelnet/qttelnet.h>
 #if QT_VERSION >= 0x040600
 #include <QProcessEnvironment>
 #endif
+#include "revision.h"
 #include "login.h"
 #include "mainframe.h"
 #include "include/vdc.h"
@@ -47,6 +47,8 @@
 LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
+
+    waitToSendMessage = false;
 
     MainFrame *mainFrame = (MainFrame*) parent;
     QMenuBar *menuBar = mainFrame->menuBar();
@@ -84,16 +86,17 @@ LoginForm::LoginForm(QWidget *parent)
 
     QGroupBox *bg_other = new QGroupBox("");
     logVDC              = new QCheckBox("Debug", bg_other);
+    connect(logVDC, SIGNAL(clicked()), mainFrame, SLOT(enableDebugModus()));
     cb                  = new QCheckBox("Save &Password?", bg_other);
 
-    int port = VDC::readSettingsFromIni("", "sshport").toInt();
-    if(port == 0) {
+    int port = VDC::readSettingsFromLocalIni("", "sshport").toInt();
+    if(port <= 0) {
         port = 22;
     }
 
     portLineEdit->setText(QString::number(port));
 
-    if(VDC::readSettingsFromIni("", "debugVDC") == "yes")
+    if(VDC::readSettingsFromLocalIni("", "debugVDC").toInt() == 1)
     {
         logVDC->setChecked(true);
     }
@@ -133,6 +136,7 @@ LoginForm::LoginForm(QWidget *parent)
     adminLayout->addLayout(labelLayout);
     adminLayout->addLayout(applicationLayout);
     adminLayout->addWidget(bg_other);
+    adminLayout->insertSpacing(0,13); //NS
 
     adminWidget->setLayout(adminLayout);
 
@@ -159,6 +163,7 @@ LoginForm::LoginForm(QWidget *parent)
     loginLayout->addWidget(passwordLineEdit);
     loginLayout->addStretch(1);
     loginLayout->addLayout(buttonLayout);
+    loginLayout->insertSpacing(0, 13); //NS
 
     QList<QKeySequence> ql_shortcuts;
     ql_shortcuts << QKeySequence("Return");
@@ -183,17 +188,17 @@ LoginForm::LoginForm(QWidget *parent)
     //
     QPushButton *okButton     = new QPushButton(tr("OK"));
     connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
-    okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
-    okButton->setIconSize(QSize(40,25));
-    okButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    okButton->setIcon(QIcon(QString(":pics/ok_gruen.png")));
+    okButton->setIconSize(QSize(53,37));
+    okButton->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
     okButton->addAction(okAction);
 
-    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    QPushButton *cancelButton = new QPushButton(tr("&Cancel"));
     connect(cancelButton, SIGNAL(pressed()), mainFrame, SLOT(closeAction()));
-    cancelButton->setIcon(QIcon(QString("pics:escape.png")));
-    cancelButton->setIconSize(QSize(40,25));
+    cancelButton->setIcon(QIcon(QString(":pics/escape.png")));
+    cancelButton->setIconSize(QSize(53,37));
     cancelButton->setShortcut(Qt::Key_Escape);
-    cancelButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    cancelButton->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
     cancelButton->addAction(cancelAction);
 
     buttonLayout->addWidget(okButton);
@@ -209,11 +214,17 @@ LoginForm::LoginForm(QWidget *parent)
 
     tabWidgetLayout->addWidget(tWidget);
 
-    QPalette palette;
-    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
-    parent->setPalette(palette);
+
+    //QtWidget->setStyleSheet("background-image: url(:pics/VENTAS_11_bg.png); ");
 
     this->setLayout(tabWidgetLayout);
+
+    this->setStyleSheet("QTabWidget::pane { border: 0px; top: 4px;  }" "QTabWidget::tab-bar { left: 9px; top:14px; }"
+                                     "QTabBar::tab { color: #005a9f; min-width: 44px; padding: 5.5px 6px 5.5px 6px; border: 1px solid #005a9f; border-bottom: 1px solid #005a9f; background-color: white; }"
+                                     "QTabBar:tab:first { border-top-left-radius: 4.2px; border-bottom-left-radius: 4.2px; }"
+                                     "QTabBar:tab:last { border-top-right-radius: 4.2px; border-bottom-right-radius: 4.2px; }"
+                                     "QTabBar::tab:selected { color: white; background-color: #005a9f; }"
+                                     "QTabBar::tab:hover:!selected { background-color: #f7f7f7; }");
 }
 
 void LoginForm::createMenu(QMenuBar *menu)
@@ -221,7 +232,7 @@ void LoginForm::createMenu(QMenuBar *menu)
     QMenu *options = new QMenu(tr("&Options"), this);
 
     QAction *checkVersion = new QAction(tr("&Search for Update"), this);
-    checkVersion->setStatusTip(tr("Checks for a new VDC Update"));
+    checkVersion->setStatusTip(tr("Checks for new VDC updates"));
     connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
     options->addAction(checkVersion);
     options->addSeparator();
@@ -233,7 +244,7 @@ void LoginForm::createMenu(QMenuBar *menu)
     settingsServer = new QAction(tr("&Form Settings on Server"), this);
     connect(settingsServer, SIGNAL(triggered()), this, SLOT(saveSettingsOnServer()));
     settingsServer->setCheckable(true);
-    if(VDC::readSettingsFromIni("", "saveSettingsOnServer").toInt() == 0)
+    if(VDC::readSettingsFromLocalIni("", "saveSettingsOnServer").toInt() <= 0)
     {
         settingsServer->setChecked(true);
     }
@@ -256,10 +267,19 @@ void LoginForm::createMenu(QMenuBar *menu)
 
     options->addSeparator();
 
-    QString screenFormat = VDC::readSettingsFromIni("","screenFormat");
-    QString seperator = VDC::readSettingsFromIni("","setDBMONEY");
+    QString screenFormat = VDC::readSettingsFromLocalIni("","screenFormat");
+    QString seperator = VDC::readSettingsFromLocalIni("","setDBMONEY");
 
-    QMenu *format = new QMenu(tr("&Format in screen forms"), this);
+    if(screenFormat == "-1") {
+        screenFormat = "##,###,###,###,##&.&&&&&&&&&&&&&&&&";
+        seperator = ",";
+
+        VDC::saveSettingsToLocalIni("","screenFormat", screenFormat);
+        VDC::saveSettingsToLocalIni("","setDBMONEY", seperator);
+
+    }
+
+    QMenu *format = new QMenu(tr("&Format in Screen Forms"), this);
     format->setStatusTip(tr("Set the Format"));
 
     QSignalMapper* formatSignalMapper = new QSignalMapper (this);
@@ -351,14 +371,14 @@ void LoginForm::createMenu(QMenuBar *menu)
 
     QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
     connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
-    removeIni->setStatusTip(tr("Remove the settings.ini from the VDC"));
+    removeIni->setStatusTip(tr("Reset the settings.ini from the VDC"));
     options->addAction(removeIni);
     options->addSeparator();
 
-    autoUpdateAction = new QAction(tr("Install update automatically"), this);
+    autoUpdateAction = new QAction(tr("Install Updates Automatically"), this);
     autoUpdateAction->setCheckable(true);
 
-    if(VDC::readSettingsFromIni("", "updateWithoutAsk").toInt() == 2) {
+    if(VDC::readSettingsFromLocalIni("", "updateWithoutAsk").toInt() == 2) {
         autoUpdateAction->setChecked(false);
     } else {
         autoUpdateAction->setChecked(true);
@@ -370,16 +390,18 @@ void LoginForm::createMenu(QMenuBar *menu)
     rememberMenuAction = new QAction(tr("Remember Main Menu"), this);
     rememberMenuAction->setCheckable(true);
 
-    if(VDC::readSettingsFromIni("","rememberMainMenu").toInt() != 2) {
+    if(VDC::readSettingsFromLocalIni("","rememberMainMenu").toInt() != 2) {
         rememberMenuAction->setChecked(true);
+    } else {
+        rememberMenuAction->setChecked(false);
     }
     connect(rememberMenuAction, SIGNAL(triggered()), this, SLOT(setRememberMenu()));
     options->addAction(rememberMenuAction);
 
 
-    QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
+    QString menuType = VDC::readSettingsFromLocalIni("", "startMenuPosition");
 
-    if(menuType == "tree" || menuType.isEmpty())
+    if(menuType == "tree" || menuType.isEmpty() || menuType == "-1")
     {
         m_mainMenu = new QAction(tr("Main Menu: Pulldown"), this);
         connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
@@ -390,10 +412,6 @@ void LoginForm::createMenu(QMenuBar *menu)
         options->addAction(m_mainMenu);
     }
 
-    options->addSeparator();
-    QAction *about = new QAction(tr("&About VDC"), this);
-    connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
-    options->addAction(about);
 
     toggledebug = new QAction(tr("&Toggle Debug"), this);
     connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
@@ -406,24 +424,272 @@ void LoginForm::createMenu(QMenuBar *menu)
     connect(convertText, SIGNAL(triggered()), this, SLOT(convertTextToIso()));
     convertText->setCheckable(true);
 
-    if(VDC::readSettingsFromIni("","convertText").toInt() != 2) {
+    if(VDC::readSettingsFromLocalIni("","convertText").toInt() != 2) {
         convertText->setChecked(true);
     }
 
     options->addAction(convertText);
 
     menu->addMenu(options);
-    menu->addAction(toggledebug);
 
+    QMenu *help = new QMenu("&Help");
+
+    QAction *documentation = new QAction(tr("&Documentation"), this);
+    connect(documentation, SIGNAL(triggered()), this, SLOT(showDocumentation()));
+
+    help->addAction(documentation);
+    help->addSeparator();
+    help->addAction(toggledebug);
+    help->addSeparator();
+
+    QAction *sendMsg = new QAction(tr("Send message to VENTAS"), this);
+    connect(sendMsg, SIGNAL(triggered()), this, SLOT(sendMessageWidget()));
+    help->addAction(sendMsg);
+
+
+//derzeit nur fuer Windows
+    QAction *quicksupport = new QAction(tr("&QuickSupport"), this);
+    connect(quicksupport, SIGNAL(triggered()), this, SLOT(openQuickSupport()));
+
+    help->addAction(quicksupport);
+
+    QAction *vdc2 = new QAction(tr("&Start VDC2"), this);
+    connect(vdc2, SIGNAL(triggered()), this, SLOT(openVdc2()));
+
+    help->addAction(vdc2);
+
+    help->addSeparator();
+    QAction *about = new QAction(tr("&About VDC"), this);
+    connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
+    help->addAction(about);
+
+    menu->addMenu(help);
+
+}
+
+void LoginForm::openVdc2()
+{
+    QString program = QDir::toNativeSeparators(QApplication::applicationDirPath() + "/VDC_backup.exe");
+
+    qDebug() << "starting program: " << program;
+    QProcess process;
+    QStringList args;
+    args << "-squish";
+    process.startDetached(QString(program), args);
+
+    QTimer::singleShot(5000, QApplication::instance(), SLOT(quit()));
+}
+
+void LoginForm::openQuickSupport()
+{
+#ifdef Q_OS_WIN
+    QString program;
+    const QString vdcInstallDir = VDC::readSettingsFromLocalIni("","vdcInstallDir");
+    QDir dir(vdcInstallDir);
+    dir.cdUp();
+    dir.cd("Fernwartung");
+
+    program = QDir::toNativeSeparators(dir.absolutePath() + "/VENTAS_QS.exe");
+
+    qDebug() << "starting program: " << program;
+    QProcess process;
+    process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( program));
+#endif
+
+#ifdef Q_OS_MAC
+    QString program;
+    const QString vdcInstallDir = VDC::readSettingsFromLocalIni("","vdcInstallDir");
+
+    program = QDir::toNativeSeparators(QApplication::applicationDirPath() + "/TeamViewerQS.app");
+
+    qDebug() << "starting program: " << program;
+    QProcess process;
+    process.startDetached(QString("open \"%1\"").arg( program));
+#endif
+}
+
+void LoginForm::showDocumentation()
+{
+
+#ifdef Q_OS_WIN
+    QSettings settings("general");
+#else
+    QSettings settings(QDir::homePath() + "/.general/general.ini", QSettings::IniFormat);
+#endif
+    int vdcIsActivated = settings.value("vdcIsActivated").toInt();
+
+    if(!vdcIsActivated)
+    {
+        Dialog *dialog = new Dialog("VENTAS", "Please register first to use this function.", "", "stop", this, Qt::WindowStaysOnTopHint, true);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        return;
+    }
+
+    WebBrowser *browser = new WebBrowser();
+    browser->createBrowser();
+    browser->loadUrl(QUrl("http://www.ventas.de/vdc-documentation/"));
+    browser->show();
+
+}
+
+void LoginForm::sendMessageToVentas()
+{
+
+    if(waitToSendMessage)
+    {
+        Dialog *dialog = new Dialog("VENTAS", "Please wait 5 minutes until you send a message again", "", "stop", ventasMessage, Qt::WindowStaysOnTopHint, true);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        return;
+    }
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkRequest req;
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readMessageReply(QNetworkReply*)));
+
+#ifdef Q_OS_WIN
+    QSettings settings("general");
+#else
+    QSettings settings(QDir::homePath() + "/.general/general.ini", QSettings::IniFormat);
+#endif
+    QString email = settings.value("email").toString();
+
+    qDebug() << "ventasMessage->toPlainText()" << ventasMessage->toPlainText();
+    QByteArray postData;
+    postData.append("msg=" + ventasMessage->toPlainText().trimmed());
+    postData.append("&email=" + email);
+    req.setUrl(QUrl("http://www.ventas.de/register-vdc/sendmessage.php?"));
+    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    qDebug() << "postData: " << postData;
+
+    manager->post(req, postData);
+
+}
+
+void LoginForm::removeMessageWaitTimer()
+{
+    waitToSendMessage = false;
+}
+
+void LoginForm::readMessageReply(QNetworkReply *reply)
+{
+    QTimer *timer = new QTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(removeMessageWaitTimer()));
+    timer->start(300000);
+
+    if(reply->error())
+    {
+        Dialog *dialog = new Dialog("VENTAS", "Unable to send message. Error Code:  " + reply->errorString(), "", "stop", ventasMessage, Qt::WindowStaysOnTopHint, true);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        return;
+    }
+
+    QString errorCode = reply->readAll();
+
+    qDebug() << "errorCode: " << errorCode;
+
+    if(errorCode == "true")
+    {
+        Dialog *dialog = new Dialog("VENTAS", "Message has been send to VENTAS.", "", "information", ventasMessage, Qt::WindowStaysOnTopHint, true);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        waitToSendMessage = true;
+        return;
+    } else {
+        Dialog *dialog = new Dialog("VENTAS", "Unable to send message. Error Code:  " + reply->errorString(), "", "stop", ventasMessage, Qt::WindowStaysOnTopHint, true);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        return;
+    }
+
+}
+
+void LoginForm::sendMessageWidget()
+{
+
+#ifdef Q_OS_WIN
+    QSettings settings("general");
+#else
+    QSettings settings(QDir::homePath() + "/.general/general.ini", QSettings::IniFormat);
+#endif
+    int vdcIsActivated = settings.value("vdcIsActivated").toInt();
+
+    if(!vdcIsActivated)
+    {
+        Dialog *dialog = new Dialog("VENTAS", "Please register first to use this function.", "", "stop", this, Qt::WindowStaysOnTopHint, true);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        return;
+    }
+    QWidget *widget = new QWidget();
+    QVBoxLayout *vLayout = new QVBoxLayout();
+
+    QPushButton *sendButton = new QPushButton(tr("&Send"));
+
+    QLabel *msgLabel = new QLabel(tr("Maximum: 500 Characters."));
+    connect(sendButton, SIGNAL(clicked()), this, SLOT(sendMessageToVentas()));
+    connect(sendButton, SIGNAL(clicked()), widget, SLOT(close()));
+    ventasMessage = new QTextEdit();
+    ventasMessage->setMinimumWidth(400);
+    connect(ventasMessage, SIGNAL(textChanged()), SLOT(ventasMessageChanged()));
+
+    vLayout->addWidget(ventasMessage);
+    vLayout->addWidget(msgLabel);
+    vLayout->addWidget(sendButton, 0, Qt::AlignRight);
+    widget->setLayout(vLayout);
+
+    widget->show();
+    widget->adjustSize();
+}
+
+void LoginForm::ventasMessageChanged()
+{
+    if(ventasMessage->toPlainText().length() > 500)
+    {
+        ventasMessage->textCursor().deletePreviousChar();
+    }
 }
 
 void LoginForm::compression()
 {
     if(compCb->isChecked())
     {
-        VDC::saveSettingsToIni("", "compression", QString::number(2));
+        VDC::saveSettingsToLocalIni("", "compression", QString::number(2));
     } else {
-        VDC::saveSettingsToIni("", "compression", QString::number(1));
+        VDC::saveSettingsToLocalIni("", "compression", QString::number(1));
     }
 }
 
@@ -435,20 +701,20 @@ void LoginForm::openCompOptions()
     QHBoxLayout *hLayout1 = new QHBoxLayout(widget);
     QSlider *compLevel = new QSlider(Qt::Horizontal, widget);
     QPushButton *okButton = new QPushButton(tr("OK"), widget);
-    okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
-    okButton->setIconSize(QSize(40,25));
+    okButton->setIcon(QIcon(QString(":pics/ok_gruen.png")));
+    okButton->setIconSize(QSize(53,37));
 
     compCb = new QCheckBox(tr("Enable Compression"));
 
-    if(VDC::readSettingsFromIni("", "compression").toInt() == 0 || VDC::readSettingsFromIni("", "compression").toInt() == 2)
+    if(VDC::readSettingsFromLocalIni("", "compression").toInt() == 0 || VDC::readSettingsFromLocalIni("", "compression").toInt() == 2)
     {
         compCb->setChecked(true);
     }
 
     QPalette palette;
-    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    palette.setBrush(this->backgroundRole(), Qt::white);
     widget->setPalette(palette);
-    widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    widget->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
 
     QLabel *infoLabel = new QLabel(tr("Lowest "));
     QLabel *infoLabel1 = new QLabel(tr("Highest "));
@@ -491,8 +757,8 @@ void LoginForm::openCompOptions()
     vLayout->addWidget(compCb);
     vLayout->addWidget(okButton, 0, Qt::AlignHCenter);
 
-    int sliderValue = VDC::readSettingsFromIni("VENTAS AG", "sshSliderValue").toInt();
-    if(sliderValue == 0)
+    int sliderValue = VDC::readSettingsFromLocalIni("VENTAS AG", "sshSliderValue").toInt();
+    if(sliderValue <= 0)
     {
         compLevel->setValue(1);
     } else {
@@ -506,18 +772,15 @@ void LoginForm::saveCompression(int value)
 {
     int factor = 2.25*value;
     VDC::setSSHCompressionsLevel(factor);
-    VDC::saveSettingsToIni("VENTAS AG", "sshSliderValue", QString::number(value+1));
+    VDC::saveSettingsToLocalIni("VENTAS AG", "sshSliderValue", QString::number(value+1));
 }
 
 void LoginForm::removeIni()
 {
-    Dialog *dialog = new Dialog(tr("Reset Screen Forms "), tr("Do you really want to reset all screen forms?"), "", "critical", this, Qt::WindowStaysOnTopHint);
-
+    Dialog *dialog = new Dialog(tr(" "), tr("Do you really want to reset all screen forms?"), "", "critical", this, Qt::WindowStaysOnTopHint, true);
     QPalette palette;
-    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    palette.setBrush(dialog->backgroundRole(), Qt::white);
     dialog->setPalette(palette);
-
-    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
 
     dialog->createButton(1, "Yes", "YES", "ok_gruen.png");
     dialog->getAction("YES")->setShortcut(Qt::Key_F12);
@@ -535,27 +798,27 @@ void LoginForm::saveSettingsOnServer()
 {
     if(!settingsServer->isChecked())
     {
-        VDC::saveSettingsToIni("", "saveSettingsOnServer", QString::number(1));
+        VDC::saveSettingsToLocalIni("", "saveSettingsOnServer", QString::number(1));
     } else {
-        VDC::removeSettingsFromIni("","saveSettingsOnServer");
+        VDC::removeSettingsFromLocalIni("","saveSettingsOnServer");
     }
 }
 
 void LoginForm::setAutoUpdate()
 {
     if(autoUpdateAction->isChecked()) {
-        VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(1));
+        VDC::saveSettingsToLocalIni("", "updateWithoutAsk", QString::number(1));
     } else {
-        VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(2));
+        VDC::saveSettingsToLocalIni("", "updateWithoutAsk", QString::number(2));
     }
 }
 
 void LoginForm::setRememberMenu()
 {
     if(rememberMenuAction->isChecked()) {
-        VDC::removeSettingsFromIni("", "rememberMainMenu");
+        VDC::removeSettingsFromLocalIni("", "rememberMainMenu");
     } else {
-        VDC::saveSettingsToIni("", "rememberMainMenu", QString::number(2));
+        VDC::saveSettingsToLocalIni("", "rememberMainMenu", QString::number(2));
     }
 
 }
@@ -629,10 +892,11 @@ void LoginForm::aboutVDC(QWidget *parent)
     QWidget *widget = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout();
     QVBoxLayout *mainlayout = new QVBoxLayout();
+    mainlayout->insertSpacing(0,55); //NS
     QLabel *labeltext = new QLabel();
     QLabel *labellogo = new QLabel();
     QLabel *space = new QLabel(widget);
-    QPixmap pix(":pics/VENTAS_9_logo-about.png");
+    QPixmap pix(":pics/VENTAS_11_logo-about.png");
 
     QList<QKeySequence> ql_shortcuts;
     ql_shortcuts << QKeySequence("F12");
@@ -641,9 +905,9 @@ void LoginForm::aboutVDC(QWidget *parent)
     ql_shortcuts << QKeySequence("Escape");
 
     QPushButton *okButton = new QPushButton("&OK");
-    okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
-    okButton->setIconSize(QSize(40,25));
-    okButton->setFixedWidth(75);
+    okButton->setIcon(QIcon(QString(":pics/ok_gruen.png")));
+    okButton->setIconSize(QSize(53,37));
+    okButton->setFixedWidth(96);
     QAction *action = new QAction(tr("&OK"), this);
     action->setShortcuts(ql_shortcuts);
     okButton->addAction(action);
@@ -651,26 +915,36 @@ void LoginForm::aboutVDC(QWidget *parent)
     connect(okButton, SIGNAL(clicked()), widget, SLOT(close()));
 
 
-    int date = QDate::currentDate().year();
+    //int date = QDate::currentDate().year();
     //QPixmap qpm = pix.scaled(80,80,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     labellogo->setPixmap(pix);
     labellogo->setAlignment(Qt::AlignTop);
     space->setFixedWidth(25);
-    QString a4glVersionClient = VDC::readSettingsFromIni("", "a4gl_version");
-    QString xmlVersionClient = VDC::readSettingsFromIni("", "xml_version");
+    QString a4glVersionClient = VDC::readSettingsFromIni("", "a4gl_version", "unknown");
+    QString xmlVersionClient = VDC::readSettingsFromIni("", "xml_version", "unknown");
 
-    if(!returnList.isEmpty())
-    {
-        if(!returnList.at(0).isEmpty())
-        {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
-
+    QString releaseDate;
+    if(!returnList.isEmpty()) {
+        if(!returnList.at(0).isEmpty()) {
+            releaseDate =returnList.at(0).at(0);
         } else {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            releaseDate = "unknown";
         }
     } else {
-        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
+        releaseDate = "unknown";
     }
+
+    labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p> \
+    Client Revisions number: %1<br> \
+    Release Date: %2<br> \
+    A4GL Version: %3<br> \
+    XML Protocol Version: %4<br> \
+    Qt Version: %5<br><br> \
+    Copyright by VENTAS AG Hamburg. All Rights Reserved.<br><br> \
+    The program is provided as is with no warranty of any kind,<br>  \
+    including the warranty of design,<br> \
+    merchantability and fitness for a particular purpose. <br> \
+    You can get professional support (info@ventas.de)").arg(GIT_REVISION_NUMBER).arg(releaseDate).arg(a4glVersionClient).arg(xmlVersionClient).arg(QT_VERSION_STR));
 
     layout->addWidget(labellogo);
     layout->addWidget(space);
@@ -680,10 +954,10 @@ void LoginForm::aboutVDC(QWidget *parent)
     widget->setLayout(mainlayout);
 
     QPalette palette;
-    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    palette.setBrush(this->backgroundRole(), QBrush(QImage(":pics/VENTAS_11_bg.png")));
     widget->setPalette(palette);
 
-    widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    widget->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
     widget->show();
     widget->adjustSize();
 }
@@ -692,9 +966,9 @@ void LoginForm::convertTextToIso()
 {
     if(!convertText->isChecked())
     {
-        VDC::saveSettingsToIni("","convertText", QString("2"));
+        VDC::saveSettingsToLocalIni("","convertText", QString("2"));
     } else {
-        VDC::removeSettingsFromIni("","convertText");
+        VDC::removeSettingsFromLocalIni("","convertText");
     }
 }
 
@@ -986,7 +1260,7 @@ MainFrame::vdcdebug("HostsData","addHost", "");
     QFile file(hostspath);
     if(!file.isWritable())
     {
-        Dialog *p_dialog = new Dialog(tr("Warning"), tr("Please start the VDC with adminstrator privileges to edit the hosts file."), "dialog", "stop", NULL);
+        Dialog *p_dialog = new Dialog(tr("Warning"), tr("Please start the VDC with adminstrator privileges to edit the hosts file."), "dialog", "stop", NULL, NULL, true);
         p_dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         connect(p_dialog->getAction("OK"), SIGNAL(triggered()), p_dialog, SLOT(close()));
         p_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -1163,11 +1437,11 @@ void LoginForm::setFormat(QString format)
     qDebug() << "format: " << format;
 
     QList<QString> params = format.split("|");
-    VDC::saveSettingsToIni("","screenFormat", params.at(0));
+    VDC::saveSettingsToLocalIni("","screenFormat", params.at(0));
 
     if(params.count() > 0)
     {
-        VDC::saveSettingsToIni("","setDBMONEY", params.at(1));
+        VDC::saveSettingsToLocalIni("","setDBMONEY", params.at(1));
     }
 
     if(params.at(0) == "##,###,###,###,##&.&&&&&&&&&&&&&&&&" && params.at(1) == ",")
@@ -1364,22 +1638,6 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       return;
    }
 
-   if(logVDC->isChecked())
-   {
-      VDC::logMessage("VDC", "- - - Begin log VDC messages");
-      if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
-      {
-          main->debugVDC = true;
-          VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("yes"));
-      }
-   } else {
-       if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
-       {
-           main->debugVDC = false;
-           VDC::removeSettingsFromIni("","debugVDC");
-       }
-   }
-
    if(cb->isChecked())
    {
        settings.setValue("password", pass);
@@ -1457,6 +1715,7 @@ void LoginForm::connectToTelnet()
 // Filename     : login.cpp
 // Description  : write the changed data back to file
 //------------------------------------------------------------------------------
+/* replaced by MainFrame::closeAction()
 void LoginForm::cancelPressed()
 {
 MainFrame::vdcdebug("LoginForm","cancelPressed", "");
@@ -1466,14 +1725,15 @@ MainFrame::vdcdebug("LoginForm","cancelPressed", "");
     {
         if(ql_screenhandler->count() > 0)
         {
-            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", tr("There are open Connections.\nDo you really want to quit?"), "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", tr("There are open connections.\nDo you really want to quit?"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+            palette.setBrush(this->backgroundRole(), QBrush(QImage(":pics/VENTAS_11_bg.png")));
+
             dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-            dialog->createButton(1, "Yes", "Yes", "ja.png");
+            dialog->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_blau.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+            dialog->createButton(1, tr("Yes"), "Yes", "ja.png");
             dialog->getAction("Yes")->setShortcut(Qt::Key_F12);
-            dialog->createButton(2, "No", "No", "escape.png");
+            dialog->createButton(2, tr("No"), "No", "escape.png");
             dialog->getAction("No")->setShortcut(Qt::Key_Escape);
             connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(closeVDC()));
             connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -1486,7 +1746,7 @@ MainFrame::vdcdebug("LoginForm","cancelPressed", "");
 
 
 }
-
+*/
 void LoginForm::closeVDC()
 {
     MainFrame *mainFrame = (MainFrame*) parent();
@@ -1602,7 +1862,7 @@ void LoginForm::removeCursor()
 
 void LoginForm::setOfficeInstallation()
 {
-    int stdOfficeProg = VDC::readSettingsFromIni("","officeStdProg").toInt();
+    int stdOfficeProg = VDC::readSettingsFromLocalIni("","officeStdProg").toInt();
     QWidget *widget = new QWidget;
     mOfficeComboBox = new QComboBox;
     QLabel *label = new QLabel;
@@ -1610,14 +1870,20 @@ void LoginForm::setOfficeInstallation()
     QHBoxLayout *hLayout = new QHBoxLayout();
 
     QPalette palette;
-    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    palette.setBrush(this->backgroundRole(), Qt::white);
     widget->setPalette(palette);
 
     QPushButton *closeButton = new QPushButton(tr("&Cancel"));
-    closeButton->setIcon(QIcon(QString("pics:escape.png")));
-    closeButton->setIconSize(QSize(40,25));
-    closeButton->setShortcut(Qt::Key_Escape);
-    closeButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    closeButton->setIcon(QIcon(QString(":pics/escape.png")));
+    closeButton->setIconSize(QSize(53,37));
+    QAction *cancelAction = new QAction(tr("&Cancel"), this);
+    closeButton->addAction(cancelAction);
+    QList<QKeySequence> shortcuts;
+    shortcuts
+    << Qt::Key_Escape // this is the primary shortcut
+    << QKeySequence("ALT + Q"); // this is another valid shortcut but won't appear on a menu for exmple
+    cancelAction->setShortcuts(shortcuts);
+    closeButton->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
     connect(closeButton, SIGNAL(clicked()), widget, SLOT(close()));
 
     QPushButton *saveButton = new QPushButton(tr("&Apply"));
@@ -1630,9 +1896,9 @@ void LoginForm::setOfficeInstallation()
     QAction *okAction = new QAction(tr("&Apply"), this);
     okAction->setShortcuts(ql_okShortcuts);
 
-    saveButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
-    saveButton->setIconSize(QSize(40,25));
-    saveButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    saveButton->setIcon(QIcon(QString(":pics/ok_gruen.png")));
+    saveButton->setIconSize(QSize(53,37));
+    saveButton->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
     saveButton->addAction(okAction);
     connect(okAction, SIGNAL(triggered()), this, SLOT(saveOfficeInstallation()));
     connect(okAction, SIGNAL(triggered()), widget, SLOT(close()));
@@ -1664,7 +1930,7 @@ void LoginForm::saveOfficeInstallation()
     {
         if(mOfficeComboBox->currentIndex() > 0)
         {
-            VDC::saveSettingsToIni("","officeStdProg", QString::number(mOfficeComboBox->currentIndex()));
+            VDC::saveSettingsToLocalIni("","officeStdProg", QString::number(mOfficeComboBox->currentIndex()));
         } else {
             emit setOfficeInstallation();
         }
@@ -1673,26 +1939,35 @@ void LoginForm::saveOfficeInstallation()
 
 void LoginForm::checkForUpdate()
 {
-    MasterUpdate *mUpdate = new MasterUpdate;
-    //mUpdate->start();
-    mUpdate->run();
-    mUpdate->wait();
+    return;
+}
 
-    DownloadManager *dlManager = new DownloadManager(true);
-    dlManager->searchForUpdate();
+void LoginForm::showUpdateError()
+{
+    Dialog *dialog = new Dialog(tr("VDC Update"), tr("VDC update available. Windows 7 or higher needed."), "", "stop", NULL, Qt::WindowStaysOnTopHint, true);
+    dialog->setVentasStyle();
+
+    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+    dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+
+    connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+
+    dialog->move(600,400);
+    dialog->show();
 }
 
 void LoginForm::setMainMenu()
 {
-    QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
+    QString menuType = VDC::readSettingsFromLocalIni("", "startMenuPosition");
 
-    if(menuType == "tree" || menuType.isEmpty())
+    if(menuType == "tree" || menuType.isEmpty() || menuType == "-1")
     {
-        VDC::saveSettingsToIni(QString(""), QString("startMenuPosition"), QString("menu"));
+        VDC::saveSettingsToLocalIni(QString(""), QString("startMenuPosition"), QString("menu"));
         m_mainMenu->setText("Main Menu vertical");
     } else if (menuType == "menu")
     {
-        VDC::saveSettingsToIni(QString(""), QString("startMenuPosition"), QString("tree"));
+        VDC::saveSettingsToLocalIni(QString(""), QString("startMenuPosition"), QString("tree"));
         m_mainMenu->setText("Main Menu horizontal");
     }
 }

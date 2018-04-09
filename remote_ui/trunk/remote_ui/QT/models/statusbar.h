@@ -43,6 +43,8 @@ private:
    QLabel *errorLabel;
    QLabel *writeModeLabel;
 
+   QTimer *m_timer;
+
 
 
 };

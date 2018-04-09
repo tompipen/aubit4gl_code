@@ -29,7 +29,7 @@ class Dialog : public QDialog
    Q_OBJECT
 
 public:
-   Dialog(QString, QString, QString, QString, QWidget* parent = 0, Qt::WindowFlags f=0);
+   Dialog(QString, QString, QString, QString, QWidget* parent = 0, Qt::WindowFlags f=0, bool vdc = false);
    Dialog(QWidget* parent = 0, Qt::WindowFlags f=0);
    
    void createButton(int id = 0, QString text = "", QString desc = "", QString icon = "");
@@ -40,19 +40,25 @@ public:
    void setText(QString);
    QList<QAction*> actions();
    QAction* getAction(QString);
+   QButtonGroup* getButtons() { return buttonGroup; }
 
    bool b_allowCloseDialog;
 
    void setVentasStyle();
 
+   void setFocusOnButton();
+
+
 private:
-   QLayout* layout;
    QLayout* buttonLayout;
+   QLayout* layout;
    QButtonGroup *buttonGroup;
    QLabel *mLabel;
 
 protected:
-   void keyPressEvent(QKeyEvent *event);
+   //void keyPressEvent(QKeyEvent *event);
+   bool eventFilter(QObject *, QEvent *);
+   void keyPressEvent(QKeyEvent*);
 
 signals:
    void dialogButtonPressed(QString);

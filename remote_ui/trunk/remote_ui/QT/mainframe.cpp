@@ -35,13 +35,38 @@
 //------------------------------------------------------------------------------
 // Method       : MainFrame()
 // Filename     : mainframe.cpp
-// Description  : starts first screen window, starts tcp server (tcpListener)
+// Description  : starts first screen window, starts tcp server (listenToPort)
 //------------------------------------------------------------------------------
 
 void MainFrame::ReadSettings()
 {
 MainFrame::vdcdebug("MainFrame","ReadSettings", "");
+    int firstStartWithNewDesign = VDC::readSettingsFromLocalIni("", "firstStartWithNewDesign").toInt();
     QSettings settings("Ventas AG", "Ventas Desktop Client");
+
+    if(firstStartWithNewDesign == -1) {
+    #ifdef Q_OS_WIN
+        #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+           QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+           QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
+    #else
+        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+    #endif
+
+    settings.remove("");
+
+    #ifdef Q_OS_MAC
+        QApplication::setFont(QFont("Open Sans Semibold", 12));
+    #else
+        QApplication::setFont(QFont("Open Sans Semibold", 10));
+    #endif
+        settings.setValue("font", QApplication::font().toString());
+        settings.sync();
+        VDC::saveSettingsToLocalIni("", "firstStartWithNewDesign", "1");
+    }
+
     QVariant fontsetting = settings.value("font");
     QString fontsetting2;
     fontsetting2 = fontsetting.toString();
@@ -49,9 +74,13 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
     fontsetting3.fromString(fontsetting2);
 
     QApplication::setFont(fontsetting3);
-    if(fontsetting2 == "" || fontsetting2.contains("Liberation"))
+    if(fontsetting2 == "")
     {
-      QApplication::setFont(QFont("Arial", 8));
+        #ifdef Q_OS_MAC
+            QApplication::setFont(QFont("Open Sans Semibold", 12));
+        #else
+            QApplication::setFont(QFont("Open Sans Semibold", 10));
+        #endif
     }
 
     QMenu *menu = new QMenu;
@@ -65,15 +94,16 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
     connect(exitAction, SIGNAL(triggered()), this, SLOT(closeAction()));
 
     mTray = new QSystemTrayIcon(this);
-    mTray->setIcon(QIcon("pics:vdc.png"));
+    mTray->setIcon(QIcon(":pics/vdc.png"));
     mTray->setContextMenu(menu);
     connect(mTray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconClicked(QSystemTrayIcon::ActivationReason)));
     mTray->show();
 
-    QApplication::setQuitOnLastWindowClosed(false);
+    this->setStyleSheet("QMainWindow { margin-top: 15px; background-color: white; }");
 }
 
 bool MainFrame::b_debugmodus = false;
+QString MainFrame::progName = "";
 MainFrame* MainFrame::lastmainframe = NULL;
 QList<ScreenHandler*> *MainFrame::ql_screenhandler = new QList<ScreenHandler*>();
 
@@ -154,7 +184,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    MainFrame::lastmainframe = this;
    p_currOpenNetwork=NULL;
-   int port=1350;
+   quint16 port=1350;
    closeSSH = 0;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
@@ -162,6 +192,7 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
   QStringList parameter;
   parameter = QCoreApplication::arguments();
    bool onlyLogin;
+   debugVDC = VDC::readSettingsFromLocalIni("", "debugVDC").toInt();
 
    adminMenu = true;
    onlyLogin = true;
@@ -233,7 +264,9 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    // start listening to the network
    //
    ReadSettings();
-   tcpListener(port);
+   if(port != 1350) {
+       listenToPort(port);
+   }
 
 }
 void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
@@ -259,6 +292,75 @@ void MainFrame::vdcdebug(QString obj, QString funk, QString uebergabe)
 
 bool MainFrame::eventFilter(QObject *obj, QEvent *event)
 {
+    QKeyEvent *kev = (QKeyEvent*) event;
+
+    if((event->type() == QEvent::KeyPress))
+    {
+        ScreenHandler *p_screen = NULL;
+
+        for(int i=0; i < ql_screenhandler->count(); i++) {
+            if(ql_screenhandler->at(i) != NULL) {
+                if(ql_screenhandler->at(i)->p_fglform != NULL) {
+                    if(ql_screenhandler->at(i)->p_fglform->isActiveWindow()) {
+                        p_screen = ql_screenhandler->at(i);
+                    }
+                }
+            }
+        }
+
+        if(p_screen != NULL) {
+            QKeyEvent *mykev = new QKeyEvent(kev->type(),
+                                             kev->key(),
+                                             kev->modifiers(),
+                                             kev->text(),
+                                             kev->isAutoRepeat(),
+                                             kev->count());
+            //SHIFT + Return nicht im buffer schreiben damit umbrueche moeglich sind.
+            if((kev->modifiers() == Qt::ShiftModifier && kev->key() == Qt::Key_Return) || kev->nativeVirtualKey() == 65505) {
+                return false;
+            }
+
+            b_lastAutoRepeat = kev->isAutoRepeat();
+
+            if((!kev->isAutoRepeat() && kev->spontaneous() && p_screen->p_fglform->state() != Fgl::MENU) ||
+               (kev->isAutoRepeat() && p_screen->p_fglform->state() != Fgl::MENU &&
+               (kev->key() == Qt::Key_Tab || kev->key() == Qt::Key_Enter || kev->key() == Qt::Key_Return || kev->key() == Qt::Key_Backtab || kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down))) {
+                p_screen->ql_keybuffer << mykev;
+                QTimer::singleShot(50, p_screen, SLOT(replayKeyboard()));
+                return true;
+            }
+        }
+    }
+
+    if((event->type() == QEvent::KeyRelease)) {
+        if(kev->isAutoRepeat() == false && b_lastAutoRepeat) {
+            ScreenHandler *p_screen = NULL;
+
+            for(int i=0; i < ql_screenhandler->count(); i++) {
+                if(ql_screenhandler->at(i) != NULL) {
+                    if(ql_screenhandler->at(i)->p_fglform != NULL) {
+                        if(ql_screenhandler->at(i)->p_fglform->isActiveWindow()) {
+                            p_screen = ql_screenhandler->at(i);
+                        }
+                    }
+                }
+            }
+
+            if(p_screen == NULL) {
+                return QMainWindow::eventFilter(obj, event);
+            }
+
+            if(!p_screen->p_fglform->menu()) {
+                if(p_screen->p_fglform->currentField() != NULL) {
+                    p_screen->p_fglform->setFocusOnWidget(p_screen->p_fglform->currentField());
+                    QMetaObject::invokeMethod(p_screen, "sendBeforeEvents", Qt::QueuedConnection);
+                }
+            }
+            b_lastAutoRepeat = false;
+        }
+    }
+
+
     /*
     if(FglForm *p_fglform = qobject_cast<FglForm*> (obj))
     {
@@ -375,29 +477,34 @@ OptionsTab::OptionsTab(QWidget *parent)
 {
 
        QPalette palette;
-       palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+       palette.setBrush(this->backgroundRole(), Qt::white);
        this->setPalette(palette);
 
-       QGroupBox *fontbox = new QGroupBox(tr("Font"));
+       QGroupBox *fontbox = new QGroupBox();
+       fontbox->setStyleSheet("QGroupBox {border: 0px;}");
        QLabel *fontlabel = new QLabel(tr("Font : "));
 
        QPushButton *select = new QPushButton(tr("&Select"),this);
-       select->setIcon(QIcon(QString("pics:vor.png")));
-       select->setIconSize(QSize(40,25));
+       select->setIcon(QIcon(QString(":pics/vor.png")));
+       select->setIconSize(QSize(53,37));
+       select->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_blau.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_blau_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
 
        QPushButton *reset = new QPushButton(tr("&Reset"),this);
-       reset->setIcon(QIcon(QString("pics:loeschen.png")));
-       reset->setIconSize(QSize(40,25));
-
-       QPushButton *close = new QPushButton(tr("&Close"), this);
-       close->setIcon(QIcon(QString("pics:nein.png")));
-       close->setIconSize(QSize(40,25));
-       close->setShortcut(Qt::Key_Escape);
+       reset->setIcon(QIcon(QString(":pics/loeschen.png")));
+       reset->setIconSize(QSize(53,37));
+       reset->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_blau.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_blau_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
 
        QPushButton *save = new QPushButton(tr("Save"), this);
-       save->setIcon(QIcon(QString("pics:ok_gruen.png")));
-       save->setIconSize(QSize(40,25));
+       save->setIcon(QIcon(QString(":pics/ok_gruen.png")));
+       save->setIconSize(QSize(53,37));
        save->setShortcut(Qt::Key_F12);
+       save->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
+
+       QPushButton *close = new QPushButton(tr("&Close"), this);
+       close->setIcon(QIcon(QString(":pics/abbrechen_rot.png")));
+       close->setIconSize(QSize(53,37));
+       close->setShortcut(Qt::Key_Escape);
+       close->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
 
        fontedit = new QLineEdit;
        fontedit->setReadOnly(true);
@@ -413,7 +520,7 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        QVBoxLayout *leftlayout = new QVBoxLayout;
        leftlayout->addLayout(fontlayout);
-        leftlayout->addStretch();
+       leftlayout->addStretch();
 
        QVBoxLayout *buttonlayout = new QVBoxLayout;
 
@@ -430,7 +537,7 @@ OptionsTab::OptionsTab(QWidget *parent)
        QVBoxLayout *mainlayout = new QVBoxLayout;
        mainlayout->addWidget(fontbox);
 
-       setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+       setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_blau.png); padding-bottom: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
        setLayout(mainlayout);
 
 
@@ -449,16 +556,23 @@ QString fonteingabe;
 fonteingabe.append(splitlist[0]);
 fonteingabe.append(",");
 fonteingabe.append(splitlist[1]);
-if (fonteingabe == "Arial,8")
-{
-fonteingabe.append("(Default)");
-fontedit->insert(fonteingabe);
-}
 
-else
-{
-fontedit->insert(fonteingabe);
-}
+#ifdef Q_OS_MAC
+    if (fonteingabe == "Open Sans Semibold,12") {
+        fonteingabe.append("(Default)");
+        fontedit->insert(fonteingabe);
+    } else {
+        fontedit->insert(fonteingabe);
+    }
+#else
+    if (fonteingabe == "Open Sans Semibold,10") {
+        fonteingabe.append("(Default)");
+        fontedit->insert(fonteingabe);
+    } else {
+        fontedit->insert(fonteingabe);
+    }
+#endif
+
 fonteingabe = "";
 
 
@@ -471,12 +585,18 @@ void OptionsTab::reset()
 {
 MainFrame::vdcdebug("OptionsTab","reset", "");
 fontedit->clear();
-QFont base = QFont("Arial", 8);
-QApplication::setFont(base);
-fonteingabe = "Arial,8(Default)";
+#ifdef Q_OS_MAC
+    QFont base = QFont("Open Sans Semibold", 12);
+    QApplication::setFont(base);
+    fonteingabe = "Open Sans Semibold,12 (Default)";
+#else
+    QFont base = QFont("Open Sans Semibold", 10);
+    QApplication::setFont(base);
+    fonteingabe = "Open Sans Semibold,10 (Default)";
+#endif
 fontedit->insert(fonteingabe);
 fonteingabe = "";
-showMessage(tr("Font set to Default"));
+showMessage(tr("Font set to default"));
 writeSettings();
 }
 
@@ -495,11 +615,11 @@ splitlist = fontconv.split(",");
 fonteingabe.append(splitlist[0]);
 fonteingabe.append(",");
 fonteingabe.append(splitlist[1]);
-if (fonteingabe == "Arial,8")
+if (fonteingabe == "Open Sans Semibold,10")
 {
 fonteingabe.append("(Default)");
 fontedit->insert(fonteingabe);
-showMessage(tr("Font set to Default"));
+showMessage(tr("Font set to default"));
 }
 else
 {
@@ -758,34 +878,66 @@ MainFrame::vdcdebug("ShortcutsTab","updateListBox", "");
 
 
 //------------------------------------------------------------------------------
-// Method       : tcpListener()
+// Method       : listenToPort()
 // Filename     : mainframe.cpp
 // Description  : listen to network port....
 //------------------------------------------------------------------------------
-
-void MainFrame::tcpListener(int port)
+void MainFrame::addSystemProxy()
 {
-MainFrame::vdcdebug("MainFrame","tcpListener", "int port");
+    QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+
+    foreach(QNetworkProxy proxy, listOfProxies)
+    {
+        if(!proxy.hostName().isEmpty())
+        {
+            QNetworkProxy::setApplicationProxy(proxy);
+            qDebug() << "proxyuser: " << proxy.user();
+            qDebug() << "proxyhost: " <<proxy.hostName();
+            break;
+        }
+    }
+}
+
+bool MainFrame::listenToPort(quint16 port)
+{
+MainFrame::vdcdebug("MainFrame","listenToPort", "int port");
    clientTcp = new ClientTcp(this);
    clientTcp->setDebugModus(MainFrame::b_debugmodus, this);
 
-   if(!clientTcp->listen(QHostAddress::Any, port)){
-      /*errorMessageMainFrame->showMessage(
-            tr("ERROR: VDC already running"));*/
-       Dialog *dialog = new Dialog(tr("VDC"), tr("VDC is already running."), "", "stop", this, Qt::WindowStaysOnTopHint);
-       QPalette palette;
-       palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
-       dialog->setPalette(palette);
-       dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-       dialog->createButton(1, "Quit", "Quit", "nein.png");
-       connect(dialog->getAction("Quit"), SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
-       dialog->show();
+   QStringList arguments = QApplication::arguments();
 
+   clientTcp->listen(QHostAddress::Any, port);
+
+   if(arguments.contains("-squish")) {
+       return true;
+   }
+
+   qDebug() << "clientTcp->serverError(): " << clientTcp->errorString();
+
+   if(!clientTcp->errorString().isEmpty()) {
+       Dialog *dialog = NULL;
+       if (clientTcp->serverError() == QAbstractSocket::AddressInUseError) {
+           dialog = new Dialog(tr("VDC"), tr("VDC is already running."), "", "stop", this, Qt::WindowStaysOnTopHint, true);
+           dialog->setStyleSheet("QDialog { background-color: #FFFFFF; }" "QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_rot_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
+           dialog->createButton(1, "Quit", "Quit", "abbrechen_rot.png");
+           connect(dialog->getAction("Quit"), SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
+           dialog->show();
+           return false;
+      } else {
+           dialog = new Dialog(tr("VDC"), QString("There was an error while starting the application.\n\nError message: %1").arg(clientTcp->errorString()), "", "stop", this, Qt::WindowStaysOnTopHint, true);
+           dialog->setStyleSheet("QDialog { background-color: #FFFFFF; }" "QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");;
+           dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+           connect(dialog->getAction("Ok"), SIGNAL(triggered()), dialog, SLOT(close()));
+           dialog->show();
+           return true;
+       }
    }
 
    if(connectionsTab != NULL){
       connect(clientTcp,SIGNAL(newConnection()),connectionsTab,SLOT(addConnection()));
    }
+   return true;
 }
 
 
@@ -958,12 +1110,11 @@ void MainFrame::closeAction()
     if(ql_screenhandler)
     {
         if(ql_screenhandler->count() > 0){
-            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", tr("There are open Connections.\nDo you really want to quit?"), "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", tr("There are open connections.\nDo you really want to quit?"), "", "stop", this, Qt::WindowStaysOnTopHint, true);
             QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
-
+            palette.setBrush(dialog->backgroundRole(), Qt::white);
             dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+
             dialog->createButton(1, tr("Yes"), "Yes", "ja.png");
             dialog->getAction("Yes")->setShortcut(Qt::Key_F12);
             dialog->createButton(2, tr("No"), "No", "escape.png");
@@ -1009,6 +1160,19 @@ void MainFrame::closeVDC()
 
 }
 
+void MainFrame::enableDebugModus()
+{
+
+    if(this->debugVDC) {
+        this->debugVDC = false;
+        VDC::saveSettingsToLocalIni("", "debugVDC", QString::number(0));
+    } else {
+        this->debugVDC = true;
+        VDC::saveSettingsToLocalIni("", "debugVDC", QString::number(1));
+
+    }
+}
+
 //------------------------------------------------------------------------------
 // Method       : closeEvent()
 // Filename     : mainframe.cpp
@@ -1017,12 +1181,15 @@ void MainFrame::closeVDC()
 void MainFrame::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
-    if (mTray->isVisible())
-    {
-        mTray->showMessage("Ventas Desktop Client", tr("The VDC runs in System Tray"));
-        this->hide();
-        event->ignore();
-    }
+    QStringList arguments = QApplication::arguments();
+
+    //if(!arguments.contains("-squish")) {
+        if (mTray->isVisible()) {
+            mTray->showMessage("Ventas Desktop Client", tr("The VDC runs in System Tray"));
+            this->hide();
+            event->ignore();
+        }
+    //}
 }
 void MainFrame::debugClose()
 {
@@ -1048,7 +1215,6 @@ MainFrame::vdcdebug("MainFrame","requestScreenHandler", "int pid, int p_pid");
     sh->p_pid = p_pid;
 
 }
-
 void MainFrame::deleteScreenHandler(int pid, int p_pid)
 {
 MainFrame::vdcdebug("MainFrame","deleteScreenHandler", "int pid, int p_pid");

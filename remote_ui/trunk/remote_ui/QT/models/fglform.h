@@ -82,7 +82,9 @@ class FglForm : public QMainWindow
 
 public:
 
-   FglForm(QString windowName = "", QWidget *parent=0);
+   bool hasTable = false;
+   int getWindowWidth() { return widgetWidth; }
+   FglForm(QString windowName = "", int posX = 0, int posY = 0, QWidget *parent=0);
    ~FglForm();
 //Flag for Response. Only sending the values of the first triggered, rest blanked
    bool b_svs;
@@ -91,8 +93,6 @@ public:
    QPointer<QPushButton> nextclick;
    QPointer<XML2Menu> mXmlMenu;
    Actions *ql_actions;
-   void replayKeyboard();
-   void clearKeyboardBuffer();
    bool b_getch_swin;
    bool b_layout;
    bool b_allowClose;
@@ -164,7 +164,6 @@ public:
    bool construct() { return b_construct; };
    */
    QStringList qsl_fieldOrder;
- QList<QKeyEvent*> ql_keybuffer;
    //QDomDocument *recordView;
    QHash<QString, QList<Fgl::Link> > recordView;
    
@@ -214,11 +213,14 @@ public:
    Fgl::State state() { return ql_states.last(); };
    void checkState();
 
+   QSplitter* getSplitter() { return p_splitter; }
+//   QHBoxLayout* gethLayout() { return hLayout; }
+//   QWidget* getFormWidget() { return formWidget; }
+//   QScrollArea* getScroll() { return p_scroll; }
+
    QList<QWidget*> formElements();
 
    Context *context;
-   bool b_keybuffer;
-   bool b_keybufferrunning;
    QWidget* findFieldByName(QString);
    QList<QWidget*> findFieldsByName(QString);
    int findFieldIdByName(QString);
@@ -241,6 +243,7 @@ public:
    QTimer *fieldChangeTimer;
    bool isFieldChangeSend;
    int lastKeyPressed;
+   void setLogo(QString);
 
 public slots:
 
@@ -270,9 +273,9 @@ public slots:
    void editpaste();
    QList<QWidget*> getConstrainList();
    void nextfield(bool change=true);
-   void prevfield();
-   void nextrow();
-   void prevrow();
+   void prevfield(bool sendEvent = true);
+   void nextrow(bool sendEvent = true);
+   void prevrow(bool sendEvent = true);
    void firstrow();
    void lastrow();
    void nextpage();
@@ -312,8 +315,10 @@ public slots:
 
 private:
 
+   bool wasMinimized = false;
    QLabel *textLabel;
    QLabel *iconLabel;
+   QLabel *m_logoLabel;
 
    QList<Fgl::State> ql_states;
 
@@ -363,6 +368,9 @@ private:
    QString qs_formfile;
    QWidget *qw_colorbar;
    QSplitter *p_splitter;
+   QHBoxLayout *hLayout;
+   QVBoxLayout *hb_lay;
+   QScrollArea *p_scroll;
 
    int gridHeight;
  //  virtual QSize sizeHint() const;
@@ -383,6 +391,7 @@ signals:
 
 protected:
    bool eventFilter(QObject *obj, QEvent *event);
+   void moveEvent(QMoveEvent *);
    void closeEvent(QCloseEvent *event);
    void contextMenuEvent(QContextMenuEvent*);
    bool focusNextPrevChild(bool);

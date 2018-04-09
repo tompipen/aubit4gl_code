@@ -107,7 +107,7 @@ MainFrame::vdcdebug("ToolBar","parseElement", "QDomNode xmlNode");
          QString name = currentElement.attribute("name");
 
 /*
-         QString image = "pics:";
+         QString image = ":pics/";
          image.append(currentElement.attribute("image"));
 */
          QString image = currentElement.attribute("image");

@@ -75,8 +75,11 @@ RingMenu::RingMenu(QString title, QWidget *fglform, QString style,
    }
 
    QVBoxLayout *layout = new QVBoxLayout;
-   layout->setAlignment(Qt::AlignTop);
+   layout->setAlignment(Qt::AlignRight | Qt::AlignTop);
    layout->setSpacing(0);
+   layout->setContentsMargins(4,21,11,11);
+   //layout->insertSpacing(0,61); //NS
+   QGroupBox::setStyleSheet("QGroupBox {border: 0px; }");
    //layout->setSizeConstraint(QLayout::SetFixedSize);
    buttonGroup = new QButtonGroup(this);
 
@@ -123,22 +126,35 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    QString image = pic + ".png";
 
-   QFile img(QString("pics:%1").arg(image));
+   QFile img(QString(":pics/%1").arg(image));
    if (!img.open(QIODevice::ReadOnly))
          image = "blank.png";
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
-   button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+   //button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
    button->setToolTip(tooltip);
    button->setFlat(true);
    button->installEventFilter(this);
-   button->setStyleSheet("QPushButton {text-align:left;}");
-//   QPushButton *button = new QPushButton(text.trimmed());
-   //button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIcon(QIcon(QString("pics:%1").arg(image)));
-   button->setIconSize(QSize(40,25));
+  // button->setStyleSheet("QPushButton {text-align:left;}");
+  //QPushButton *button = new QPushButton(text.trimmed());
+  //button->setIcon(QIcon(QString(":pics/blank.png")));
+   button->setIcon(QIcon(QString(":pics/%1").arg(image)));
+   button->setIconSize(QSize(53,37));
    button->setShortcut(shortcut);
+
+   if (pic == "ende" || pic == "nein" || pic == "abbruch" || pic == "quit" || pic == "no" || pic == "cancel" || pic == "cancelar" || pic == "fin" || pic == "non" || pic == "interrompre") {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_rot.png);}"
+                                            "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_gelb.png);}"
+                                            "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_rot_grau.png);}"
+                                            "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_gelb_grau.png);}");
+   } else if (pic == "ok" || pic == "ja" || pic == "yes" || pic == "si" || pic == "oui") {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_gruen.png);}"
+                                             "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_gelb.png);}"
+                                             "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_gruen_grau.png);}"
+                                             "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_gelb_grau.png);}");
+   }
+
    /*if(FglForm *fglform = qobject_cast<FglForm*> (ql_fglform))
    {
        for(int i=0; i < fglform->ql_shortcuts.count(); i++)
@@ -282,6 +298,7 @@ MainFrame::vdcdebug("RingMenu","selectButton", "QString name");
          if(button->text() == name){
 //            nextButton = button;
             QMetaObject::invokeMethod(button, "setFocus", Qt::QueuedConnection);
+            nextOptionName = "";
             return;
          }
       }
@@ -352,9 +369,9 @@ MainFrame::vdcdebug("RingMenu","createAction", "int id, QString text");
    QPushButton *button = new QPushButton(text.trimmed());
    button->setVisible(false);
 //   button->setShortcut(shortcut);
-   button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIconSize(QSize(40,25));
-   button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+   button->setIcon(QIcon(QString(":pics/blank.png")));
+   button->setIconSize(QSize(53,37));
+//   button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 
    Action *action = new Action(text.toLower(), text, button);
    action->setImage("blank.png");
@@ -409,14 +426,14 @@ MainFrame::vdcdebug("RingMenu","keyPressEvent", "QKeyEvent *keyEvent");
             return ;
          }
 
-   if(keyEvent->type() == QEvent::KeyPress){
+   /*if(keyEvent->type() == QEvent::KeyPress){
       if(keyEvent->key() == Qt::Key_Down){
          focusNextChild();
       }
       if(keyEvent->key() == Qt::Key_Up){
          focusPreviousChild();
       }
-   }
+   }*/
 
    return QGroupBox::keyPressEvent(keyEvent);
 }
@@ -523,59 +540,92 @@ bool RingMenu::eventFilter(QObject *obj, QEvent *event)
 
        }
 
-       if(keyEvent->key() == Qt::Key_Up) {
-           if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
-           {
-               if(buttonGroup->buttons().first()->text() == bt->text())
-               {
-                   if(!buttonGroup->buttons().last()->isVisible())
-                   {
-                       for(int i=buttonGroup->buttons().size()-1; i > 0; i--)
-                       {
-                           if(buttonGroup->buttons().at(i)->isVisible())
-                           {
-                               QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
-                               break;
-                           }
+       if(keyEvent->key() == Qt::Key_Down) {
+           if(QPushButton *bt = qobject_cast<QPushButton*> (obj)) {
+               QPushButton *lastButton = NULL;
+               for(int i=buttonGroup->buttons().count()-1; i > 0; i--) {
+                   if(buttonGroup->buttons().at(i)->isVisible()) {
+                       lastButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i));
+                       break;
+                   }
+               }
+
+               if(bt == lastButton) {
+                   for(int k=0; k < buttonGroup->buttons().count(); k++) {
+                       QPushButton *firstButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(k));
+
+                       if(!firstButton->isVisible()) {
+                           continue;
                        }
-                   } else {
-                       QMetaObject::invokeMethod(buttonGroup->buttons().last(), "setFocus", Qt::QueuedConnection);
+
+                       QMetaObject::invokeMethod(firstButton, "setFocus", Qt::QueuedConnection);
+                       break;
+                   }
+               } else {
+                   int buttonIndex = buttonGroup->buttons().indexOf(bt);
+                   while(buttonIndex < buttonGroup->buttons().count()) {
+                       buttonIndex++;
+
+                       if(buttonIndex < buttonGroup->buttons().count()) {
+                           break;
+                       }
+
+                       QPushButton *nextButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(buttonIndex));
+                       if(nextButton->isVisible()) {
+                           QMetaObject::invokeMethod(nextButton, "setFocus", Qt::QueuedConnection);
+                           break;
+                       }
                    }
                }
            }
        }
 
-       if(keyEvent->key() == Qt::Key_Down) {
-           if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
-           {
-               for(int j=buttonGroup->buttons().size()-1; j > 0; j--)
-               {
-                   if(buttonGroup->buttons().at(j)->isVisible())
-                   {
-                       if(buttonGroup->buttons().at(j)->text() == bt->text())
-                       {
-                           if(!buttonGroup->buttons().first()->isVisible())
-                           {
-                               for(int i=0; i < buttonGroup->buttons().size()-1; i++)
-                               {
-                                   qDebug() << i;
-                                   if(buttonGroup->buttons().at(i)->isVisible())
-                                   {
-                                       QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
-                                       break;
-                                   }
-                               }
-                           } else {
-                               QMetaObject::invokeMethod(buttonGroup->buttons().first(), "setFocus", Qt::QueuedConnection);
-                           }
-                       }
+       if(keyEvent->key() == Qt::Key_Up ) {
+           if(QPushButton *bt = qobject_cast<QPushButton*> (obj)) {
+               QPushButton *firstButton = NULL;
+               for(int i=0; i < buttonGroup->buttons().count(); i++) {
+                   if(buttonGroup->buttons().at(i)->isVisible()) {
+                       firstButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i));
                        break;
+                   }
+               }
+
+               if(bt == firstButton) {
+                   for(int k=buttonGroup->buttons().count()-1; k > 0; k--) {
+                       QPushButton *lastButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(k));
+
+                       if(!lastButton->isVisible()) {
+                           continue;
+                       }
+
+                       QMetaObject::invokeMethod(lastButton, "setFocus", Qt::QueuedConnection);
+                       break;
+                   }
+               } else {
+                   int buttonIndex = buttonGroup->buttons().indexOf(bt);
+                   while(buttonIndex < buttonGroup->buttons().count()) {
+                       buttonIndex--;
+
+                       if(buttonIndex < buttonGroup->buttons().count()) {
+                           break;
+                       }
+
+                       QPushButton *nextButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(buttonIndex));
+                       if(nextButton->isVisible()) {
+                           QMetaObject::invokeMethod(nextButton, "setFocus", Qt::QueuedConnection);
+                           break;
+                       }
                    }
                }
            }
        }
     }
-
-
+    if(event->type() == QEvent::FocusIn) {
+        if(QPushButton *pb = qobject_cast<QPushButton*> (obj)) {
+            if (!nextOptionName.isEmpty()) {
+                selectButton(nextOptionName);
+            }
+        }
+    }
     return QGroupBox::eventFilter(obj,event);
 }

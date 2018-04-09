@@ -39,6 +39,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    b_ignoreFocus = false;
    b_ignoreRowChange = false;
    ignoreFieldChangeEvent = false;
+   setAutoRepeat(false);
  //  b_palette = false;
    this->setMouseTracking(true);
    const int rowHeight = fontMetrics().height() + 2;
@@ -63,7 +64,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
 
    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
-  QObject::connect(header, SIGNAL(sectionClicked(int)),
+   QObject::connect(header, SIGNAL(sectionClicked(int)),
                     this, SLOT(sortByColumn(int)));
 
    QObject::connect(header, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
@@ -81,21 +82,21 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setEnabled(false);
 
    int logicalIndex = 0;
-   QString sortIndecator;
+   QString sortIndicator;
 
    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
    {
        logicalIndex = VDC::readSettingsFromIni(fglform->formName(), "sortLogicalIndex").toInt();
-       sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
+       sortIndicator = VDC::readSettingsFromIni(fglform->formName(), "sortIndicator");
    }
 
    horizontalHeader()->blockSignals(true);
-   if(sortIndecator == "ASC")
+   if(sortIndicator == "ASC")
    {
        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
    }
 
-   if(sortIndecator == "DESC")
+   if(sortIndicator == "DESC")
    {
        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
    }
@@ -110,21 +111,21 @@ void TableView::restoreSortOrder()
     QObject::disconnect(header, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
                      this, SLOT(saveSortOrder(int, Qt::SortOrder)));
     int logicalIndex = 0;
-    QString sortIndecator;
+    QString sortIndicator;
 
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
     {
         logicalIndex = VDC::readSettingsFromIni(fglform->formName(), "sortLogicalIndex").toInt();
-        sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
+        sortIndicator = VDC::readSettingsFromIni(fglform->formName(), "sortIndicator");
     }
 
     this->setSortingEnabled(false);
-    if(sortIndecator == "ASC")
+    if(sortIndicator == "ASC")
     {
         this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
     }
 
-    if(sortIndecator == "DESC")
+    if(sortIndicator == "DESC")
     {
         this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
     }
@@ -139,15 +140,15 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
 {
     if(this->isEnabled() && this->isVisible())
     {
-        QString sortIndecator;
+        QString sortIndicator;
 
         switch (sortOrder)
         {
         case Qt::AscendingOrder:
-            sortIndecator = "ASC";
+            sortIndicator = "ASC";
             break;
         case Qt::DescendingOrder:
-            sortIndecator = "DESC";
+            sortIndicator = "DESC";
             break;
         default:
             break;
@@ -155,7 +156,7 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
 
         if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
         {
-            VDC::saveSettingsToIni(fglform->formName(), "sortIndecator", sortIndecator);
+            VDC::saveSettingsToIni(fglform->formName(), "sortIndicator", sortIndicator);
             VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", QString::number(logicalIndex));
 
             Fgl::Event event;
@@ -312,6 +313,7 @@ void TableView::insertRow()
 {
   int row = -1;
   int col = -1;
+  int arrCount = getForm()->context->getOption("ARRCOUNT");
 
   row = currentIndex().row();
   col = currentIndex().column();
@@ -324,11 +326,16 @@ void TableView::insertRow()
      return;
   }
 
+  if(arrCount >= i_maxArrSize) {
+      qWarning("Max rows reached. Insert row failed.");
+      getForm()->error("Max rows reached. Insert row failed.");
+      return;
+  }
 
   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
   table->insertRows(row, 1, QModelIndex());
-  getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")+1);
+  getForm()->context->setOption("ARRCOUNT", arrCount+1);
   b_ignoreFocus = true;
  // setCurrentField(row, col);
 
@@ -481,7 +488,12 @@ void TableView::copyTable()
         for(int j=0; j < columns; j++)
         {
             QModelIndex index = this->model()->index(i, j);
-            tableText.append(index.data().toString().remove("\n") + "\t");
+            QString value = index.data().toString();
+
+            value.remove("\"");
+            value.remove("\n");
+
+            tableText.append(value + "\t");
 
             if(j+1 == columns)
             {
@@ -518,20 +530,14 @@ void TableView::copyColumn()
     QApplication::clipboard()->setText(tableText);
 }
 
-bool TableView::eventFilter(QObject *object, QEvent *event)
+bool TableView::eventFilter(QObject *obj, QEvent *event)
 {
-    Q_UNUSED(object);
-
-
     if(event->type() == QEvent::ContextMenu)
     {
         QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
         TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
         Pulldown *pulldownMenu = new Pulldown();
         int i =0;
-
-        /*standardAct = new QAction(tr("Standard Einstellung der Spaltenbreite wiederherstellen"), this);
-        resetAct    = new QAction(tr("Standard Reihenfolge der Spalten wiederherstellen"), this);*/
         standardAct = new QAction(tr("Reset the width of all columns"), this);
         resetAct    = new QAction(tr("Reset order"), this);
         restoreSort   = new QAction(tr("Spaltensortierung wiederherstellen"), this);
@@ -546,25 +552,26 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
                     columnLabels << getColumnLabel(i);
                     if(columnLabels.toVector().at(i) != NULL)
                     {
-                       columnAct = new QAction(columnLabels.at(i)->text(), this);
-                       columnAct->setObjectName(columnLabels.at(i)->objectName());
-                       pulldownMenu->addAction(columnAct);
-                       columnAct->setCheckable(true);
-                       int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn")).toInt();
+                       Label *la = qobject_cast<Label*> (columnLabels.at(i));
+                       if(!la->getIsHidden()) {
+                           columnAct = new QAction(columnLabels.at(i)->text(), this);
+                           columnAct->setObjectName(columnLabels.at(i)->objectName());
+                           pulldownMenu->addAction(columnAct);
+                           columnAct->setCheckable(true);
+                           int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn")).toInt();
 
-
-                       if(!columnLabels.at(i)->objectName().isNull()) {
-                           if(hideColumn == 0)
-                           {
-                           columnAct->setChecked(true);
-                           }
-                       } else {
-                           if(hideColumn == 0)
-                           {
-                           columnAct->setChecked(true);
+                           if(!columnLabels.at(i)->objectName().isNull()) {
+                               if(hideColumn == 0)
+                               {
+                               columnAct->setChecked(true);
+                               }
+                           } else {
+                               if(hideColumn == 0)
+                               {
+                               columnAct->setChecked(true);
+                               }
                            }
                        }
-
                     }
                 }
             }
@@ -584,9 +591,9 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         pulldownMenu->exec(QCursor::pos());
 
         return true;
-    } else {
-        return false;
     }
+
+    return QTableView::eventFilter(obj, event);
 }
 
 void TableView::resetSettings()
@@ -625,12 +632,11 @@ void TableView::writeSettings(QAction *action)
                             VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"), QString::number(1));
                             VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"), QString::number(i));
                             this->horizontalHeader()->hideSection(i);
-                            return;
+                            break;
                         } else {
-                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"));
-                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"));
+                            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"), QString::number(0));
                             this->horizontalHeader()->showSection(i);
-                            return;
+                            break;
                         }
                     } else {
                         int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/hideColumn")).toInt();
@@ -640,16 +646,27 @@ void TableView::writeSettings(QAction *action)
                             VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"), QString::number(1));
                             VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"), QString::number(i));
                             this->horizontalHeader()->hideSection(i);
-                            return;
+                            break;
                         } else {
-                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"));
-                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"));
+                            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"), QString::number(1));
                             this->horizontalHeader()->showSection(i);
-                            return;
+                            break;
                         }
                     }
                 }
             }
+        }
+    }
+
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+    {
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+        TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+        if(!table->b_input)
+        {
+            QHeaderView *header = this->horizontalHeader();
+            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/state"), header->saveState());
         }
     }
 }
@@ -657,8 +674,7 @@ void TableView::writeSettings(QAction *action)
 
 void TableView::playkey(QKeyEvent *ev)
 {
-  //QAbstractItemDelegate *led = itemDelegateForColumn(currentIndex().column());
-  QApplication::postEvent(curr_editor, ev, Qt::LowEventPriority);
+    QApplication::sendEvent(curr_editor, ev);
 }
 
 /*
@@ -733,8 +749,6 @@ void TableView::setMousePos(QModelIndex mousepos)
 {
     this->setMouseModelIndex(mousepos);
 }
-
-
 
 QSize TableView::sizeHint() const
 {
@@ -915,13 +929,10 @@ MainFrame::vdcdebug("TableView","accept", "");
    }
 }
 
-
-
 void TableView::dragSuccess()
 {
     qDebug()<<"Done";
 }
-
 
 void TableView::setInputEnabled(bool enable)
 { 
@@ -1006,6 +1017,7 @@ if(!p_fglform)
 
    QList<Fgl::Event> ql_events = QList<Fgl::Event>();
    QList<Fgl::Event> ql_events2 = QList<Fgl::Event>();
+
    if(prev.column() > -1 && this->b_sendevents){
       // ignore field event if the before field was also ignored
       if(!b_ignoreFocus){
@@ -1107,7 +1119,8 @@ if(!p_fglform)
               returnevent.id += ",";
        }
 
-       if(!ignoreFieldChangeEvent)
+       if(b_sendevents)
+       //if(!ignoreFieldChangeEvent || b_sendevents)
        {
            addToQueue(returnevent);
        }
@@ -1125,6 +1138,9 @@ if(!p_fglform)
        }
        int scrLine = current.row();
 
+       targetfield = current;
+       fglform->context->refreshInputArrayAttributes();
+
        fglform->context->setOption("SCRLINE", scrLine);
        fglform->context->setOption("ARRLINE", arrLine);
    }
@@ -1139,12 +1155,15 @@ if(!p_fglform)
            if(i+1 != resp_cnt)
               returnevent.id += ",";
        }
-         if(!ignoreFieldChangeEvent)
+         //if(!ignoreFieldChangeEvent)
+         if(!isAutoRepeat())
          {
              addToQueue(returnevent);
          }
          targetfield = current;
    }
+
+   b_sendevents = true;
 
 
 }
@@ -1216,7 +1235,6 @@ void TableView::setCurrentField(int row, int col, bool b_sendevents)
          }
 
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
-
 
          //setCurrentIndex(index);
 //         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
@@ -1314,7 +1332,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
    {
        if(index.data().toString().contains(".png") || index.data().toString().contains(".jpg") || index.data().toString().contains(".jpeg") || index.data().toString().contains(".gif"))
        {
-           QPixmap pix("pics:" + index.data().toString());
+           QPixmap pix(":pics/" + index.data().toString());
            return pix;
        }
    }
@@ -1422,24 +1440,26 @@ QStringList TableModel::mimeTypes() const
 QMimeData* TableModel::mimeData(const QModelIndexList &indexes) const
 {
     Q_UNUSED(indexes);
-   QMimeData *mimeData = new QMimeData();
-  // QByteArray encodedData;
-  // encodedData.clear();
-  // QDataStream stream(&encodedData, QIODevice::WriteOnly);
-   QModelIndex index;
-   if(TableView *tv = qobject_cast<TableView *> (getTableView()))
-   {
-       index = tv->getMouseModelIndex();
-   }
-   QString text;
-   if (index.isValid())
-   {
+    QMimeData *mimeData = new QMimeData();
+    // QByteArray encodedData;
+    // encodedData.clear();
+    // QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    QModelIndex index;
+    if(TableView *tv = qobject_cast<TableView *> (getTableView()))
+    {
+        index = tv->getMouseModelIndex();
+    }
 
-           text = data(index, Qt::DisplayRole).toString().trimmed();
-   }
+    QString text;
+    if (index.isValid())
+    {
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (getTableView()->model());
+        QModelIndex index1 = proxyModel->mapToSource(index);
+        text = data(index1, Qt::DisplayRole).toString().trimmed();
+    }
 
-   mimeData->setText(text);
-   return mimeData;
+    mimeData->setText(text);
+    return mimeData;
 }
 
 
@@ -1742,7 +1762,6 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
              n_cb->setModel(c_cb->model());
           }
        }
-
    }
 
 
@@ -1824,7 +1843,26 @@ void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
         }
     }
 
+    if(ComboBox *cb =  qobject_cast<ComboBox*> (editor)) {
+        value = cb->currentText();
+    }
+
     model->setData(index, value);
+}
+
+void LineEditDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    if(!m_color.isEmpty()) {
+        if(index.data().isValid()){
+            QStyleOptionViewItem viewOption(option);
+            painter->save();
+            painter->fillRect(option.rect, VDC::getVentasColor(m_color)); // background color
+            painter->restore();
+            QStyledItemDelegate::paint(painter, viewOption, index);
+        }
+    } else {
+        QStyledItemDelegate::paint(painter,option,index);
+    }
 }
 
 
@@ -1853,6 +1891,45 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
   {
       QKeyEvent *key = (QKeyEvent*) event;
 
+      if(key->key() == Qt::Key_Backtab)
+      {
+          event->ignore();
+          if (TableView *tableView = qobject_cast<TableView*> (parent())) {
+             tableView->prevfield();
+          }
+              return true;
+      }
+
+      /*if(key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter) {
+          event->ignore();
+
+          if (TableView *tableView = qobject_cast<TableView*> (parent())) {
+             tableView->nextfield();
+          }
+
+          return true;
+      }
+
+      if(key->key() == Qt::Key_Up) {
+          event->ignore();
+
+          if (TableView *tableView = qobject_cast<TableView*> (parent())) {
+             tableView->setCurrentField(tableView->currentIndex().row()-1, tableView->currentIndex().column());
+          }
+
+          return true;
+      }
+
+      if(key->key() == Qt::Key_Down) {
+          event->ignore();
+
+          if (TableView *tableView = qobject_cast<TableView*> (parent())) {
+             tableView->setCurrentField(tableView->currentIndex().row()+1, tableView->currentIndex().column());
+          }
+
+          return true;
+      }*/
+
       if(key->key() == Qt::Key_Left)
       {
           if(LineEdit *edit = qobject_cast<LineEdit*> (object))
@@ -1865,13 +1942,16 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
       {
           if(LineEdit *edit = qobject_cast<LineEdit*> (object))
           {
-              edit->setCursorPosition(edit->cursorPosition()+1);
-              return true;
+              if (edit->text().length() < edit->cursorPosition())
+              {
+                  edit->setCursorPosition(edit->cursorPosition()+1);
+                  return true;
+              }
           }
       }
    }
 
-  if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+  /*(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
   {
       QKeyEvent *key = (QKeyEvent*) event;
 
@@ -1884,6 +1964,9 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                            key->isAutoRepeat(),
                                            key->count());
 
+         if (TableView *tableView = qobject_cast<TableView*> (parent())) {
+            tableView->hasIndexChanged.stop();
+         }
          QApplication::postEvent(p_fglform, mykev);
          return true;
       }
@@ -1913,37 +1996,6 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 
       }
 
-  }
-  //Type wieder glätten für die weitere Verarbeitung
-  /*if(event->type() == 1400)
-  {
-      QKeyEvent *key = (QKeyEvent*) event;
-
-
-      QKeyEvent *mykev = new QKeyEvent(QEvent::KeyPress,
-                                       key->key(),
-                                       key->modifiers(),
-                                       key->text(),
-                                       key->isAutoRepeat(),
-                                       key->count());
-   QApplication::postEvent(QApplication::focusWidget(), mykev);
-   return true;
-  }
-
-  if(event->type() == 1401)
-  {
-
-      QKeyEvent *key = (QKeyEvent*) event;
-
-
-      QKeyEvent *mykev = new QKeyEvent(QEvent::KeyRelease,
-                                       key->key(),
-                                       key->modifiers(),
-                                       key->text(),
-                                       key->isAutoRepeat(),
-                                       key->count());
-      QApplication::sendEvent(QApplication::focusWidget(), mykev);
-      return true;
   }*/
 
   //Verhindert beim disablen von p_fglform, das der Editor geschlossen wird. Kommt durch synchronisation des

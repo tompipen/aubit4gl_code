@@ -44,12 +44,12 @@ void SSHTunnel::run()
            session_mutex->lock();
        }
 
-       sctunnel = ssh_forward_accept(base_session, 10);
+       sctunnel = ssh_forward_accept(base_session, 0);
        if(session_mutex)
        {
            session_mutex->unlock();
        }
-       waitTimer::msleep(10);
+       waitTimer::msleep(1);
     }
 
     emit bound();
@@ -87,7 +87,7 @@ void SSHTunnel::run()
 
                  if(counter >= 500000)
                  {
-                     waitTimer::msleep(1);
+                     waitTimer::msleep(100);
                  }
              } else {
                  counter = 0;
@@ -104,8 +104,8 @@ void SSHTunnel::run()
 
         while(ph.isRunning())
         {
-          QApplication::processEvents();
-          waitTimer::msleep(1);
+            waitTimer::msleep(50);
+            QApplication::processEvents();
         }
 
 
@@ -119,7 +119,10 @@ void SSHTunnel::run()
         }
         ba_readssh = "";
 
-
+        if(session_mutex)
+        {
+            session_mutex->lock();
+        }
         while(!qsl_sendqueue.isEmpty())
         {
         int bytes_written = 0;
@@ -128,20 +131,29 @@ void SSHTunnel::run()
           if(!resp.isEmpty())
           {
              resp.append("\n");
-             if(session_mutex)
-             {
-                 session_mutex->lock();
+             QByteArray respText = "";
+
+             if(ph.qs_dblocale.contains("UTF8")) {
+                 respText = resp.toUtf8();
+             } else {
+                 respText = resp.toLatin1();
              }
-             bytes_written = ssh_channel_write(sctunnel, resp.toLatin1().constData(), strlen(resp.toLatin1().constData()));
-             if(session_mutex)
+
+             if(ssh_channel_is_open(sctunnel))
              {
-                 session_mutex->unlock();
+                 bytes_written = ssh_channel_write(sctunnel, respText.constData(), strlen(respText.constData()));
              }
+
              if(bytes_written < 1)
              {
                  qDebug()<<"ERROR";
              }
           }
+        }
+
+        if(session_mutex)
+        {
+            session_mutex->unlock();
         }
 
       }

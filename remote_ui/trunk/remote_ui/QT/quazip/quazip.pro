@@ -1,9 +1,10 @@
 TEMPLATE = lib
-CONFIG += qt warn_on release
+CONFIG += qt warn_on
 QT -= gui
 DEPENDPATH += .
 INCLUDEPATH += .
-TARGET = ../lib/quazip
+TARGET = quazipQt5
+DESTDIR = $$OUT_PWD/lib/
 DEFINES += QUAZIP_BUILD
 CONFIG(staticlib): DEFINES += QUAZIP_STATIC
 
@@ -46,6 +47,7 @@ win32 {
     *-g++*: LIBS += -lz
     *-msvc*: LIBS += -lzlibwapi
     *-msvc*: DEFINES += ZLIB_WINAPI NOMINMAX WIN32_LEAN_AND_MEAN
+    *-msvc*: QMAKE_LFLAGS += /IMPLIB:$$OUT_PWD/lib/quazipQt5.lib
 }
 
 

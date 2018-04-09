@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>font/LiberationMono-Regular.ttf</file>
         <file>pics/1.png</file>
         <file>pics/2.png</file>
         <file>pics/3.png</file>
@@ -10,24 +9,7 @@
         <file>pics/7.png</file>
         <file>pics/8.png</file>
         <file>pics/9.png</file>
-        <file>pics/VENTAS_9_dialogbox_fehler.png</file>
-        <file>pics/VENTAS_9_dialogbox_frage.png</file>
-        <file>pics/VENTAS_9_dialogbox_hinweis.png</file>
-        <file>pics/VENTAS_9_dialogbox_info.png</file>
-        <file>pics/VENTAS_9_flagge_de.png</file>
-        <file>pics/VENTAS_9_flagge_en.png</file>
-        <file>pics/VENTAS_9_flagge_es.png</file>
-        <file>pics/VENTAS_9_flagge_unbekannt.png</file>
-        <file>pics/VENTAS_9_alu_1080p.png</file>
-        <file>pics/VENTAS_9_gebuersteter_alu.png</file>
-        <file>pics/VENTAS_9_gebuersteter_stahl.png</file>
-        <file>pics/VENTAS_9_knopf_aktion_aktiv.png</file>
-        <file>pics/VENTAS_9_knopf_aktion_inaktiv.png</file>
-        <file>pics/VENTAS_9_knopf_menu_aktiv.png</file>
-        <file>pics/VENTAS_9_knopf_menu_inaktiv.png</file>
-        <file>pics/VENTAS_9_textur_1.png</file>
         <file>pics/a.png</file>
-        <file>pics/abbrechen.png</file>
         <file>pics/abbrechen_rot.png</file>
         <file>pics/auflisten.png</file>
         <file>pics/b.png</file>
@@ -38,19 +20,7 @@
         <file>pics/browser-zurueck.png</file>
         <file>pics/c.png</file>
         <file>pics/calendar.png</file>
-        <file>pics/cancel.png</file>
         <file>pics/d.png</file>
-        <file>pics/disk.png</file>
-        <file>pics/dropdown_down.png</file>
-        <file>pics/dropdown_down_bak.png</file>
-        <file>pics/dropdown_f9.png</file>
-        <file>pics/dropdown_kalendar_1.png</file>
-        <file>pics/dropdown_kalendar_2.png</file>
-        <file>pics/dropdown_suchen.png</file>
-        <file>pics/dropdown_vor.png</file>
-        <file>pics/dropdown_vor_bak.png</file>
-        <file>pics/dropdown_zurueck.png</file>
-        <file>pics/dropdown_zurueck_bak.png</file>
         <file>pics/drucken.png</file>
         <file>pics/e.png</file>
         <file>pics/einfuegen.png</file>
@@ -115,19 +85,14 @@
         <file>pics/m_verkauf.png</file>
         <file>pics/markieren.png</file>
         <file>pics/modulsprung.png</file>
-        <file>pics/nein.png</file>
         <file>pics/neu.png</file>
-        <file>pics/ok.png</file>
         <file>pics/ok_F12.png</file>
         <file>pics/ok_gruen.png</file>
         <file>pics/open.png</file>
         <file>pics/positionen.png</file>
         <file>pics/pulldown-abbrechen.png</file>
-        <file>pics/pulldown-esc.png</file>
         <file>pics/question.png</file>
         <file>pics/reaktivieren.png</file>
-        <file>pics/sortieren.png</file>
-        <file>pics/splash.png</file>
         <file>pics/stop.png</file>
         <file>pics/suchen.png</file>
         <file>pics/text.png</file>
@@ -141,7 +106,6 @@
         <file>pics/standort.png</file>
         <file>pics/kalender.png</file>
         <file>pics/grafik.png</file>
-        <file>pics/VENTAS_9_logo-about.png</file>
         <file>pics/progressbar.gif</file>
         <file>pics/browser-drucken.png</file>
         <file>pics/route_von.png</file>
@@ -150,7 +114,6 @@
         <file>pics/browser-reset.png</file>
         <file>pics/browser-groesser.png</file>
         <file>pics/browser-suchen.png</file>
-        <file>pics/ventas.jpg</file>
         <file>pics/editor-beenden-ohne-speichern.png</file>
         <file>pics/editor-drucken.png</file>
         <file>pics/editor-oeffnen.png</file>
@@ -161,15 +124,60 @@
         <file>pics/editor-zurueck.png</file>
         <file>pics/editor-ok.png</file>
         <file>pics/editor-anwender-datum.png</file>
-        <file>pics/VENTAS_9_splashscreen.png</file>
-        <file>pics/VENTAS_9_titel.jpg</file>
-        <file>pics/frame_right.jpg</file>
-        <file>pics/yes.png</file>
-        <file>pics/no.png</file>
-        <file>pics/master10.png</file>
-        <file>pics/VENTAS_10_splashscreen.png</file>
-        <file>pics/master_training.png</file>
         <file>pics/vdc_icon.png</file>
         <file>pics/vdc_training_icon.png</file>
+        <file>pics/dashboard/neue-aufgabe.png</file>
+        <file>pics/VENTAS_11_btn_gruen.png</file>
+        <file>pics/VENTAS_11_btn_rot.png</file>
+        <file>pics/VENTAS_11_btn_blau.png</file>
+        <file>pics/VENTAS_11_btn_gelb.png</file>
+        <file>pics/VENTAS_11_btn_gelb_grau.png</file>
+        <file>pics/VENTAS_11_btn_gruen_grau.png</file>
+        <file>pics/VENTAS_11_btn_rot_grau.png</file>
+        <file>pics/open_weiss.png</file>
+        <file>pics/calendar_weiss.png</file>
+        <file>pics/VENTAS_11_bg_dialog.png</file>
+        <file>pics/VENTAS_11_btn_blau_grau.png</file>
+        <file>pics/VENTAS_11_btn_dialog_blau.png</file>
+        <file>pics/VENTAS_11_btn_dialog_blau_grau.png</file>
+        <file>pics/VENTAS_11_btn_dialog_gelb.png</file>
+        <file>pics/VENTAS_11_btn_dialog_gelb_grau.png</file>
+        <file>pics/VENTAS_11_btn_dialog_gruen.png</file>
+        <file>pics/VENTAS_11_btn_dialog_gruen_grau.png</file>
+        <file>pics/VENTAS_11_btn_dialog_rot.png</file>
+        <file>pics/VENTAS_11_btn_dialog_rot_grau.png</file>
+        <file>pics/VENTAS_11_bg.png</file>
+        <file>pics/VENTAS_11_logo-about.png</file>
+        <file>pics/VENTAS_11_splashscreen.png</file>
+        <file>font/LICENSE.txt</file>
+        <file>font/OpenSans-Regular.ttf</file>
+        <file>font/OpenSans-Semibold.ttf</file>
+        <file>pics/dashboard/agentur_modul.png</file>
+        <file>pics/dashboard/einkaufs_modul.png</file>
+        <file>pics/dashboard/fibu_modul.png</file>
+        <file>pics/dashboard/kommunikations_modul.png</file>
+        <file>pics/dashboard/lager_modul.png</file>
+        <file>pics/dashboard/personell_modul.png</file>
+        <file>pics/dashboard/pps_modul.png</file>
+        <file>pics/dashboard/report_modul.png</file>
+        <file>pics/dashboard/schnittstellen_modul.png</file>
+        <file>pics/dashboard/stammdaten_modul.png</file>
+        <file>pics/dashboard/systverwaltung_modul.png</file>
+        <file>pics/dashboard/verkaufs_modul.png</file>
+        <file>pics/dashboard/icon-small.png</file>
+        <file>pics/master11.png</file>
+        <file>pics/dashboard/small_agentur_modul.png</file>
+        <file>pics/dashboard/small_einkaufs_modul.png</file>
+        <file>pics/dashboard/small_fibu_modul.png</file>
+        <file>pics/dashboard/small_kommunikations_modul.png</file>
+        <file>pics/dashboard/small_lager_modul.png</file>
+        <file>pics/dashboard/small_neue_aufgabe.png</file>
+        <file>pics/dashboard/small_personell_modul.png</file>
+        <file>pics/dashboard/small_pps_modul.png</file>
+        <file>pics/dashboard/small_report_modul.png</file>
+        <file>pics/dashboard/small_schnittstellen_modul.png</file>
+        <file>pics/dashboard/small_systverwaltung_modul.png</file>
+        <file>pics/dashboard/small_verkaufs_modul.png</file>
+        <file>pics/zoom_auswahl_weiss.png</file>
     </qresource>
 </RCC>

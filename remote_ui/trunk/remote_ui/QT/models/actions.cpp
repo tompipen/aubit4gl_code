@@ -201,7 +201,7 @@ void Action::setImage(QString image)
 {
 MainFrame::vdcdebug("Action","setImage", "QString image");
 //qDebug()<<"msi : "<<image<<"name :"<<this->name();
-   this->setIcon(QIcon(QString("pics:%1").arg(image)));
+   this->setIcon(QIcon(QString(":pics/%1").arg(image)));
    qs_image = image;
 }
 

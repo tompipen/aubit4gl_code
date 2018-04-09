@@ -19,7 +19,7 @@
 #include "models/dialog.h"
 #include "tools/umlauts.h"
 
-TextEditorWidget::TextEditorWidget(QMainWindow *parent)
+TextEditorWidget::TextEditorWidget(QObject *parentObj, QMainWindow *parent)
     : QMainWindow(parent)
 {
     mTextEdit = new TextEditor;
@@ -34,12 +34,12 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     Q_UNUSED(syntax);
 
     this->setCentralWidget(mTextEdit);
-    this->resize(600, 400);
     this->setWindowTitle("VENTAS - Text Editor");
 
     this->initToolBar();
     connect(mTextEdit, SIGNAL(textChanged()), this, SLOT(textIsChanged()));
-
+    QTimer::singleShot(10, this, SLOT(readWindowSettings()));
+    m_parentObj = parentObj;
 }
 
 void TextEditorWidget::textIsChanged()
@@ -121,22 +121,20 @@ void TextEditorWidget::loadFileFromLocal()
             qDebug() << "Kann Datei nicht zum lesen oeffnen";
         }
 
-        int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
+        int enableFilter = VDC::readSettingsFromLocalIni("","convertText").toInt();
 
         QString filterText;
         QTextStream in(&file);
-#ifndef Q_OS_WIN
-        in.setCodec("ISO-8859-15");
-#else
-    if(mSetIsoEncoding)
-    {
-        in.setCodec("ISO-8859-15");
-    }
-#endif
 
-        if(enableFilter != 2) {
-            filterText = Umlauts::replaceUmlauts(in.readAll());
+        if(mSetIsoEncoding)
+        {
+            in.setCodec("ISO-8859-15");
+
+            if(enableFilter != 2) {
+                filterText = Umlauts::replaceUmlauts(in.readAll());
+            }
         } else {
+            in.setCodec("UTF-8");
             filterText = in.readAll();
         }
 
@@ -161,15 +159,18 @@ void TextEditorWidget::saveFile()
     }
 
     QTextStream out(&file);
-    out.setCodec("ISO-8859-15");
-
     QString filterText;
 
-    int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
+    int enableFilter = VDC::readSettingsFromLocalIni("","convertText").toInt();
 
-    if(enableFilter != 2) {
-        filterText = Umlauts::replaceUmlauts(mTextEdit->toPlainText());
+    if(mSetIsoEncoding)
+    {
+        out.setCodec("ISO-8859-15");
+        if(enableFilter != 2) {
+            filterText = Umlauts::replaceUmlauts(mTextEdit->toPlainText());
+        }
     } else {
+        out.setCodec("UTF-8");
         filterText = mTextEdit->toPlainText();
     }
 
@@ -237,6 +238,51 @@ void TextEditorWidget::setWrapMode(int digits)
     this->resize(w,600);
 }
 
+void TextEditorWidget::saveWindowSettings()
+{
+    int widgetPosX = this->pos().x();
+    int widgetPosY = this->pos().y();
+
+
+    if(this->isMaximized() && this->isVisible())
+    {
+        VDC::saveSettingsToIni("VENTAS-Editor", "windowIsMaximized", QString::number(1));
+    } else {
+        VDC::removeSettingsFromIni("VENTAS-Editor", "windowIsMaximized");
+    }
+
+    VDC::saveSettingsToIni("VENTAS-Editor", "width", QString::number(this->size().width()));
+    VDC::saveSettingsToIni("VENTAS-Editor", "height", QString::number(this->size().height()));
+
+    if(widgetPosX >= 0 && widgetPosY >= 0)
+    {
+        VDC::saveSettingsToIni("VENTAS-Editor", "posX", QString::number(widgetPosX));
+        VDC::saveSettingsToIni("VENTAS-Editor", "posY", QString::number(widgetPosY));
+    }
+
+}
+
+void TextEditorWidget::readWindowSettings()
+{
+    int widgetPosX = VDC::readSettingsFromIni("VENTAS-Editor", "posX").toInt();
+    int widgetPosY = VDC::readSettingsFromIni("VENTAS-Editor", "posY").toInt();
+    int widgetHeight = VDC::readSettingsFromIni("VENTAS-Editor", "height").toInt();
+    int widgetWidth = VDC::readSettingsFromIni("VENTAS-Editor", "width").toInt();
+
+    move(QPoint(widgetPosX, widgetPosY));
+    update();
+
+    int isMaximized = VDC::readSettingsFromIni("VENTAS-Editor", "windowIsMaximized").toInt();
+
+    if(isMaximized == 1)
+    {
+        this->show();
+        this->showMaximized();
+    } else if(widgetWidth > 0 && widgetHeight > 0) {
+        this->resize(widgetWidth, widgetHeight);
+    }
+}
+
 void TextEditorWidget::openFileFromLocal()
 {
 
@@ -261,9 +307,14 @@ void TextEditorWidget::closeOnAccept()
 
 void TextEditorWidget::closeEvent(QCloseEvent *event)
 {
+    saveWindowSettings();
+
     if(mTextIsChanged && !mCloseTextEdit)
     {
-        Dialog *dialog = new Dialog(tr("File is modified"), tr("Do you want to apply the changes before the Editor will be closed?"), "", "stop", this, Qt::WindowStaysOnTopHint);
+        Dialog *dialog = new Dialog(tr("File has been modified"), tr("Do you want to save the changes?"), "", "stop", this, Qt::WindowStaysOnTopHint);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
         dialog->createButton(1, tr("Apply"), "APPLY", "ok_gruen.png");
 
         if(QAction *action = qobject_cast<QAction*> (dialog->getAction("OK")))
@@ -273,7 +324,7 @@ void TextEditorWidget::closeEvent(QCloseEvent *event)
 
         dialog->createButton(2, tr("Discard"), "DISCARD", "");
 
-        dialog->createButton(2, tr("Cancel"), "CANCEL", "abbrechen_rot.png");
+        dialog->createButton(3, tr("Cancel"), "CANCEL", "abbrechen_rot.png");
 
         if(QAction *action = qobject_cast<QAction*> (dialog->getAction("DISCARD")))
         {
@@ -286,11 +337,18 @@ void TextEditorWidget::closeEvent(QCloseEvent *event)
         connect(dialog->getAction("DISCARD"), SIGNAL(triggered()), dialog, SLOT(close()));
         connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
 
+        dialog->adjustSize();
         dialog->show();
 
         event->ignore();
         return;
     }
+
+    //ScreenHandler *screen = MainFrame::lastmainframe->ql_screenhandler->last();
+    ScreenHandler *screen = qobject_cast<ScreenHandler*> (m_parentObj);
+
+    screen->makeFglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>1</SV></SVS></TRIGGERED>");
+
     mIsEditFinished = 1;
 }
 
@@ -522,4 +580,3 @@ void TextHighlighting::highlightBlock(const QString &text) {
         }
     }
 }
-

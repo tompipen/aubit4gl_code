@@ -92,6 +92,7 @@ private:
    void executeFile(int,QString);
    QString encodeXMLFile(QString);
    void handleStartup(const QDomNode&);
+   void handleDisplayAtElement(const QDomNode&);
    void handleDisplayToElement(const QDomNode&, QString parentNodeName = "");
    void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = "");
    void clearDisplayArray(const QDomNode&, QString parentNodeName = "");

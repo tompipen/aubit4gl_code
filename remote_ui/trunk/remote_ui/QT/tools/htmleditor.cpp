@@ -430,7 +430,10 @@ void HtmlEditor::closeEvent(QCloseEvent *event)
 {
     if(mTextIsModified && !mCloseEditor)
     {
-        Dialog *dialog = new Dialog(tr("File is modified"), tr("Do you want to save changes?"), "", "critical", this, Qt::WindowStaysOnTopHint);
+        Dialog *dialog = new Dialog(tr("File has been modified"), tr("Do you want to save the changes?"), "", "critical", this, Qt::WindowStaysOnTopHint);
+        QPalette palette;
+        palette.setBrush(dialog->backgroundRole(), Qt::white);
+        dialog->setPalette(palette);
         dialog->createButton(1, "Ok", "OK", "ok_gruen.png");
 
         if(QAction *action = qobject_cast<QAction*> (dialog->getAction("OK")))
@@ -438,17 +441,21 @@ void HtmlEditor::closeEvent(QCloseEvent *event)
             action->setShortcut(Qt::Key_F12);
         }
 
+        dialog->createButton(2, tr("Discard"), "DISCARD", "");
+
         dialog->createButton(2, tr("Cancel"), "CANCEL", "abbrechen_rot.png");
 
-        if(QAction *action = qobject_cast<QAction*> (dialog->getAction("CANCEL")))
+        if(QAction *action = qobject_cast<QAction*> (dialog->getAction("DISCARD")))
         {
             action->setShortcut(Qt::Key_Escape);
         }
 
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeEditor()));
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), this, SLOT(closeEditorWithoutSave()));
+        connect(dialog->getAction("APPLY"), SIGNAL(triggered()), this, SLOT(closeOnAccept()));
+        connect(dialog->getAction("APPLY"), SIGNAL(triggered()), dialog, SLOT(close()));
+        connect(dialog->getAction("DISCARD"), SIGNAL(triggered()), this, SLOT(closeEditor()));
+        connect(dialog->getAction("DISCARD"), SIGNAL(triggered()), dialog, SLOT(close()));
         connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
+
         dialog->show();
 
         event->ignore();
@@ -472,7 +479,7 @@ void HtmlEditor::closeEditor()
     outStream.setCodec("ISO-8859-1");
 
     QString htmlString = mEdit->toHtml();
-    if(!mFileName.contains("kopf") && !mFileName.contains("fuss"))
+    /*if(!mFileName.contains("kopf") && !mFileName.contains("fuss"))
     {
         htmlString.remove("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n");
         htmlString.remove("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n");
@@ -483,7 +490,7 @@ void HtmlEditor::closeEditor()
 
         htmlString.prepend("<iframe src=\"kopf.html\" width=\"100%\" min-height=\"200px\" />");
         htmlString.append("\n<iframe src=\"fuss.html\" width=\"100%\" min-height=\"200px\" />");
-    }
+    }*/
 
     outStream << htmlString;
     file.close();

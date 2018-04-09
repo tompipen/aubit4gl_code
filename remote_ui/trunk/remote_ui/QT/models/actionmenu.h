@@ -28,9 +28,7 @@ class ActionMenu : public QGroupBox
    Q_OBJECT
 
 public:
-   ActionMenu(QWidget *parent = 0);
    ActionMenu(QString title = "", QString style = "", QWidget *parent = 0);
-
 
    void createButton(QString id = "", QString text = "", QString desc = "", QAction* action=NULL);
    void setAction(QString, QAction*);

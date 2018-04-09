@@ -38,7 +38,7 @@ public:
    void setLastFocusWidget(QWidget*);
    QWidget *lastFocusWidget();
    QList<QWidget*> ql_formFields;
-   QList<Fgl::Event> ql_pandingevents;
+   QList<Fgl::Event> ql_pendingEvents;
    /*
    void restoreFieldPalette();
    void setPaletteList();

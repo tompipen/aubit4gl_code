@@ -118,13 +118,8 @@ namespace Fgl {
    QString vdc_to_fgl(QString fmt, QString value, DataType dt)
    {
        QString tdel = "";
-       QString dbmoney = VDC::readSettingsFromIni("","setDBMONEY");
+       QString dbmoney = env["DBMONEY"].trimmed();
        QString a4gl_numeric = env["A4GL_NUMERIC"].trimmed();
-
-      if(dbmoney.isEmpty())
-      {
-          dbmoney = env["DBMONEY"].trimmed();
-      }
 
        if(dbmoney == ",")
        {
@@ -222,12 +217,6 @@ namespace Fgl {
       QList<QChar> repDigit;
       repDigit << '*' << '&' << '#' << '<' << '-' << '+' << '(' << ')' << '$';
 
-      QString dbmoney1 = VDC::readSettingsFromIni("", "setDBMONEY");
-
-      /*if(!dbmoney1.isEmpty())
-      {
-          dbmoney = dbmoney1;
-      }*/
       int def = 30;
 
       int lb = 0, cb = 0;
@@ -618,16 +607,7 @@ namespace Fgl {
       QChar tdel;
       QString suffix;
    //   const QString DBMONEY = dbmoney.isEmpty() ? dbmoney : env["DBMONEY"];
-      QString DBMONEY;
-
-      dbmoney = VDC::readSettingsFromIni("", "setDBMONEY");
-
-      if(dbmoney.isEmpty()) {
-         DBMONEY = env["DBMONEY"];
-      }
-      else{
-         DBMONEY = dbmoney;
-      }
+      QString DBMONEY = env["DBMONEY"];
 
       decFound = false;
       for(int i=0;i<DBMONEY.size(); i++){
@@ -875,7 +855,7 @@ namespace Fgl {
 
       QStringList arr_mdy;
       QString validateDate;
-      arr_mdy = value.split(sep);
+      arr_mdy = value.trimmed().split(sep);
       int cntYear = dbdate.indexOf("Y");
 
       for(int i=0; i < arr_mdy.count(); i++)
@@ -1155,11 +1135,17 @@ namespace Fgl {
 
                   if(value.contains("<"))
                   {
+                      if(value.indexOf("<") > 0) {
+                          return false;
+                      }
                       value.remove("<");
                   }
 
                   if(value.contains(">"))
                   {
+                      if(value.indexOf(">") > 0) {
+                          return false;
+                      }
                       value.remove(">");
                   }
 

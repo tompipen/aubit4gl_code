@@ -41,7 +41,9 @@ public:
 
    LoginForm(QWidget *parent = 0);
    void createMenu(QMenuBar*);
-   QString getUserName() { return usernameLineEdit->text(); };
+   QString getUserName() { return usernameLineEdit->text(); }
+   QString getPassword() { return passwordLineEdit->text(); }
+   QString getServer() { return serverLineEdit->text(); }
    QLineEdit *fontedit;
    QString fontconv;
    QStringList splitlist;
@@ -81,13 +83,22 @@ public slots:
    #endif
    void error(QString);
    void checkForUpdate();
+   void showUpdateError();
    void setMainMenu();
    void setOfficeInstallation();
    void saveOfficeInstallation();
+   void showDocumentation();
+   void sendMessageToVentas();
+   void removeMessageWaitTimer();
+   void readMessageReply(QNetworkReply *reply);   
+   void sendMessageWidget();
+   void ventasMessageChanged();
+   void openVdc2();
+   void openQuickSupport();
 
 private slots:
    void okPressed();
-   void cancelPressed();
+   //void cancelPressed();
    void saveEdits();
    void showLogin();
    void hideLogin();
@@ -160,6 +171,10 @@ private:
 
    QString qs_openFilename;
    void loadSettings();
+
+   bool waitToSendMessage;
+   QTextEdit *ventasMessage;
+
 };
 
 class HostsData  : public QDialog

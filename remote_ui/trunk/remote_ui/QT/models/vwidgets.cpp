@@ -315,7 +315,7 @@ LineEdit::LineEdit(QWidget *parent)
 
 
    // Set enabled as long as Protocol says to enable it
-   this->setEnabled(false);
+   //this->setEnabled(false);
    this->setAcceptDrops(true);
 
    connect(this, SIGNAL(textChanged(const QString)), this, SLOT(isTouched()));
@@ -433,7 +433,6 @@ void LineEdit::dropEvent(QDropEvent *e)
     //Handle drop for files and directories (paste path into the field (without file://)
     if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
         QString text;
-        bool umlautsFound = false;
         if (e->mimeData()->hasUrls() )
         {
            QList<QUrl> listUrls = e->mimeData()->urls();
@@ -446,50 +445,16 @@ void LineEdit::dropEvent(QDropEvent *e)
         }
         text = text.replace("file://","").trimmed();
 
-        if(text.contains("ä"))
-        {
-            umlautsFound = true;
-        }
-        if(text.contains("ö"))
-        {
-            umlautsFound = true;
-        }
-        if(text.contains("ü"))
-        {
-            umlautsFound = true;
-        }
-        if(text.contains("ß"))
-        {
-            umlautsFound = true;
-        }
-
-        if(umlautsFound)
-        {
-            QString newName = text;
-            newName.replace("ä", "ae");
-            newName.replace("ö", "oe");
-            newName.replace("ü", "ue");
-            newName.replace("ß", "ss");
-
-            QFile datei(text);
-            if(!datei.copy(newName))
-            {
-                qDebug() << "failed! "  << datei.errorString();
-            }
-
-            text = newName;
-        }
-
-        //text.replace(" ", "\\ ");
+        text = VDC::removeUmlauts(text);
         this->setText(text);
-        Fgl::Event event;
+        /*Fgl::Event event;
         event.type = Fgl::AFTER_FIELD_EVENT;
         event.attribute = this->objectName();
         if(FglForm *p_fglform = qobject_cast<FglForm*> (parent()))
         {
             p_fglform->raise();
         }
-        emit fieldEvent(event);
+        emit fieldEvent(event);*/
         emit dropSuccess();
 
     }
@@ -497,6 +462,11 @@ void LineEdit::dropEvent(QDropEvent *e)
 
 void LineEdit::markup()
 {
+
+  if(this->noEntry()) {
+      return;
+  }
+
   this->setCursorPosition(0);
   if(this->text().isEmpty())
   {
@@ -510,7 +480,9 @@ void LineEdit::markup()
 
 void LineEdit::copyText()
 {
-    this->selectAll();
+    if(!this->hasSelectedText()) {
+        this->selectAll();
+    }
     this->copy();
 }
 
@@ -538,27 +510,27 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
     : LineEdit(parent)
 {
    // Set enabled as long as Protocol says to enable it
-   this->setEnabled(false);
+    this->setEnabled(false);
     button = NULL;
 
    this->iconFileName = iconFileName;
-   if(this->iconFileName != NULL){
+    if(this->iconFileName != NULL){
       button = new QPushButton(this);
       //connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
       button->setFocusPolicy(Qt::NoFocus);
       button->setFocusProxy(this);
-      if(!iconFileName.contains("."))
-      {
-          iconFileName.append(".png");
-      }
-      QPixmap pixmap("pics:" + iconFileName);
-      //   Its now a Stylesheet cause on MAC there is a little border around the button
-     // button->setIcon(QIcon(pixmap));
-      QSize siz(18,18);
+      QSize siz(27,25);
       button->setFixedSize(siz);
       button->setCursor(Qt::ArrowCursor);
+
+      if(!iconFileName.contains("."))
+      {
+            iconFileName.append(".png");
+      }
       int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-      setStyleSheet(QString(" ButtonEdit QPushButton {border-image: url(pics:" + iconFileName + ");} QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
+      setStyleSheet(QString(" ButtonEdit QPushButton {outline: none; border-image: url(:pics/" + iconFileName + ");}"
+                                           " QPushButton:focus { border-image: url(:pics/open_weiss.png);}"
+                                           " QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
    }
 }
 
@@ -622,18 +594,23 @@ DateEdit::DateEdit(QWidget *parent)
    button = new QPushButton(this);
   // connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    button->setFocusPolicy(Qt::NoFocus);
+   button->setFocusProxy(this);
+
    if(!iconFileName.contains("."))
    {
        iconFileName.append(".png");
    }
-   QPixmap pixmap("pics:" + iconFileName);
-   //   Its now a Stylesheet cause on MAC there is a little border around the button
+   //QPixmap pixmap(":pics/" + iconFileName);
+   //   It's now a Stylesheet cause on MAC there is a little border around the button
    //   button->setIcon(QIcon(pixmap));
-   QSize siz(18,18);
+
+   QSize siz(28,25);
    button->setFixedSize(siz);
    button->setCursor(Qt::ArrowCursor);
    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-   setStyleSheet(QString(" DateEdit QPushButton {border-image: url(pics:" + iconFileName + ");} QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
+   setStyleSheet(QString(" DateEdit QPushButton {outline: none;border-image: url(:pics/" + iconFileName + ");}"
+                                        " QPushButton:focus { border-image: url(:pics/calendar_weiss.png);}"
+                                        " QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
 }
 
 void DateEdit::resizeEvent(QResizeEvent *)
@@ -726,7 +703,11 @@ void TextEdit::setStretching(QString stretch)
 
 void TextEdit::copyText()
 {
-    this->selectAll();
+    QTextCursor cursor = this->textCursor();
+    if(!cursor.hasSelection()) {
+        this->selectAll();
+    }
+
     this->copy();
 }
 
@@ -908,8 +889,11 @@ QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *p
 MainFrame::vdcdebug("WidgetHelper","createFormWidget", "const QDomElement& formField, QWidget *parent");
    QDomElement lineEditElement = formField.firstChild().toElement();
 
+   if(lineEditElement.nodeName().isEmpty()) {
+       lineEditElement.nodeName() = "BlankLine";
+   }
 
-   if(lineEditElement.nodeName() == "Label" || lineEditElement.nodeName() == "RipLabel"){
+   if(lineEditElement.nodeName() == "Label" || lineEditElement.nodeName() == "RipLabel" || lineEditElement.nodeName()  == "BlankLine"){
       return createLabel(formField, parent);
    }
 
@@ -1016,17 +1000,13 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
-   QString sqlType = formField.attribute("sqlType");
+   //QString sqlType = formField.attribute("sqlType");
 
-   bool hidden   = formField.attribute("hidden").toInt();
-   bool noShow   = formField.attribute("noshow").toInt();
+   bool hidden     = formField.attribute("hidden").toInt();
+   bool noShow     = formField.attribute("noshow").toInt();
+   bool noHideMenu = formField.attribute("nohidemenu").toInt();
 
    int w  = labelElement.attribute("width").toInt();
-
-   QString shift  = labelElement.attribute("shift");
-   QString action = labelElement.attribute("action");
-   QString image  = labelElement.attribute("image");
-   image.prepend("pics:");
 
    Label *label = new Label(parent);
    label->setAccessibleName(name);
@@ -1037,6 +1017,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    label->w = w;
    label->setIsHidden(hidden);
    label->setNoShow(noShow);
+   label->setNoHideMenu(noHideMenu);
 
 
    QString comments = labelElement.attribute("comments");
@@ -1044,12 +1025,16 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
       label->setToolTip(comments);
    }
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(label->colName + "/hideColumn")).toInt();
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(label->colName + "/hideColumn"), "-1").toInt();
        if(hideColumn > 0 || label->getIsHidden()) {
            label->hide();
        }
+
+       if(hideColumn == -1 && noShow) {
+           label->setVisible(false);
+       }
    }
-   if(hidden || noShow){
+   if(hidden){
       label->setVisible(false);
    }
 
@@ -1072,16 +1057,13 @@ MainFrame::vdcdebug("WidgetHelper","createImage", "const QDomElement& formField,
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
-   QString sqlType = formField.attribute("sqlType");
+   //QString sqlType = formField.attribute("sqlType");
 
    bool hidden   = formField.attribute("hidden").toInt();
+   bool autoScale = labelElement.attribute("autoScale").toInt();  //Used in WidgetHelper::setFieldText
 
    int w  = labelElement.attribute("pixelWidth").toInt();
    int h  = labelElement.attribute("pixelHeight").toInt();
-
-   bool autoScale  = labelElement.attribute("autoScale").toInt();
-   QString image  = labelElement.attribute("image");
-   image.prepend("pics:");
 
    Label *label = new Label(parent);
    label->setAccessibleName(name);
@@ -1091,11 +1073,7 @@ MainFrame::vdcdebug("WidgetHelper","createImage", "const QDomElement& formField,
    label->sqlTabName = tabName;
    label->w = w;
    label->img = true;
-
-   if(autoScale == 1)
-   {
-       label->setScaledContents(true);
-   }
+   label->autoScale = autoScale;
 
    QString comments = labelElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -1109,11 +1087,6 @@ MainFrame::vdcdebug("WidgetHelper","createImage", "const QDomElement& formField,
    QPixmap pixmap("");
    label->setPixmap(pixmap);
 
-
-  // QPalette p = label->palette();
-  // p.setColor(QPalette::Foreground, Qt::blue);
- //  label->setPalette(p);
-   //label->setFixedSize(defHeight);
    label->setFixedSize(w,h);
 
    return label;
@@ -1126,8 +1099,8 @@ MainFrame::vdcdebug("WidgetHelper","createWebView", "const QDomElement& formFiel
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
-   QString tabName = formField.attribute("sqlTabName");
-   QString sqlType = formField.attribute("sqlType");
+   //QString tabName = formField.attribute("sqlTabName");
+   //QString sqlType = formField.attribute("sqlType");
    QString defaultValue = formField.attribute("defaultValue");
 
    bool hidden   = formField.attribute("hidden").toInt();
@@ -1242,9 +1215,6 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    int w  = lineEditElement.attribute("width").toInt();
 
    QString shift  = lineEditElement.attribute("shift");
-   QString action = lineEditElement.attribute("action");
-   QString image  = lineEditElement.attribute("image");
-   image.prepend("pics:");
 
    bool autoNext = lineEditElement.attribute("autoNext").toInt();
    bool noEntry  = formField.attribute("noEntry").toInt();
@@ -1277,14 +1247,14 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
 
    QString format = lineEditElement.attribute("format");
 
-   QString screenFormat = VDC::readSettingsFromIni("","screenFormat");
+   QString screenFormat = VDC::readSettingsFromLocalIni("","screenFormat");
 
    switch(lineEdit->dataType())
    {
    case Fgl::DTYPE_SMFLOAT:
    case Fgl::DTYPE_FLOAT:
    case Fgl::DTYPE_DECIMAL:
-      if(!screenFormat.isEmpty())
+      if(!screenFormat.isEmpty() && screenFormat != "-1")
       {
           if(screenFormat != "-" && screenFormat != "--")
           {
@@ -1320,12 +1290,16 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), lineEdit->colName+"/hideColumn").toInt();
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), lineEdit->colName+"/hideColumn", "-1").toInt();
        if(hideColumn > 0) {
            lineEdit->hide();
        }
+
+       if(hideColumn == -1 && noShow) {
+           lineEdit->setVisible(false);
+       }
    }
-   if(hidden || noShow)
+   if(hidden)
       lineEdit->setVisible(false);
 
    return lineEdit;
@@ -1341,6 +1315,8 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   bool noShow   = formField.attribute("noshow").toInt();
+
    QString defaultValue = formField.attribute("defaultValue");
 
    int w  = lineEditElement.attribute("width").toInt();
@@ -1366,14 +1342,14 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    lineEdit->setSqlType(sqlType);
    lineEdit->setDefaultValue(defaultValue);
 
-   QString screenFormat = VDC::readSettingsFromIni("","screenFormat");
+   QString screenFormat = VDC::readSettingsFromLocalIni("","screenFormat");
 
    switch(lineEdit->dataType())
    {
    case Fgl::DTYPE_SMFLOAT:
    case Fgl::DTYPE_FLOAT:
    case Fgl::DTYPE_DECIMAL:
-      if(!screenFormat.isEmpty())
+      if(!screenFormat.isEmpty() && screenFormat != "-1")
       {
           if(screenFormat != "-" && screenFormat != "--")
           {
@@ -1415,9 +1391,13 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(lineEdit->colName + "/hideColumn")).toInt();
-       if(hideColumn > 0) {
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(lineEdit->colName + "/hideColumn"), "-1").toInt();
+       if(hideColumn > 0 || lineEdit->getIsHidden()) {
            lineEdit->hide();
+       }
+
+       if(hideColumn == -1 && noShow) {
+           lineEdit->setVisible(false);
        }
    }
    if(hidden)
@@ -1442,29 +1422,43 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             QPalette p = widget->palette();
             QColor col(dummycol.red(), dummycol.green(), dummycol.blue());
             p.setColor(QPalette::Active, QPalette::Foreground, col);
-            //p.setColor(QPalette::Foreground, col);
             widget->setPalette(p);
-            widget->setFont(dummy.font());
+
+            QString fontconv = dummy.font().toString();
+            QStringList splitlist = fontconv.split(",");
+            int fsize = splitlist[1].toInt();
+
+            if (splitlist[0] == "Open Sans Semibold")
+            {
+                QFont f("Open Sans", fsize, QFont::Bold);
+                widget->setFont(f);
+            }else{
+                QFont f(splitlist[0], fsize, QFont::Bold);
+                widget->setFont(f);
+            }
+
+
          } else if (LineEdit *le = qobject_cast<LineEdit*> (widget))
          {
              Q_UNUSED(le);
-             LineEdit dummy;
+             //LineEdit dummy;
              //dummy.setEnabled(widget->isEnabled());
-             QPalette p = widget->palette();
-             p.setColor(QPalette::Disabled, QPalette::Text, p.color(QPalette::Active, QPalette::Text));
-             //p.setColor(QPalette::Foreground, col);
-             widget->setPalette(p);
-             widget->setFont(dummy.font());
+             //widget->setFont(dummy.font());
+             //Stylesheet set in default.4st
+             //QColor lightgrey(247, 247, 247);
+             //QPalette p = widget->palette();
+             //p.setColor(QPalette::Disabled, widget->backgroundRole(), lightgrey);
+             //widget->setPalette(p);
+
          }else if (TextEdit *le = qobject_cast<TextEdit*> (widget))
          {
              Q_UNUSED(le);
-             LineEdit dummy;
+             //LineEdit dummy;
              //dummy.setEnabled(widget->isEnabled());
-             QPalette p = widget->palette();
-             p.setColor(QPalette::Disabled, QPalette::Text, p.color(QPalette::Active, QPalette::Text));
-             //p.setColor(QPalette::Foreground, col);
-             widget->setPalette(p);
-             widget->setFont(dummy.font());
+             //widget->setFont(dummy.font());     
+             //Stylesheet set in default.4st
+             //widget->setStyleSheet(" QTextEdit:disabled {background-color: #f7f7f7}; ");
+
          }
          else if(LineEditDelegate *led = qobject_cast<LineEditDelegate *> (widget))
          {
@@ -1560,7 +1554,8 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
                 case Fgl::AUBIT_COLOR_BLUE:
                 {
                    QPalette p = widget->palette();
-                   QColor col(25, 59, 165);
+                 //  QColor col(25, 59, 165);
+                   QColor col("black");
                    if(Label *la = qobject_cast<Label *> (widget))
                    {
                       Q_UNUSED(la);
@@ -1677,6 +1672,7 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   bool noShow   = formField.attribute("noshow").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
    int w  = lineEditElement.attribute("width").toInt();
@@ -1727,9 +1723,13 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(lineEdit->colName + "/hideColumn")).toInt();
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(lineEdit->colName + "/hideColumn"),"-1").toInt();
        if(hideColumn > 0) {
            lineEdit->hide();
+       }
+
+       if(hideColumn == -1 && noShow) {
+           lineEdit->setVisible(false);
        }
    }
    if(hidden)
@@ -1748,6 +1748,7 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   bool noShow   = formField.attribute("noshow").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
 
@@ -1836,9 +1837,13 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    if(height < 1) height = 1;
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(textEdit->colName + "/hideColumn")).toInt();
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(textEdit->colName + "/hideColumn"), "-1").toInt();
        if(hideColumn > 0) {
            textEdit->hide();
+       }
+
+       if(hideColumn == -1 && noShow) {
+           textEdit->setVisible(false);
        }
    }
    if(hidden)
@@ -2198,9 +2203,9 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
       else{
 
 
-         if(QFile::exists("pics:" + fieldValue))
+         if(QFile::exists(":pics/" + fieldValue))
          {
-                 fieldValue = "pics:" + fieldValue;
+                 fieldValue = ":pics/" + fieldValue;
          }
          else if(!QFile::exists(fieldValue))
          {
@@ -2228,7 +2233,13 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
                 return; // Avoid repaint event
              }
              QPixmap pixmap(fieldValue);
-             widget->setPixmap(pixmap);
+
+             if (widget->autoScale) {
+                 widget->setPixmap(pixmap.scaled(widget->size(), Qt::KeepAspectRatio));
+             } else {
+                 widget->setPixmap(pixmap);
+             }
+             widget->setAlignment(Qt::AlignTop);
              widget->fieldValue = fieldValue;
          }
          //widget->setFixedSize(pixmap.size());
@@ -2247,7 +2258,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
        if(QFile::exists(QDir::tempPath() + "/" + fieldValue.split("?").at(0)))
        {
            #ifdef Q_OS_WIN
-              fieldValue = QDir::tempPath() + "/" + fieldValue;
+              fieldValue = "file:///" + QDir::tempPath() + "/" + fieldValue;
            #else
               fieldValue = "file://" +  QDir::tempPath() + "/" + fieldValue;
            #endif
@@ -2256,8 +2267,8 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
        {
            widget->setPage(new WebPage());
        }
-          widget->load(QUrl(fieldValue,QUrl::TolerantMode));
-      return;
+       widget->setUrl(QUrl(fieldValue, QUrl::TolerantMode));//widget->load(QUrl(fieldValue,QUrl::TolerantMode));
+       return;
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
@@ -2352,14 +2363,18 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
           return widget->toPlainText();//.replace(",",".");
        }
    */
-       int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
+       /*if(VDC::getDBLocale() == "ISO-8859-1") {
+           int enableFilter = VDC::readSettingsFromLocalIni("","convertText").toInt();
 
-
-       if(enableFilter != 2) {
-           return Umlauts::replaceUmlauts(widget->toPlainText());
+           if(enableFilter != 2) {
+               return Umlauts::replaceUmlauts(widget->toPlainText());
+           } else {
+               return widget->toPlainText();
+           }
        } else {
            return widget->toPlainText();
-       }
+       }*/
+       return widget->toPlainText();
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
@@ -2508,8 +2523,11 @@ void WidgetHelper::setValidator(QWidget* widget){
    }
 
    if(sqlType == "INTEGER" ||
-      sqlType == "SMALLINT" ||
-      sqlType == "SERIAL"){
+      sqlType == "SMALLINT"){
+      exprString = QString("^[-0-9]+$");
+   }
+
+   if(sqlType == "SERIAL"){
       exprString = QString("^[0-9]+$");
    }
 
@@ -2664,7 +2682,7 @@ MainFrame::vdcdebug("ProgressBar","ProgressBar", "QWidget *parent");
    setTextVisible(false);
 }
 
-WebView::WebView(QWidget *parent) : QWebView(parent)
+WebView::WebView(QWidget *parent) : QWebEngineView(parent)
 {
 MainFrame::vdcdebug("WebView","WebView", "QWidget *parent");
    

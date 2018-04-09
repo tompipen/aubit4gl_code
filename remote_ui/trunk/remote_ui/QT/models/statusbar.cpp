@@ -33,6 +33,7 @@ MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
    commentLabel = new QLabel(this);
    messageLabel = new QLabel(this);
    errorLabel = new QLabel(this);
+   m_timer = NULL;
 
    writeModeLabel = new QLabel("OVR", this);
    writeModeLabel->setEnabled(b_overwrite);
@@ -66,8 +67,14 @@ MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
    errorLabel->setAutoFillBackground(true);
    errorLabel->setPalette(pal);
    errorLabel->setText(" " + text.trimmed());
-   QTimer::singleShot(5000, errorLabel, SLOT(clear()));
-   QTimer::singleShot(5000, this, SLOT(clearStylesheet()));
+
+   if(!m_timer) {
+       m_timer = new QTimer(this);
+       m_timer->setSingleShot(true);
+       connect(m_timer, SIGNAL(timeout()), errorLabel, SLOT(clear()));
+       connect(m_timer, SIGNAL(timeout()), this, SLOT(clearStylesheet()));
+       m_timer->start(5000);
+   }
 }
 
 void StatusBar::displayError(QString text)
@@ -79,13 +86,20 @@ MainFrame::vdcdebug("StatusBar","displayError", "QString text");
    errorLabel->setAutoFillBackground(true);
    errorLabel->setPalette(pal);
    errorLabel->setText(" " + text.trimmed());
-   QTimer::singleShot(5000, errorLabel, SLOT(clear()));
-   QTimer::singleShot(5000, this, SLOT(clearStylesheet()));
+
+   if(!m_timer) {
+       m_timer = new QTimer(this);
+       m_timer->setSingleShot(true);
+       connect(m_timer, SIGNAL(timeout()), errorLabel, SLOT(clear()));
+       connect(m_timer, SIGNAL(timeout()), this, SLOT(clearStylesheet()));
+       m_timer->start(5000);
+   }
 }
 
 void StatusBar::clearStylesheet()
 {
     errorLabel->setAutoFillBackground(false);
+    m_timer = NULL;
 }
 
 void StatusBar::toggleOverwriteMode()

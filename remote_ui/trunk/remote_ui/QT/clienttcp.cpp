@@ -26,12 +26,16 @@
 #include <QMessageBox>
 #include <QVector>
 #include <QVariant>
+#include <QXmlSimpleReader>
+#include <QXmlInputSource>
 #include "clienttcp.h"
 #include "mainframe.h"
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
 #ifdef VREPGEN_USE
 #include "models/reportgen/reportgen.cpp"
+#include "models/reportgen/documentinfo.h"
+
 #endif
 #include <models/fglform.h>
 #ifdef Q_OS_WIN
@@ -508,7 +512,12 @@ void ClientSocket::makeOwnResponse(QString qs_replyString)
 MainFrame::vdcdebug("ClientSocket","makeOwnResponse", "QString qs_replyString");
    QTextStream out;
    out.setDevice(this);
-   out.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+   if(this->ph.qs_dblocale.contains("UTF8")) {
+       out.setCodec(QTextCodec::codecForName("UTF-8"));
+
+   } else {
+       out.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+   }
 
    qs_replyString+="\n";
    qs_replyString.replace("\n", "");
@@ -605,8 +614,12 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
-         out.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+         if(cl->ph.qs_dblocale.contains("UTF8")) {
+             out.setCodec(QTextCodec::codecForName("UTF-8"));
 
+         } else {
+             out.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+         }
 
          qs_replyString+="\n";
          //out << qs_replyString.toLatin1();
@@ -639,7 +652,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    //
 p_currScreenHandler = NULL;
    openFileSuccess = 0;
-   QString qs_protocolCommand;
+   QByteArray qs_protocolCommand;
 
    if(qs_dblocale.isEmpty())
    {
@@ -649,7 +662,8 @@ p_currScreenHandler = NULL;
       QTextCodec *codec = QTextCodec::codecForName(qPrintable(QString("UTF-8")));
       QTextStream in_request(&request);
       in_request.setCodec(codec);
-      qs_protocolCommand = in_request.readAll();
+      qs_protocolCommand.clear();
+      qs_protocolCommand.append(in_request.readAll());
       
    }
    else{
@@ -759,6 +773,23 @@ p_currScreenHandler = NULL;
       qsl_xmlCommands.insert(i, tmpstring);
       QString errorMsg;
       int errorLine, errorCol;
+      QXmlSimpleReader reader;
+      QXmlInputSource source;
+
+      source.setData(qsl_xmlCommands.at(i));
+
+      //TODO: fehler finden warum DISPLAYTO elemente verschwinden wenn DISPLAYAT mit drin ist.
+      /*if(qsl_xmlCommands.at(i).contains("DISPLAYAT") && !qsl_xmlCommands.at(i).contains("DISPLAYTO")) {
+
+          if (!doc.setContent(&source, &reader, &errorMsg, &errorLine, &errorCol)){
+             qDebug()<<"MISSMATCH : "<<qsl_xmlCommands.at(i);
+             QString str = errorMsg + "\n" +
+                           "Line:" + QString::number(errorLine) + "\n" +
+                           "Column" + QString::number(errorCol);
+             MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
+             break;
+          }
+      } else {*/
 
       if (!doc.setContent(qsl_xmlCommands.at(i), &errorMsg, &errorLine, &errorCol)){
          qDebug()<<"MISSMATCH : "<<qsl_xmlCommands.at(i);
@@ -767,8 +798,8 @@ p_currScreenHandler = NULL;
                        "Column" + QString::number(errorCol);
          MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
          break;
+      //}
       }
-      else{
    if(b_write){
       // -- Record Datastream
       QFile file(fileName);
@@ -778,6 +809,7 @@ p_currScreenHandler = NULL;
       QTextStream out(&file);
       out << qsl_xmlCommands.at(i);
    }
+
 
    /*QString test = doc.toString();
    test = filterUmlauts(test);
@@ -817,7 +849,7 @@ p_currScreenHandler = NULL;
                  }
                  if(i+1 == MainFrame::ql_screenhandler->size())
                  {
-                     qFatal("ScreenHandler request failed!");
+                     qWarning("ScreenHandler request failed!");
                  }
              }
 
@@ -854,7 +886,6 @@ p_currScreenHandler = NULL;
             }
             child = child.nextSiblingElement();
          }
-      }
 
 
    p_currScreenHandler = NULL;
@@ -880,7 +911,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
       QString programName = childElement.attribute("PROGRAMNAME");
-      setProgramName(programName);
+      QMetaObject::invokeMethod(p_currScreenHandler, "setProgramName", Qt::QueuedConnection, Q_ARG(QString, programName));
       MainFrame::check_new_pids();
       QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
       QString xml_version_client = VDC::readSettingsFromIni("", "xml_version");
@@ -888,7 +919,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
       QString xml_version_server = p_currScreenHandler->qh_env["XML_VERSION"];
 
 
-      if(a4gl_version_client.isNull() || a4gl_version_client != a4gl_version_server)
+      /*if(a4gl_version_client.isNull() || a4gl_version_client != a4gl_version_server)
       {
           VDC::saveSettingsToIni("", "a4gl_version", a4gl_version_server);
       }
@@ -899,13 +930,29 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
           {
                   VDC::saveSettingsToIni("", "xml_version", xml_version_server);
           }
-      }
+      }*/
 
       if(!a4gl_version_client.isNull())
       {
           if(programName == "./p_master.4ae")
           {
-             QMetaObject::invokeMethod(p_currScreenHandler, "checkForUpdate", Qt::QueuedConnection);
+#ifdef Q_OS_WIN
+              qDebug() << "QSysInfo::windowsVersion(): " << QSysInfo::windowsVersion();
+            switch(QSysInfo::windowsVersion())
+            {
+                case QSysInfo::WV_95:
+                case QSysInfo::WV_2000:
+                case QSysInfo::WV_XP:
+                case QSysInfo::WV_VISTA:
+                   QMetaObject::invokeMethod(p_currScreenHandler, "showUpdateError", Qt::QueuedConnection);
+                   break;
+                default:
+                   QMetaObject::invokeMethod(p_currScreenHandler, "checkForUpdate", Qt::QueuedConnection);
+                   break;
+              }
+#else
+              QMetaObject::invokeMethod(p_currScreenHandler, "checkForUpdate", Qt::QueuedConnection);
+#endif
           }
       }
       QFile stylesFile(QString("%1.4st").arg(programName));
@@ -916,12 +963,20 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
           stylesFile.close();
       }
       else{
-          stylesFile.setFileName(QDir::tempPath() + "/" +"default.4st");
+          stylesFile.setFileName(QDir::tempPath() + "/" +"default_vdc3.4st");
            if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultStyle = stylesFile.readAll();
                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStyles", Qt::QueuedConnection, Q_ARG(QString, qs_defaultStyle));
  //              handleXMLStyles(qs_defaultStyle);
                stylesFile.close();
+           } else {
+               stylesFile.setFileName(QDir::tempPath() + "/" +"default.4st");
+                if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+                    QString qs_defaultStyle = stylesFile.readAll();
+                    QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStyles", Qt::QueuedConnection, Q_ARG(QString, qs_defaultStyle));
+      //              handleXMLStyles(qs_defaultStyle);
+                    stylesFile.close();
+                }
            }
           
       }
@@ -1002,37 +1057,42 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_en.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QDomDocument doc;
-                QString qs_defaultShortcuts = iconFile.readAll();
-                doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDocEn = doc;
+                doc.setContent(iconFile.readAll());
                 iconFile.close();
+                if(doc.hasChildNodes()) {
+                    QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+                }
             }
             
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_de.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QDomDocument doc;
-                QString qs_defaultShortcuts = iconFile.readAll();
-                doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDocDe = doc;
+                doc.setContent(iconFile.readAll());
                 iconFile.close();
+                if(doc.hasChildNodes()) {
+                    QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+                }
             }
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_fr.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                            QDomDocument doc;
-                QString qs_defaultShortcuts = iconFile.readAll();
-                doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDocFr = doc;
+                QDomDocument doc;
+                doc.setContent(iconFile.readAll());
                 iconFile.close();
+                if(doc.hasChildNodes()) {
+                    QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+                }
             }
+
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_sp.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                            QDomDocument doc;
-                QString qs_defaultShortcuts = iconFile.readAll();
-                doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDocSp = doc;
+                QDomDocument doc;
+                doc.setContent(iconFile.readAll());
                 iconFile.close();
+                if(doc.hasChildNodes()) {
+                    QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+                }
             }
 
       }
@@ -1040,19 +1100,21 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
       QFile shortcutFile(QString("%1.4sc").arg(programName));
       if (shortcutFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QDomDocument doc;
-          QString qs_defaultShortcuts = shortcutFile.readAll();
-          doc.setContent(qs_defaultShortcuts);
-          p_currScreenHandler->xmlShortcutDoc = doc;
+          doc.setContent(shortcutFile.readAll());
           shortcutFile.close();
+          if(doc.hasChildNodes()) {
+              QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+          }
       }
       else{
           shortcutFile.setFileName(QDir::tempPath() + "/" +"vdc.4sc");
            if (shortcutFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QDomDocument doc;
-               QString qs_defaultShortcuts = shortcutFile.readAll();
-               doc.setContent(qs_defaultShortcuts);
-               p_currScreenHandler->xmlShortcutDoc = doc;
+               doc.setContent(shortcutFile.readAll());
                shortcutFile.close();
+               if(doc.hasChildNodes()) {
+                   QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+               }
            }
 
       }
@@ -1135,14 +1197,18 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
           QDomDocument doc;
           QString xmlString = encodeXMLFile(childElement.text());
           doc.setContent(xmlString);
-         p_currScreenHandler->xmlIconDocDe = doc;
+          if(doc.hasChildNodes()) {
+                 QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+             }
       }
 
       if(fileName.trimmed().endsWith(".4sc")){
          QDomDocument doc;
          QString xmlString = encodeXMLFile(childElement.text());
          doc.setContent(xmlString);
-         p_currScreenHandler->xmlShortcutDoc = doc;
+         if(doc.hasChildNodes()) {
+             QMetaObject::invokeMethod(p_currScreenHandler, "parseXmlFile", Qt::DirectConnection, Q_ARG(QDomDocument, doc));
+         }
       }
 
       // 4JS StartMenu XML File
@@ -1177,7 +1243,8 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
    }
    
    if(childElement.nodeName() == "EXECUTE"){
-      QString fileName = childElement.text();
+      QString value = childElement.text();
+      QString fileName = value.toLower();
       int openFileType = 1;
 
       if (fileName.contains("to=") && !fileName.contains("http:"))
@@ -1190,17 +1257,24 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
           openFileType = 3;
       }
 
+      if(fileName.startsWith("tic://")) {
+          openFileType = 4;
+      }
+
 
       switch(openFileType)
       {
       case 1:
-          QMetaObject::invokeMethod(p_currScreenHandler, "openLocalFile", Qt::QueuedConnection, Q_ARG(QString, fileName));
+          QMetaObject::invokeMethod(p_currScreenHandler, "openLocalFile", Qt::QueuedConnection, Q_ARG(QString, value));
           break;
       case 2:
-          QMetaObject::invokeMethod(p_currScreenHandler, "openEmailWithAttach", Qt::QueuedConnection, Q_ARG(QString, fileName));
+          QMetaObject::invokeMethod(p_currScreenHandler, "openEmailWithAttach", Qt::QueuedConnection, Q_ARG(QString, value));
           break;
       case 3:
-          QMetaObject::invokeMethod(p_currScreenHandler, "openEmail", Qt::QueuedConnection, Q_ARG(QString, fileName));
+          QMetaObject::invokeMethod(p_currScreenHandler, "openEmail", Qt::QueuedConnection, Q_ARG(QString, value));
+          break;
+      case 4:
+          QMetaObject::invokeMethod(p_currScreenHandler, "openEmailWithTobit", Qt::QueuedConnection, Q_ARG(QString, value));
           break;
       default:
           break;
@@ -1442,7 +1516,13 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  params << valuesElement.text();
               }
            //   emit setUrl(params.at(0).toInt(), QUrl(params.at(1)));
-              QMetaObject::invokeMethod(p_currScreenHandler, "setUrl", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QUrl, QUrl(params.at(1))));
+
+              bool isoEncoding = true;
+
+              if(this->qs_dblocale.contains("UTF8")) {
+                  isoEncoding = false;
+              }
+              QMetaObject::invokeMethod(p_currScreenHandler, "setUrl", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QUrl, QUrl(params.at(1))), Q_ARG(bool, isoEncoding));
               //Important, we want sending the triggered out of the screenhandler, because there we have the errorcodes.
               expect = 0;
 
@@ -1457,6 +1537,55 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
               QMetaObject::invokeMethod(p_currScreenHandler, "closeBrowser", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()));
 
               //emit closeBrowser(params.at(0).toInt());
+         }
+         if(qs_name == "ui.dashboard.additem") {
+             QStringList params;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+             }
+
+             ScreenHandler *p_screenHandler = p_currScreenHandler;
+             if(p_currScreenHandler->getDashboard() == NULL) {
+                 for(int i=0; i < MainFrame::ql_screenhandler->count(); i++)
+                 {
+                     ScreenHandler *screen = MainFrame::ql_screenhandler->at(i);
+                     if(screen->getDashboard() != NULL) {
+                        p_screenHandler = screen;
+                        break;
+                     }
+                 }
+             }
+
+             QMetaObject::invokeMethod(p_screenHandler, "addDashboardItem", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(QString, params.at(2)), Q_ARG(QString, params.at(3)));
+
+         }
+
+         if(qs_name == "ui.dashboard.getabonnements") {
+             QMetaObject::invokeMethod(p_currScreenHandler, "getAbonnements", Qt::QueuedConnection);
+             expect = 0;
+         }
+
+         if(qs_name == "ui.vdc.dial") {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+             QMetaObject::invokeMethod(p_currScreenHandler, "dial", Qt::QueuedConnection,Q_ARG(QString, params.at(0)));
+             //expect = 0;
+         }
+
+         if(qs_name == "ui.vdc.playsound") {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+             QMetaObject::invokeMethod(p_currScreenHandler, "playSound", Qt::QueuedConnection,Q_ARG(QString, params.at(0)));
+             expect = 0;
          }
 
          if(qs_name == "ui.vdc.openchartwindow")
@@ -1478,13 +1607,13 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()), Q_ARG(bool, false));
-              waitTimer::msleep(5000);
-              while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
-              {
-                  waitTimer::msleep(1000);
+              bool isoEncoding = true;
+
+              if(this->qs_dblocale.contains("UTF8")) {
+                  isoEncoding = false;
               }
-              returnvalues << "1";
+              QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()), Q_ARG(bool, isoEncoding));
+              expect = 0;
          }
 
          if(qs_name == "ui.vdc.get_last_sort")
@@ -1495,32 +1624,38 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  params << valuesElement.text();
               }
 
-              QMetaObject::invokeMethod(p_currScreenHandler, "checkFormMaskForSort", Qt::QueuedConnection, Q_ARG(QString, params.at(0)));
-
               int sortIndex = VDC::readSettingsFromIni(params.at(0), "sortLogicalIndex").toInt();
-              QString sortIndecator = VDC::readSettingsFromIni(params.at(0), "sortIndecator");
+              QString sortIndicator = VDC::readSettingsFromIni(params.at(0), "sortIndicator");
 
-              if(sortIndecator.isEmpty())
+              if(sortIndicator.isEmpty())
               {
-                  sortIndecator = "DESC";
+                  sortIndicator = "DESC";
               }
+              sortIndex++;
 
-              if ((params.at(0) == "m2zagk") ||
-                  (params.at(0) == "m2zagd") ||
-                  (params.at(0) == "m_mave") ||
-                  (params.at(0) == "m_mave2")) {
-                 sortIndex++;
-              } else {
-                 if(sortIndex == 0) {
-                    sortIndex = 1;
-                 }
-              }
+//              if ((params.at(0) == "m2zagk") ||
+//                  (params.at(0) == "m2zagd") ||
+//                  (params.at(0) == "a_vanf") ||
+//                  (params.at(0) == "m_mave") ||
+//                  (params.at(0) == "m_mave2")) {
+//                 sortIndex++;
+//              } else {
+//                 if(sortIndex == 0) {
+//                    sortIndex = 1;
+//                 }
+//              }
 
-              returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + sortIndecator;
+              //returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + sortIndicator;
+              returnvalues << QString::number(sortIndex) + " " + sortIndicator;
          }
 
          if(qs_name == "ui.vdc.settingonserver") {
-             bool value = VDC::readSettingsFromIni("","saveSettingsOnServer").toInt();
+             bool value = false;
+
+             if(VDC::readSettingsFromLocalIni("","saveSettingsOnServer").toInt() != -1)
+             {
+                 value = VDC::readSettingsFromLocalIni("","saveSettingsOnServer").toInt();
+             }
 
              returnvalues << QString::number(!value);
          }
@@ -1569,6 +1704,12 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
          {
               returnvalues << "desktop" << "max";
          }
+
+         if(qs_name == "ui.vdc.version")
+         {
+              returnvalues << "vdc3";
+         }
+
          if(qs_name == "ui.vdc.setclipboard")
          {
              QStringList params;
@@ -1592,8 +1733,8 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                params << valuesElement.text();
             }
            //params 0-2 sind die uebergabeparameter 
-           //Ruckgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
-
+           //Rueckgabe werte:
+           //   - Exitcode
             #ifdef VREPGEN_USE
                 /*Reportgen *p_reportgen = new Reportgen();
                 QFileInfo file(params.at(0));
@@ -1633,19 +1774,9 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                 {
                     if(QFile::exists(QDir::tempPath() + "/" + params.at(0)))
                     {
-                        Reportgen *reportgen = new Reportgen(p_currScreenHandler);
-                        reportgen->setOdfFile(params.at(0));
-                        reportgen->setSedFile(params.at(1));
-                        reportgen->setDestinationFile(params.at(2));
-
-                        reportgen->start(QThread::NormalPriority);
-
-                        while(reportgen->isRunning())
-                        {
-                            waitTimer::msleep(5);
-                        }
-
-                        returnvalues << QString::number(reportgen->getExitCode());
+                        ReportGenerator *reportgen = new ReportGenerator(params.at(0), params.at(1), params.at(2));
+                        reportgen->start();
+                        returnvalues <<  QString::number(0);
                     }
                 } else {
                     returnvalues << "500";
@@ -1669,19 +1800,19 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
             
              }
             #ifdef VREPGEN_USE
-             Reportgen *p_reportgen = new Reportgen();
              QFileInfo odffile(params.at(0));
-             QFileInfo zieldatei(params.at(1));
+             QString zieldatei = params.at(1);
              QFile *file = new QFile(QDir::tempPath() + "/" + odffile.baseName() + "." + odffile.completeSuffix());
 
              if(file->open(QIODevice::ReadOnly))
              {
-                returnvalues << QString::number(p_reportgen->createInfoFile(odffile.baseName() + "." + odffile.completeSuffix(), zieldatei));
+                 DocumentInfo *documentInfo = new DocumentInfo(odffile.baseName() + "." + odffile.completeSuffix(), zieldatei);
+                 returnvalues << QString::number(documentInfo->createInfoFile());
+
         
-             } else 
-             {
+             } else {
                 qDebug() << "Datei nicht geoffnet" << "";
-                returnvalues << "O";
+                returnvalues << "0";
              }
              file->close();
             #endif
@@ -1771,14 +1902,14 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
-             if(fileInfo.suffix() == "xls")
+             if(fileInfo.suffix() == "xls" || fileInfo.suffix() == "xlsx")
              {
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
 
-             if(fileInfo.suffix() == "xlsx")
+             if(fileInfo.suffix() == "xlsm")
              {
              #ifndef Q_OS_WIN
                  ExecuteFile *exec = new ExecuteFile;
@@ -1840,16 +1971,25 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  foundFormat = 1;
              }
 
+             if(fileInfo.suffix() == "html1")
+             {
+                 returnvalues << QString::number(openFileSuccess);
+                 executeFile(1, fileName);
+                 foundFormat = 1;
+             }
+
+
              if(fileInfo.suffix() == "txt" || fileInfo.suffix().isEmpty())
              {
-                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName), Q_ARG(QString, "nowrap"), Q_ARG(int, 0), Q_ARG(bool, true));
-                 waitTimer::msleep(2000);
-                 while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
-                 {
-                     waitTimer::msleep(1000);
+                 bool isoEncoding = true;
+
+                 if(this->qs_dblocale.contains("UTF8")) {
+                     isoEncoding = false;
                  }
 
+                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName), Q_ARG(QString, "nowrap"), Q_ARG(int, 0), Q_ARG(bool, isoEncoding));
                  foundFormat = 1;
+                 expect = 0;
              }
              if(foundFormat == 0)
              {
@@ -1861,7 +2001,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
          if(qs_name == "ui.vdc.getstdofficeprog")
          {
-             int stdOfficeProg = VDC::readSettingsFromIni("","officeStdProg").toInt();
+             int stdOfficeProg = VDC::readSettingsFromLocalIni("","officeStdProg").toInt();
 
              if(stdOfficeProg > 0)
              {
@@ -2432,13 +2572,12 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
       QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, childElement.nodeName()), Q_ARG(bool, true), Q_ARG(int, context));
     //  setFormOpts(childElement.nodeName(), true, context);
       this->handleMenuElement(childElement);
-      QMetaObject::invokeMethod(p_currScreenHandler, "showWindow", Qt::QueuedConnection);
+      //QMetaObject::invokeMethod(p_currScreenHandler, "showWindow", Qt::QueuedConnection);
       QMetaObject::invokeMethod(p_currScreenHandler, "setWaitCursor", Qt::QueuedConnection);
-return;
+      return;
    }
 
    if(childElement.nodeName() == "NEXTOPTION"){
-      //TODO
       int context = childElement.attribute("CONTEXT").toInt();
       QString name = childElement.attribute("OPTION").trimmed();
       QMetaObject::invokeMethod(p_currScreenHandler, "nextOption", Qt::QueuedConnection, Q_ARG(QString, name), Q_ARG(int, context));
@@ -2513,6 +2652,11 @@ return;
       return;
    }
 
+   if(childElement.nodeName() == "DISPLAYAT"){
+      handleDisplayAtElement(childElement);
+      return;
+   }
+
    if(childElement.nodeName() == "DISPLAYTO"){
       handleDisplayToElement(childElement);
       return;
@@ -2561,7 +2705,7 @@ return;
       handleInputElement(childElement);
       QMetaObject::invokeMethod(p_currScreenHandler, "setFieldOrder", Qt::QueuedConnection, Q_ARG(QStringList, qsl_fieldList));
      // setFieldOrder(qsl_fieldList);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, qsl_fieldList.first()));
+      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection);
      // setFieldFocus(qsl_fieldList.first());
       QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
       return;
@@ -2581,7 +2725,7 @@ return;
       handleConstructElement(childElement);
       QMetaObject::invokeMethod(p_currScreenHandler, "setFieldOrder", Qt::QueuedConnection, Q_ARG(QStringList, qsl_fieldList));
      // setFieldOrder(qsl_fieldList);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, qsl_fieldList.first()));
+      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection);
       QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
      // setFieldFocus(qsl_fieldList.first());
       return;
@@ -2682,6 +2826,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
 {
     int logicalIndex = -1;
     QString form = formmask;
+
+    if(form == "a_r4s")
+    {
+        logicalIndex = index + 1;
+    }
 
     if(form == "a_vkopf")
     {
@@ -2784,6 +2933,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
     }
 
     if(form == "a_zuord")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_zugang")
     {
         logicalIndex = index + 1;
     }
@@ -3448,11 +3602,6 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
         logicalIndex = index + 1;
     }
 
-    if(form == "a_ansp")
-    {
-        logicalIndex = index + 1;
-    }
-
     if(form == "a_vtst")
     {
         logicalIndex = index + 1;
@@ -3741,7 +3890,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
                                 &si,
                                 &pi ))
              {
-                 QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "ERROR"), Q_ARG(QString, "Can not found a default Program for this file."), Q_ARG(QString, "Critical"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
+                 QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "ERROR"), Q_ARG(QString, "Could not find a default program for this file."), Q_ARG(QString, "Critical"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
                  qDebug() << "FEHLER BEI PROZESS ERSTELLEN!!!!";
                  openFileSuccess = 0;
                  return;
@@ -3892,6 +4041,18 @@ MainFrame::vdcdebug("ProtocolHandler","handleStartup", "const QDomNode& domNode"
    // ALWAYS set search Paths
    //p_currScreenHandler->setSearchPaths();
    ScreenHandler::setSearchPaths();
+}
+
+void ProtocolHandler::handleDisplayAtElement(const QDomNode& domNode)
+{
+    QDomElement displayAtElement = domNode.toElement();
+
+    int row  = displayAtElement.attribute("Y").toInt();
+    int column  = displayAtElement.attribute("X").toInt()-1;
+    bool clearLine  = displayAtElement.attribute("CLRLINE").toInt();
+    QString displayText = displayAtElement.text();
+
+    QMetaObject::invokeMethod(p_currScreenHandler, "displayAt", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(int, column), Q_ARG(bool, clearLine), Q_ARG(QString, displayText));
 }
 
 //------------------------------------------------------------------------------
@@ -4330,7 +4491,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleMenuElement", "const QDomNode& domN
 
       // Image to Show (only used for Dialogs ( MENU inside INPUT etc) )
       QString image   = currentElement.attribute("IMAGE");
-      QMetaObject::invokeMethod(p_currScreenHandler, "createMenu", Qt::QueuedConnection, Q_ARG(QString, title), Q_ARG(QString, comment), Q_ARG(QString, style), Q_ARG(QString, image));
+      QMetaObject::invokeMethod(p_currScreenHandler, "createMenu", Qt::QueuedConnection, Q_ARG(QString, title.trimmed()), Q_ARG(QString, comment), Q_ARG(QString, style), Q_ARG(QString, image));
       //createMenu(title, comment, style, image);
    }
 
@@ -4368,7 +4529,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleMenuElement", "const QDomNode& domN
          // TODO: Implement KEYS (text is NULL)
          if(!text.isEmpty()){
             QMetaObject::invokeMethod(p_currScreenHandler, "createMenuButton", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(QString, text), Q_ARG(QString, desc), Q_ARG(QStringList, keys));
-            //createMenuButton(id, text, desc, keys);
+            QMetaObject::invokeMethod(p_currScreenHandler, "setIconForCommand", Qt::QueuedConnection, Q_ARG(QString, text));
          }
       }
 
@@ -4419,7 +4580,9 @@ MainFrame::vdcdebug("ProtocolHandler","handleEventsElement", "const QDomNode& do
 
       if(nodeName == "BEFORE_INPUT_EVENT" ||
          nodeName == "BEFORE_CONSTRUCT_EVENT" ||
-         nodeName == "BEFORE_DISPLAY_EVENT"){
+         nodeName == "BEFORE_DISPLAY_EVENT" ||
+         nodeName == "BEFORE_INSERT_EVENT" ||
+         nodeName == "BEFORE_DELETE_EVENT"){
          QString id = currentElement.attribute("ID");
          QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, ""), Q_ARG(QString, id));
  //        setEvent(nodeName, QString(), id);
@@ -4427,7 +4590,9 @@ MainFrame::vdcdebug("ProtocolHandler","handleEventsElement", "const QDomNode& do
 
       if(nodeName == "AFTER_INPUT_EVENT" ||
          nodeName == "AFTER_CONSTRUCT_EVENT" ||
-         nodeName == "AFTER_DISPLAY_EVENT"){
+         nodeName == "AFTER_DISPLAY_EVENT" ||
+         nodeName == "AFTER_INSERT_EVENT" ||
+         nodeName == "AFTER_DELETE_EVENT"){
          QString id = currentElement.attribute("ID");
          QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, ""), Q_ARG(QString, id));
          //setEvent(nodeName, QString(), id);
@@ -4530,7 +4695,7 @@ MainFrame::vdcdebug("ProtocolHandler","fglFormResponse", "QString qs_id");
    {
        makeResponse(qs_id);
    }
-   qDebug()<<qs_id;
+   //qDebug()<<qs_id;
    QMetaObject::invokeMethod(MainFrame::lastmainframe, "debugText", Q_ARG(QString, ">> " + qs_id));
    //emit debugtext(QString(">> " + qs_id));
 }

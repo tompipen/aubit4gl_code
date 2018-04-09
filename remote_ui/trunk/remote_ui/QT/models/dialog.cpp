@@ -40,7 +40,7 @@ MainFrame::vdcdebug("Dialog","Dialog", "QWidget *parent, Qt");
 // Description  : Constructs the RingMenu for the MenuButtons
 //------------------------------------------------------------------------------
 Dialog::Dialog(QString title, QString comment, QString style, QString image,
-               QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
+               QWidget *parent, Qt::WindowFlags f, bool vdc) : QDialog(parent, f)
 {
 MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
@@ -51,6 +51,9 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
    this->setAttribute(Qt::WA_DeleteOnClose);
 
    QVBoxLayout *layout = new QVBoxLayout;
+
+   if (!vdc) layout->insertSpacing(0,24); //NS
+
    QHBoxLayout *buttonLayout = new QHBoxLayout;
    buttonLayout->setAlignment(Qt::AlignCenter);
 
@@ -70,7 +73,7 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
    QHBoxLayout *pixLayout = new QHBoxLayout;
    mLabel    = new QLabel(comment);
    QLabel *p_pixLabel = new QLabel();
-   QString filename   = "pics:";
+   QString filename   = ":pics/";
 
    filename.append(image);
    filename.append(".png");
@@ -86,11 +89,14 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
   // this->setModal(true);
    this->adjustSize();
+   this->installEventFilter(this);
 }
 
 void Dialog::setText(QString text)
 {
-    mLabel->setText(text);
+    if(mLabel != NULL) {
+        mLabel->setText(text);
+    }
 }
 
 void Dialog::closeEvent(QCloseEvent *event)
@@ -155,16 +161,33 @@ MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tool
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(text.trimmed(), this);
    button->setShortcut(shortcut);
+
    if(icon == "")
    {
-      button->setIcon(QIcon(QString("pics:blank.png")));
-      button->setIconSize(QSize(40,25));
+      button->setIcon(QIcon(QString(":pics/blank.png")));
+      button->setIconSize(QSize(53,37));
+   }   else   {
+      button->setIcon(QIcon(QString(":pics/" + icon)));
+      button->setIconSize(QSize(53,37));
    }
-   else
-   {
-      button->setIcon(QIcon(QString("pics:" + icon)));
-      button->setIconSize(QSize(40,25));
+   if (icon == "abbrechen_rot.png" || pic == "ende" || pic == "nein" || pic == "abbruch" || pic == "quit" || pic == "no" || pic == "cancel" || pic == "cancelar" || pic == "fin" || pic == "non" || pic == "interrompre") {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_rot.png); padding-right: 10; text-align: left; min-width: 88px; }"
+                                            "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}"
+                                            "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_rot_grau.png);}"
+                                            "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
+   } else if (icon == "ok_gruen.png" || pic == "ok" || pic == "ja" || pic == "yes" || pic == "si" || pic == "oui") {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }"
+                                            "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}"
+                                            "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}"
+                                            "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
+   } else {
+       button->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_blau.png); padding-right: 10; text-align: left; min-width: 88px; }"
+                                            "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}"
+                                            "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_blau_grau.png);}"
+                                            "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");
    }
+
+   button->installEventFilter(this);
 
  /*  Action *action = (Action*) this->getAction(text);
    if(action->text() != text){
@@ -172,11 +195,11 @@ MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tool
       action->setComment(tooltip);
       if(icon == "")
       {
-         action->setImage("pics:blank.png");
+         action->setImage(":pics/blank.png");
       }
       else
       {
-         action->setImage("pics:" + icon);
+         action->setImage(":pics/" + icon);
       }
    }*/
    
@@ -184,11 +207,11 @@ MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tool
    action->setComment(tooltip);
    if(icon == "")
    {
-      action->setImage("pics:blank.png");
+      action->setImage(":pics/blank.png");
    }
    else
    {
-      action->setImage("pics:" + icon);
+      action->setImage(":pics/" + icon);
    }
    button->addAction(action);
 
@@ -208,15 +231,15 @@ void Dialog::createAction(int id, QString text)
 {
 MainFrame::vdcdebug("Dialog","createAction", "int id, QString text");
    // Make Shortcut for Button
-   QString pic = text.toLower();
+   //QString pic = text.toLower();
    QString shortcut = text.at(0);
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(text.trimmed(), this);
    button->setVisible(false);
    button->setShortcut(shortcut);
-   button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIconSize(QSize(40,25));
+   button->setIcon(QIcon(QString(":pics/blank.png")));
+   button->setIconSize(QSize(53,37));
 
    Action *action = new Action(text.toLower(), text, button);
    action->setImage("blank.png");
@@ -270,6 +293,19 @@ MainFrame::vdcdebug("Dialog","showButton", "QString name");
    this->adjustSize();
 }
 
+void Dialog::setFocusOnButton()
+{
+MainFrame::vdcdebug("Dialog","selectButton", "QString name");
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))) {
+         if(button->isVisible()){
+            QMetaObject::invokeMethod(button, "setFocus", Qt::QueuedConnection);
+            return;
+         }
+      }
+   }
+}
+
 //------------------------------------------------------------------------------
 // Method       : buttonClicked()
 // Filename     : ringmenu.cpp
@@ -284,27 +320,106 @@ MainFrame::vdcdebug("Dialog","buttonClicked", "int id");
 }
 
 //------------------------------------------------------------------------------
-// Method       : keyPressEvent()
-// Filename     : ringmenu.cpp
+// Method       : eventFilter()
+// Filename     : dialog.cpp
 // Description  : when ENTER or Return Key is pressed the buttons
 //                should be activated also
 //------------------------------------------------------------------------------
+
+bool Dialog::eventFilter(QObject *obj, QEvent *event)
+{
+    QKeyEvent *keyEvent = (QKeyEvent*) event;
+
+
+    if(keyEvent->type() == QEvent::KeyPress){
+       if(keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return){
+          QWidget *widget = this->focusWidget();
+          if(QPushButton *button = qobject_cast<QPushButton *> (widget)){
+             button->animateClick();
+             return true;
+          }
+       }
+
+       /*if(keyEvent->key() == Qt::Key_Tab || keyEvent->key() == Qt::Key_Right) {
+           if(QPushButton *bt = qobject_cast<QPushButton*> (obj)) {
+               QPushButton *lastButton;
+               for(int i=buttonGroup->buttons().count()-1; i > 0; i--) {
+                   if(buttonGroup->buttons().at(i)->isVisible()) {
+                       lastButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i));
+                       break;
+                   }
+               }
+
+               if(bt == lastButton) {
+                   for(int k=0; k < buttonGroup->buttons().count(); k++) {
+                       QPushButton *firstButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(k));
+
+                       if(!firstButton->isVisible()) {
+                           continue;
+                       }
+
+                       QMetaObject::invokeMethod(firstButton, "setFocus", Qt::QueuedConnection);
+                       break;
+                   }
+               } else {
+                   int buttonIndex = buttonGroup->buttons().indexOf(bt);
+                   while(buttonIndex < buttonGroup->buttons().count()) {
+                       buttonIndex++;
+                       QPushButton *nextButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(buttonIndex));
+                       if(nextButton->isVisible()) {
+                           QMetaObject::invokeMethod(nextButton, "setFocus", Qt::QueuedConnection);
+                           break;
+                       }
+                   }
+               }
+           }
+       }
+
+       if(keyEvent->key() == Qt::Key_Backtab ||keyEvent->key() == Qt::Key_Left ) {
+           if(QPushButton *bt = qobject_cast<QPushButton*> (obj)) {
+               QPushButton *firstButton;
+               for(int i=0; i < buttonGroup->buttons().count(); i++) {
+                   if(buttonGroup->buttons().at(i)->isVisible()) {
+                       firstButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i));
+                       break;
+                   }
+               }
+
+               if(bt == firstButton) {
+                   for(int k=buttonGroup->buttons().count()-1; k > 0; k--) {
+                       QPushButton *lastButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(k));
+
+                       if(!lastButton->isVisible()) {
+                           continue;
+                       }
+
+                       QMetaObject::invokeMethod(lastButton, "setFocus", Qt::QueuedConnection);
+                       break;
+                   }
+               } else {
+                   int buttonIndex = buttonGroup->buttons().indexOf(bt);
+                   while(buttonIndex < buttonGroup->buttons().count()) {
+                       buttonIndex--;
+                       QPushButton *nextButton = qobject_cast<QPushButton*> (buttonGroup->buttons().at(buttonIndex));
+                       if(nextButton->isVisible()) {
+                           QMetaObject::invokeMethod(nextButton, "setFocus", Qt::QueuedConnection);
+                           break;
+                       }
+                   }
+               }
+           }
+       }*/
+    }
+    return QDialog::eventFilter(obj, event);
+}
+
 void Dialog::keyPressEvent(QKeyEvent *event)
 {
-MainFrame::vdcdebug("Dialog","keyPressEvent", "QKeyEvent *event");
-   if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
-      QWidget *widget = this->focusWidget();
-      if(QPushButton *button = qobject_cast<QPushButton *> (widget)){
-         button->animateClick();
-         return;
-      }
-   }
-   if(event->key() == Qt::Key_Escape){
-      event->ignore();
-      return;
-   }
-
-   QDialog::keyPressEvent(event);
+    if(event->key() == Qt::Key_Escape){
+       event->ignore();
+       return;
+    }
+    QDialog::keyPressEvent(event);
 }
 
 QList<QAction*> Dialog::actions()
@@ -346,9 +461,9 @@ MainFrame::vdcdebug("Dialog","getAction", "QString name");
 void Dialog::setVentasStyle()
 {
     QPalette palette;
-    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    palette.setBrush(this->backgroundRole(), QBrush(QImage(":pics/VENTAS_11_bg.png")));
     this->setPalette(palette);
-    this->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    this->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_blau.png); padding-right: 10; text-align: left;}");
 
 }
 

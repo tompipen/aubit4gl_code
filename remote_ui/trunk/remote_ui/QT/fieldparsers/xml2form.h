@@ -46,23 +46,14 @@ class myValidatorToUpper : public QRegExpValidator
 
 public:
    //myValidatorToUpper(const QRegExp &rx, QObject *parent) : QRegExpValidator::QRegExpValidator ( rx, parent ) {}
-   myValidatorToUpper(const QRegExp &rx, QObject *parent) {}
+   myValidatorToUpper(const QRegExp &rx, QObject *parent) {
+       Q_UNUSED(rx);
+       Q_UNUSED(parent);
+   }
 
    QValidator::State validate(QString& input, int &pos) const ;
 
 };
-
-
-class myValidatorToLower : public QRegExpValidator
-{
-
-public:
-   //myValidatorToLower(const QRegExp &rx, QObject *parent) : QRegExpValidator::QRegExpValidator ( rx, parent ) {}
-   myValidatorToLower(const QRegExp &rx, QObject *parent) {}
-   QValidator::State validate(QString& input, int &pos) const ;
-
-};
-
 
 //class XML2Form : public QObject : public QMainWindow
 class XML2Form : public QWidget

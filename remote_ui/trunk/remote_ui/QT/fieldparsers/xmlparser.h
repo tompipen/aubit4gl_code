@@ -46,6 +46,7 @@ private:
    int gridWidth;
    bool layoutChanged;
    bool hidden;
+   bool hasTabs = false;
 
    void parseElement(const QDomNode&);
    void handleTableColumn(const QDomNode&);

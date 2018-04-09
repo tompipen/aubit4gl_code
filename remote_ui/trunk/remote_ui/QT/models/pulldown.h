@@ -45,6 +45,7 @@ public:
     void moveToPos(const QPoint pos);
     void closeEvent(QCloseEvent *);
 
+    void setFocusOnButton();
 public slots:
     void closeWindowAndTrigger();
 

@@ -487,12 +487,7 @@ QList<QWidget*> Context::fieldList()
 {
     return QList<QWidget*> ql_tmp;
 }*/
-  if(!b_constrained)
-  {
-      return ql_fieldList;
-  } else {
-      return ql_formFields;
-  }
+    return ql_fieldList;
 }
 
 void Context::setOption(QString name, int value)
@@ -511,13 +506,6 @@ void Context::setOption(QString name, int value)
      b_scrlinech = true;
   }
 
-  if(name == "ARRCOUNT" && (value != qh_options[name]))
-  {
-     b_arrcountch = true;
-  }
-
-
-
   qh_options[name] = value;
   checkOptions();
 
@@ -528,6 +516,7 @@ void Context::setOption(QString name, int value)
       //return;
       for(int i=0; i<ql_fieldList.count(); i++){
           if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+              b_arrcountch = true;
               tableView->setArrCount(qh_options[name]);
             }
         }

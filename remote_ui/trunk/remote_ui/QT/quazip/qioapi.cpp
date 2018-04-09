@@ -33,10 +33,11 @@
 #endif
 
 voidpf ZCALLBACK qiodevice_open_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf file,
    int mode)
 {
+    Q_UNUSED(opaque);
     QIODevice *iodevice = reinterpret_cast<QIODevice*>(file);
     if(iodevice->isSequential())
         return NULL;
@@ -57,11 +58,12 @@ voidpf ZCALLBACK qiodevice_open_file_func (
 
 
 uLong ZCALLBACK qiodevice_read_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf stream,
    void* buf,
    uLong size)
 {
+    Q_UNUSED(opaque);
     uLong ret;
     ret = (uLong)((QIODevice*)stream)->read((char*)buf,size);
     return ret;
@@ -69,31 +71,34 @@ uLong ZCALLBACK qiodevice_read_file_func (
 
 
 uLong ZCALLBACK qiodevice_write_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf stream,
    const void* buf,
    uLong size)
 {
+    Q_UNUSED(opaque);
     uLong ret;
     ret = (uLong)((QIODevice*)stream)->write((char*)buf,size);
     return ret;
 }
 
 uLong ZCALLBACK qiodevice_tell_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf stream)
 {
+    Q_UNUSED(opaque);
     uLong ret;
     ret = ((QIODevice*)stream)->pos();
     return ret;
 }
 
 int ZCALLBACK qiodevice_seek_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf stream,
    uLong offset,
    int origin)
 {
+    Q_UNUSED(opaque);
     uLong qiodevice_seek_result=0;
     int ret;
     switch (origin)
@@ -114,17 +119,19 @@ int ZCALLBACK qiodevice_seek_file_func (
 }
 
 int ZCALLBACK qiodevice_close_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf stream)
 {
+    Q_UNUSED(opaque);
     ((QIODevice*)stream)->close();
     return 0;
 }
 
 int ZCALLBACK qiodevice_error_file_func (
-   voidpf opaque UNUSED,
+   voidpf opaque,
    voidpf stream)
 {
+    Q_UNUSED(opaque);
     return !((QIODevice*)stream)->errorString().isEmpty();
 }
 

@@ -37,6 +37,7 @@
 #include "clienttcp.h"
 #include <string>
 #include <iostream>
+#include "models/dialog.h"
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -197,10 +198,13 @@ typedef BOOL (*PDUMPFN)(
   PMINIDUMP_CALLBACK_INFORMATION CallbackParam
 
 );
-
+#if (QT_VERSION > QT_VERSION_CHECK(5, 9, 1))
+    HANDLE hFile = CreateFile( _T("MiniDump.dmp"), GENERIC_READ | GENERIC_WRITE,
+    0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+#else
     HANDLE hFile = CreateFileA( _T("MiniDump.dmp"), GENERIC_READ | GENERIC_WRITE,
     0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-
+#endif
     HMODULE h = ::LoadLibrary(L"DbgHelp.dll");
     PDUMPFN pFn = (PDUMPFN)GetProcAddress(h, "MiniDumpWriteDump");
 
@@ -248,7 +252,12 @@ LONG WINAPI HandleExceptionFilter(struct _EXCEPTION_POINTERS* ExceptionInfo)
 
 int main(int argc, char *argv[])
 {
+
+    QApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+    QApplication::setQuitOnLastWindowClosed(false);
     QApplication app(argc, argv);
+
+    VDC::logMessage("VDC", "VDC wird gestartet...");
 
     #ifdef SSH_USE
     ssh_threads_set_callbacks(ssh_threads_get_noop());
@@ -261,7 +270,7 @@ int main(int argc, char *argv[])
 
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
-    splash->setPixmap(QPixmap("pics:VENTAS_10_splashscreen.png"));
+    splash->setPixmap(QPixmap(":pics/VENTAS_11_splashscreen.png"));
 
     splash->show();
 
@@ -278,23 +287,28 @@ int main(int argc, char *argv[])
        app.installTranslator(translator);
     }
 
-    QFontDatabase::addApplicationFont(":/font/LiberationMono-Regular.ttf");
-    QFont yavcFont("Arial", 8);
+    QFontDatabase::addApplicationFont(":/font/OpenSans-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/font/OpenSans-Semibold.ttf");
+    #ifdef Q_OS_MAC
+        QFont yavcFont("Open Sans Semibold", 12);
+    #else
+        QFont yavcFont("Open Sans Semibold", 10);
+    #endif
     yavcFont.setFixedPitch(true);
 
     app.setFont(yavcFont);
 
 
     #ifdef Q_OS_MAC
-       QIcon ventasLogo("pics:vdc.icns");
+       QIcon ventasLogo(":pics/vdc.icns");
     #else
-       QIcon ventasLogo("pics:vdc.png");
+       QIcon ventasLogo(":pics/vdc.png");
     #endif
 
     app.setWindowIcon(ventasLogo);
 
     QEvent::registerEventType(1337);
-    //Event to seperate Keys for the Puffers(same like KeyPress)
+    //Event to separate Keys for the Puffers(same like KeyPress)
     QEvent::registerEventType(1400);
     //Event to seperate Keys for the Puffers(same like KeyRelease)
     QEvent::registerEventType(1401);
@@ -310,17 +324,22 @@ int main(int argc, char *argv[])
     int posX = VDC::readSettingsFromIni("Ventas AG", "posX").toInt();
     int posY = VDC::readSettingsFromIni("Ventas AG", "posY").toInt();
 
-    MainFrame mainframe;
-    mainframe.move(VDC::widgetPositionValidate(posX, posY));
+    MainFrame *mainframe = new MainFrame;
+    mainframe->move(VDC::widgetPositionValidate(posX, posY));
+    mainframe->progName = argv[0];
 
-    waitTimer::msleep(2000);
+    mainframe->addSystemProxy();
 
-    mainframe.show();
-    mainframe.adjustSize();
-    mainframe.activateWindow();
-    mainframe.raise();
+    if(mainframe->listenToPort(1350)) {
+        mainframe->show();
+        mainframe->adjustSize();
+        mainframe->activateWindow();
+        mainframe->raise();
+    }
 
-    splash->finish(&mainframe);
+    splash->finish(mainframe);
+    qApp->installEventFilter(mainframe);
+    VDC::logMessage("VDC", "VDC ist gestartet und bereit!");
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(crashingMessageHandler);

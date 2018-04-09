@@ -1,4 +1,4 @@
- //--------------------------------------------------------- (C) VENTAS AG 2009 -
+//--------------------------------------------------------- (C) VENTAS AG 2009 -
 // Project      : VENTAS Desktop Client for A4gl
 // Filename     : fglform.cpp
 // Description  : contains the fglform class definition
@@ -41,8 +41,9 @@
   * \brief Constructor for the Fglform
   *
   */
-FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
-
+FglForm::FglForm(QString windowName, int posX, int posY, QWidget *parent) : QMainWindow(parent){
+   Q_UNUSED(posX);
+   Q_UNUSED(posY);
    //this->setAttribute(Qt::WA_PaintOnScreen);
    b_dummy = false;
    context = NULL;
@@ -63,6 +64,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    isFieldChangeSend = false;
    lastKeyPressed = 0;
 
+   setAttribute(Qt::WA_KeyCompression);
+
    /*
    if(parent != NULL){
        setWindowModality(Qt::WindowModal);
@@ -81,19 +84,26 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    QWidget *qw_framewidget = new QWidget(this);
    qw_colorbar = new QWidget(this);
    qw_colorbar->setAutoFillBackground(true);
-   qw_colorbar->setVisible(false); // hidden until 4cf show it
-   QVBoxLayout *hb_lay = new QVBoxLayout(qw_framewidget);
+   qw_colorbar->setVisible(false); // hidden until 4cf shows it
+   hb_lay = new QVBoxLayout;
+   hLayout = new QHBoxLayout;
    hb_lay->setMargin(0);
    hb_lay->setSpacing(2);
+   hb_lay->setContentsMargins(0,0,0,0);
    qw_framewidget->setLayout(hb_lay);
    qw_colorbar->setFixedHeight(3);
    this->setAccessibleName("FGLFORM");
    this->setObjectName("FGLFORM");
-   p_splitter = new QSplitter;
-   hb_lay->addWidget(p_splitter);
+   //p_splitter = new QSplitter;
+   //hb_lay->addWidget(p_splitter);
+   hb_lay->addLayout(hLayout);
    hb_lay->addWidget(qw_colorbar);
-   p_splitter->setChildrenCollapsible(false);
-   p_splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+   m_logoLabel = new QLabel;
+   m_logoLabel->setFixedHeight(51);
+   m_logoLabel->setContentsMargins(0,2,12,0);
+
+   hb_lay->insertWidget(0, m_logoLabel, 0, Qt::AlignRight);
    setCentralWidget(qw_framewidget);
 
 
@@ -119,8 +129,6 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    p_actionMenu = NULL;
    b_browser = NULL;
    formWidget = NULL;
-   b_keybuffer = false;
-   b_keybufferrunning = false;
    ql_actions = NULL;
 
    //currentWidget = NULL;
@@ -128,9 +136,9 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    // Default Propertys/Styleattributes (can be overridden in *.4st files);
 
-   QString menuType = VDC::readSettingsFromIni("","startMenuPosition");
+   QString menuType = VDC::readSettingsFromLocalIni("","startMenuPosition");
 
-   if(!menuType.isEmpty())
+   if(!menuType.isEmpty() && menuType != "-1")
    {
        setProperty("startMenuPosition", menuType);
    } else {
@@ -155,8 +163,6 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    connect(this, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
 
    this->installEventFilter(this);
-
-   //readSettingsLocal();
 }
 
 FglForm::~FglForm()
@@ -174,7 +180,7 @@ p_currscreenhandler->activeFocus();
 //------------------------------------------------------------------------------
 // Method       : createStatusBar()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::createStatusBar()
 {
@@ -186,7 +192,105 @@ StatusBar *status = new StatusBar(this);
 void FglForm::showEvent(QShowEvent *qfe)
 {
     Q_UNUSED(qfe);
-    readSettingsLocal();
+    int screenWidth  = QApplication::desktop()->availableGeometry().width();
+    int marginWidth  = this->frameGeometry().width() - this->geometry().width();
+    int screenHeight = QApplication::desktop()->availableGeometry().height();
+    int marginHeight = this->frameGeometry().height() - this->geometry().height();
+    int tabWidth  = 0;
+    int tabHeight = 0;
+//    bool isMaximized = false;
+
+    //es macht probleme unter mac wenn es maximiert dargestellt wird
+//    #ifndef Q_OS_MAC
+//        isMaximized = VDC::readSettingsFromIni(this->formName(), "windowIsMaximized").toInt();
+//    #endif
+//    if(isMaximized)
+//    {
+//        this->showMaximized();
+//    } else if (!wasMinimized){
+        QSize widgetSize (VDC::readSettingsFromIni(this->formName(), "width").toInt(), VDC::readSettingsFromIni(this->formName(), "height").toInt());
+        if(!widgetSize.isEmpty())
+        {
+            if (!wasMinimized) {
+                    this->resize(widgetSize);
+            } else {wasMinimized = false;}
+
+        } else if (!this->hasTable){
+            if(formWidget == NULL) {
+                return;
+            }
+            formWidget->adjustSize();
+            this->adjustSize();
+            int buttonWidth = this->geometry().width();
+
+            if (formWidget->geometry().height() + 81 > screenHeight - marginHeight)
+            {
+                this->resize(formWidget->width() + buttonWidth + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent), screenHeight - marginHeight);
+            } else {
+                this->resize(formWidget->width() + buttonWidth, formWidget->geometry().height() + 81);
+            }
+            if (this->frameGeometry().width() > screenWidth) {
+                this->resize(screenWidth - marginWidth, this->geometry().height());
+            }
+            // Resizing to fit the largest tab
+            QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
+            for(int i=0; i<ql_tabList.count(); i++){
+               QTabWidget *tabWidget = ql_tabList.at(i);
+
+               for(int j=0; j<tabWidget->count(); j++){
+                   QWidget* tab = tabWidget->widget(j);
+                   if(tabWidth < tab->width()){
+                      tabWidth = tab->width();
+                  }if(tabHeight < tab->height()){
+                      tabHeight = tab->height();
+                  }
+               }
+            }
+             if(tabWidth + buttonWidth > this->width()) this->resize(tabWidth + buttonWidth, this->height());
+             if(tabHeight + 81 > this->height()) this->resize(this->width(), tabHeight + 81);
+        }
+
+
+//    }
+    //aligns the window to the top right of the previous one if it came from a main module
+    if (p_currscreenhandler->isMainModule)
+    {
+        this->readSettingsLocal();
+        p_currscreenhandler->isMainModule = false;
+    } else {
+
+         foreach (FglForm *form, p_currscreenhandler->ql_fglForms)
+         {
+            if (form->isVisible() == true)
+             {
+                int posX;
+                int widthDiff = form->width() - this->width();
+
+                if (widthDiff >= 0 || form->geometry().right() >= this->width()) {
+                    posX = form->x() + widthDiff;
+                } else {
+                    posX = 0;
+                    form->move(this->width() - form->width(), form->y());
+                }
+
+                int posY;
+                int topToBottom = screenHeight - form->geometry().top();
+                int margins = (form->geometry().top() - form->frameGeometry().top())*2 + form->frameGeometry().bottom() - form->geometry().bottom();
+
+                if (topToBottom >= this->height() + marginHeight) {
+                    posY = form->geometry().top();
+                    this->move(posX, posY);
+                    posY = posY + form->geometry().top() - this->geometry().top(); //somehow necessary
+                } else if (this->height() + margins >= screenHeight) {
+                    posY = 0;
+                } else {
+                    form->move(form->x(), screenHeight - this->height() - margins);
+                    posY = form->geometry().top();
+                }
+                this->move(posX, posY);
+             }
+         }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -321,7 +425,7 @@ MainFrame::vdcdebug("FglForm","setActions", "QDomDocument xmlFile");
          connect(action, SIGNAL(triggered()), this, SLOT(prevfield()));
          continue;
       }
- 
+
       if(name == "nextrow"){
          connect(action, SIGNAL(triggered()), this, SLOT(nextrow()));
          continue;
@@ -341,7 +445,7 @@ MainFrame::vdcdebug("FglForm","setActions", "QDomDocument xmlFile");
          connect(action, SIGNAL(triggered()), this, SLOT(lastrow()));
          continue;
       }
-         
+
       if(name == "nextpage"){
          connect(action, SIGNAL(triggered()), this, SLOT(nextpage()));
          continue;
@@ -377,46 +481,46 @@ void FglForm::initActions()
 {
 MainFrame::vdcdebug("FglForm","initActions", "");
    Action *acceptA = new Action("accept", tr("Accept"), this);
-   acceptA->setAcceleratorName("F12");
+   acceptA->setAcceleratorName2("F12");
    addFormAction(acceptA);
+   p_currscreenhandler->setIconForCommand("accept");
+
 
    Action *cancelA = new Action("cancel", tr("Cancel"), this);
-   //cancelA->setAcceleratorName("Escape");
+   cancelA->setAcceleratorName2("Escape");
    addFormAction(cancelA);
+   p_currscreenhandler->setIconForCommand("cancel");
 
    Action *nextRowA = new Action("nextrow", tr("Next Row"), this);
-  // nextRowA->setAcceleratorName("Down");
-//   nextRowA->setAcceleratorName2("Down");
    addFormAction(nextRowA);
 
    Action *prevRowA = new Action("prevrow", tr("Previous Row"), this);
-//   prevRowA->setAcceleratorName("Shift+Tab");
-  // prevRowA->setAcceleratorName("Up");
    addFormAction(prevRowA);
 
    Action *nextFieldA = new Action("nextfield", tr("Next Field"), this);
-//   nextFieldA->setAcceleratorName("Tab");
    addFormAction(nextFieldA);
 
    Action *prevFieldA = new Action("prevfield", tr("Previous Field"), this);
-//   prevFieldA->setAcceleratorName("Shift+Tab");
    addFormAction(prevFieldA);
 
 
    Action *insertA = new Action("insert", tr("Insert"), this);
    addFormAction(insertA);
+   insertA->setAcceleratorName2("F3");
+   p_currscreenhandler->setIconForCommand("insert");
 
 
    Action *deleteA = new Action("delete", tr("Delete"), this);
    addFormAction(deleteA);
-
+   deleteA->setAcceleratorName2("F4");
+   p_currscreenhandler->setIconForCommand("delete");
    return;
 }
 
 //------------------------------------------------------------------------------
 // Method       : setMenu()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setMenu(RingMenu* p_menu)
 {
@@ -435,7 +539,7 @@ MainFrame::vdcdebug("FglForm","setMenu", "RingMenu* p_menu");
 
    ql_menus << p_menu;
 
-      p_splitter->addWidget(p_menu);
+      hLayout->addWidget(p_menu);
       setRingMenuPosition(getRingMenuPosition());
 
 /*
@@ -448,7 +552,7 @@ MainFrame::vdcdebug("FglForm","setMenu", "RingMenu* p_menu");
 //------------------------------------------------------------------------------
 // Method       : removeMenu()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::removeMenu()
 {
@@ -470,7 +574,7 @@ MainFrame::vdcdebug("FglForm","removeMenu", "");
 //------------------------------------------------------------------------------
 // Method       : setMenuEnabled()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setMenuEnabled(bool enable)
 {
@@ -483,39 +587,17 @@ MainFrame::vdcdebug("FglForm","setMenuEnabled", "bool enable");
    setActionMenuEnabled(!enable);
    p_menu->setVisible(enable);
    p_menu->setEnabled(enable);
-   if(enable){
-      p_menu->setFocus();
+   if (enable) {
+       QMetaObject::invokeMethod(p_menu, "setFocus", Qt::QueuedConnection);
    }
-   
-   if(this->p_toolBar == NULL)
-      return;
 
-/*
-   if(ToolBar *toolBar = qobject_cast<ToolBar *> (this->p_toolBar)){
-      QList<QPushButton*> buttons = menu()->buttons();
-      QList<QString> actions;
-      for(int i=0; i<buttons.size(); i++){
-         if(buttons.at(i)->isEnabled()){
-            QString action = buttons.at(i)->text();
-            action.remove(0,1);
-            actions << action;
-         }
-      }
-
-      QList<QAction*> toolBarActions = toolBar->actions();
-      for(int i=0; i<toolBarActions.size(); i++){
-         toolBarActions.at(i)->showStatusText(this);
-      }
-   }
-*/
-   this->checkActions();
    b_menu = enable;
 }
 
 //------------------------------------------------------------------------------
 // Method       : setActionMenu()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setActionMenu(ActionMenu* menu)
 {
@@ -530,7 +612,7 @@ MainFrame::vdcdebug("FglForm","setActionMenu", "ActionMenu* menu");
 
    p_actionMenu = menu;
 
-   p_splitter->addWidget(menu);
+   hLayout->addWidget(menu);
 
 /*
    connect(menu, SIGNAL(menuButtonPressed(QString)),
@@ -543,7 +625,7 @@ MainFrame::vdcdebug("FglForm","setActionMenu", "ActionMenu* menu");
 //------------------------------------------------------------------------------
 // Method       : setActionMenuEnabled()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setActionMenuEnabled(bool enable)
 {
@@ -571,7 +653,7 @@ void FglForm::disableForm()
 //------------------------------------------------------------------------------
 // Method       : actionTriggered()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::actionTriggered()
 {
@@ -605,7 +687,7 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
 //------------------------------------------------------------------------------
 // Method       : actionTriggered()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 /*
 void FglForm::actionTriggered()
@@ -647,7 +729,7 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
 //------------------------------------------------------------------------------
 // Method       : toolBarActionTriggered()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::toolBarActionTriggered()
 {
@@ -685,7 +767,7 @@ MainFrame::vdcdebug("FglForm","toolBarActionTriggered", "");
 //------------------------------------------------------------------------------
 // Method       : setDialog()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setDialog(Dialog* dialog)
 {
@@ -720,7 +802,7 @@ void FglForm::setRingMenuPulldown(RingMenuPulldown *pulldown)
 //------------------------------------------------------------------------------
 // Method       : setToolBar()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setToolBar(ToolBar *toolBar)
 {
@@ -751,7 +833,7 @@ MainFrame::vdcdebug("FglForm","setToolBar", "ToolBar *toolBar");
 //------------------------------------------------------------------------------
 // Method       : setToolBar()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::setToolBar(QDomDocument xmlFile)
 {
@@ -779,87 +861,25 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
    }
 }
 
-/*!
- * \brief Method to replay the Keyboardbuffer.
- */
+//------------------------------------------------------------------------------
+// Method       : setLogo()
+// Filename     : fglform.cpp
+// Description  : Sets the company logo that was send from A4GL, if non-existant inserts spacing
+//------------------------------------------------------------------------------
+void FglForm::setLogo(QString logoPath) {
+    QString logoName;
+    if(!logoPath.isEmpty()) {
+        for (int i = logoPath.count()-1; i > 0; i--) {
+            if (logoPath.at(i) == '/') {
+                logoName = logoPath.right(logoPath.count()-i-1);
+                break;
+            }
+        }
+        QPixmap logo(QDir::tempPath() + "/" + logoName);
 
-void FglForm::replayKeyboard()
-{
+        m_logoLabel->setPixmap(logo.scaledToHeight(43));
 
-
-
-  if(!currentField() && state() != Fgl::MENU)
-  {
-      if(ql_keybuffer.size() > 0)
-      {
-          clearKeyboardBuffer();
-      }
-     return;
-  }
-
-  if(!b_keybuffer)
-  {
-     return;
-  }
-
-  b_keybufferrunning = true;
-
-  foreach(QKeyEvent *key, ql_keybuffer)
-  {
-      //Response? Break hart, send keys in next scope
-      if(!b_getch_swin)
-      {
-         break;
-      }
-
-      if(TableView *tableView = qobject_cast<TableView *> (currentField())){
-          if(inputArray())
-          {
-              //QApplication::sendEvent(currentField(), key);
-              tableView->playkey(key);
-              //tableView->itemDelegateForColumn(tableView->currentIndex().column())->event(key);
-             //QMetaObject::invokeMethod(tableView->itemDelegateForColumn(tableView->currentIndex().column()), "event", Qt::QueuedConnection,Q_ARG(QEvent*, key));
-              //QApplication::postEvent(focusWidget(), key);
-
-
-          }
-      }
-      else
-      {
-          if(state() == Fgl::MENU)
-          {
-              if(menu())
-                 QApplication::postEvent(menu(), key);
-          }
-          else
-          {
-
-             QApplication::postEvent(currentField(), key);
-          }
-      }
-
-      if(ql_keybuffer.contains(key))
-      {
-            ql_keybuffer.removeOne(key);
-      }
-  }
-
-
-  b_keybufferrunning = false;
-  b_keybuffer = false;
-
-}
-/*!
- * \brief Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet.
- */
-void FglForm::clearKeyboardBuffer()
-{
-  b_keybuffer = false;
-  if(ql_keybuffer.size() > 0)
-  {
-     //ql_keybuffer.clear();
-  }
-
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -871,7 +891,6 @@ void FglForm::clearKeyboardBuffer()
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
-
 
     if(event->type() == QEvent::MouseButtonRelease)
     {
@@ -921,12 +940,24 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-    //Only send the fiel change event if the time beetween key pressed is greter then 300 miliseconds
+    //Only send the field change event if the time beetween key pressed is greter then 300 miliseconds
 
     QKeyEvent *kev = (QKeyEvent*) event;
 
     if(event->type() == QEvent::KeyPress)
     {
+        if(LineEdit *edit = qobject_cast<LineEdit*> (obj))
+        {
+            /*edit->setCursorPosition(0);*/
+            edit->setFocus();
+        }
+
+        if(TextEdit *edit = qobject_cast<TextEdit*> (obj))
+        {
+            edit->setFocus();
+        }
+
+        //TODO: Ueberlegen ob man es demnaechst rausschmeißen kann.
         if( displayArray())
         {
             if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down)
@@ -957,57 +988,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    //Keyboardbuffer
 
-  if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
-  {
-      int test = kev->key();
+    if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
+    {
+        QKeyEvent *kev = (QKeyEvent*) event;
+        if(kev->key() == Qt::Key_F9)
+        {
+            if(DateEdit *edit = qobject_cast<DateEdit*> (currentField())) {
+                edit->buttonClicked();
+            }
+        }
 
-      QKeyEvent *kev = (QKeyEvent*) event;
-      if(kev->key() == Qt::Key_F9)
-      {
-          if(DateEdit *edit = qobject_cast<DateEdit*> (obj)) {
-              edit->buttonClicked();
-          }
-      }
-
-      if(b_keybuffer && !b_keybufferrunning)
-      {
-
-          if((event->type() == QEvent::KeyRelease || event->type() == 1401) && ql_keybuffer.size() < 1)
-          {
-             return true;
-          }
-
-          QKeyEvent *kev = (QKeyEvent*) event;
-          QKeyEvent *mykev = new QKeyEvent(kev->type(),
-                                           kev->key(),
-                                           kev->modifiers(),
-                                           kev->text(),
-                                           kev->isAutoRepeat(),
-                                           kev->count());
-
-          if(!kev->isAutoRepeat())
-          {
-              ql_keybuffer << mykev;
-          }
-          if(LineEdit *edit = qobject_cast<LineEdit*> (obj))
-          {
-              /*edit->setCursorPosition(0);*/
-              edit->setFocus();
-          }
-
-          if(TextEdit *edit = qobject_cast<TextEdit*> (obj))
-          {
-              edit->setFocus();
-          }
-
-          return true;
-
-
-      }
-  }
-
-
-
+    }
 
     if(event->type() == QEvent::MouseButtonPress)
     {
@@ -1044,7 +1035,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     }
 
-    //F9 Taste wird hier ausgelößt, damit er erstmal das Feld Über jumptofield setzt, und dann im waitforevent den klick auslößt.
+    //F9 Taste wird hier ausgelöst, damit er erstmal das Feld über jumptofield setzt, und dann im waitforevent den klick auslöst.
     //Falls wir uns schon im Feld befinden, soll er hier den click machen.
     if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
@@ -1053,6 +1044,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          QWidget *w = (QWidget*) obj;
          if(QPushButton *qpb = qobject_cast<QPushButton*> (obj))
          {
+             if(context == NULL) {
+                 return false;
+             }
              if(context->fieldList().contains(qpb->parentWidget()))
              {
                  if(input() || construct()){
@@ -1107,7 +1101,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          mev->ignore();
          QWidget *w = (QWidget*) obj;
          if(input() || construct()){
-             if(obj->inherits("QComboBoxListView"))
+             if(obj->inherits("QComboBoxListView") || obj->inherits("ComboBox"))
              {
                 nextfield();
              }
@@ -1169,11 +1163,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addMenu(createMenuHideShowFields(obj));
                       rightClick->addSeparator();
 
-                      QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                      QAction *screenAction = new QAction(tr("&Save hard copy"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
 
-                      QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                      QAction *printscreenAction = new QAction(tr("&Print hard copy"), this);
                       connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                       rightClick->addAction(printscreenAction);
 
@@ -1194,11 +1188,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addMenu(createMenuHideShowFields(obj));
                       rightClick->addSeparator();
 
-                      QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                      QAction *screenAction = new QAction(tr("&Save hard copy"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
 
-                      QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                      QAction *printscreenAction = new QAction(tr("&Print hard copy"), this);
                       connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                       rightClick->addAction(printscreenAction);
                       rightClick->exec(QCursor::pos());
@@ -1225,13 +1219,20 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   rightClick->addAction(copyColumn);
                   rightClick->addSeparator();
 
-                  QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                  QAction *screenAction = new QAction(tr("&Save hard copy"), this);
                   connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                   rightClick->addAction(screenAction);
 
-                  QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                  QAction *printscreenAction = new QAction(tr("&Print hard copy"), this);
                   connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                   rightClick->addAction(printscreenAction);
+
+                  //Deactivated for inactive display array. copy cell/row needs focus from the row.
+                  if(!tv->isEnabled()) {
+                      copyCell->setEnabled(false);
+                      copyRow->setEnabled(false);
+                  }
+
                   rightClick->exec(QCursor::pos());
                   return true;
               }
@@ -1256,13 +1257,20 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               rightClick->addAction(copyColumn);
               rightClick->addSeparator();
 
-              QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+              QAction *screenAction = new QAction(tr("&Save hard copy"), this);
               connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
               rightClick->addAction(screenAction);
 
-              QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+              QAction *printscreenAction = new QAction(tr("&Print hard copy"), this);
               connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
               rightClick->addAction(printscreenAction);
+
+              //Deactivated for inactive display array. copy cell/row needs focus from the row.
+              if(!tv->isEnabled()) {
+                  copyCell->setEnabled(false);
+                  copyRow->setEnabled(false);
+              }
+
               rightClick->exec(QCursor::pos());
               return true;
 
@@ -1278,7 +1286,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   if(le->isEnabled())
                   {
                       QAction *paste = new QAction(tr("Paste"), this);
-                      connect(paste, SIGNAL(triggered()), le, SLOT(pasteText()));
+                      connect(paste, SIGNAL(triggered()), le, SLOT(paste()));
                       rightClick->addAction(paste);
                   }
 
@@ -1286,11 +1294,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   rightClick->addMenu(createMenuHideShowFields(obj));
                   rightClick->addSeparator();
 
-                  QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                  QAction *screenAction = new QAction(tr("&Save hard copy"), this);
                   connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                   rightClick->addAction(screenAction);
 
-                  QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                  QAction *printscreenAction = new QAction(tr("&Print hard copy"), this);
                   connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                   rightClick->addAction(printscreenAction);
                   rightClick->exec(QCursor::pos());
@@ -1314,11 +1322,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   rightClick->addMenu(createMenuHideShowFields(obj));
                   rightClick->addSeparator();
 
-                  QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                  QAction *screenAction = new QAction(tr("&Save hard copy"), this);
                   connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                   rightClick->addAction(screenAction);
 
-                  QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                  QAction *printscreenAction = new QAction(tr("&Print hard copy"), this);
                   connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                   rightClick->addAction(printscreenAction);
                   rightClick->exec(QCursor::pos());
@@ -1330,7 +1338,24 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     }
 
+    if(event->type() == QEvent::FocusIn) {
+        if(TextEdit *te = qobject_cast<TextEdit*> (obj)) {
+            te->setStyleSheet("color: white;");
+        }
+    } else if(event->type() == QEvent::FocusOut) {
+        if(TextEdit *te = qobject_cast<TextEdit*> (obj)) {
+            te->setStyleSheet("color: black;");
+        }
+    }
 
+    if(event->type() == QEvent::EnabledChange) {
+        if(TextEdit *te = qobject_cast<TextEdit*> (obj)) {
+            if (te->isEnabled()) {
+                te->setStyleSheet("color: black;");
+                }
+            else te->setStyleSheet("color: #787878;");
+            }
+    }
 
 /*
    if(event->type() == QEvent::FocusIn ||
@@ -1419,7 +1444,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           return true;
       }
 
-      if(obj->inherits("QComboBoxListView"))
+      if(obj->inherits("QComboBoxListView") || obj->inherits("ComboBox"))
       {
           if(keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
           {
@@ -1437,12 +1462,21 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          {
              if(le->autoNext() == 1)
              {
+                 if(le->maxLength() == 1 && le->text().length() == 1) {
+                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
+                     {
+                         QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                     }
+                 }
                  if(le->maxLength() <= le->text().length()+1 && !le->hasSelectedText())
                  {
 
                      if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
                      {
-                         QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                         if(!le->hasSelectedText())
+                         {
+                             QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                         }
                      }
                  }
              }
@@ -1458,7 +1492,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  {
                      if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
                      {
-                         QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                         if(!te->textCursor().hasSelection())
+                         {
+                             QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                         }
                      }
                  }
              }
@@ -1475,16 +1512,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                      return false;
                  }
              }
-             if(obj->parent())
-             {
-                 if(obj->parent()->inherits("QComboBox"))
-                 {
-                     event->ignore();
-                     return false;
-                 }
-             }
 
-             if(!obj->inherits("QComboBoxListView"))
+             if(!obj->inherits("QComboBox") || !obj->inherits("ComboBox"))
              {
                  if(input() || construct())
                    prevfield();
@@ -1507,16 +1536,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  }
              }
 
-             if(obj->parent())
-             {
-                 if(obj->parent()->inherits("QComboBox"))
-                 {
-                     event->ignore();
-                     return false;
-                 }
-             }
-
-             if(!obj->inherits("QComboBoxListView"))
+             if(!obj->inherits("QComboBox") || !obj->inherits("ComboBox"))
              {
                  if(input() || construct())
                    nextfield();
@@ -1553,9 +1573,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       return true;
                   }
               }
-              if(!obj->inherits("QComboBoxListView") && !obj->inherits("QComboBoxPrivateContainer")){
+              if(obj->inherits("QComboBox") || obj->inherits("ComboBox")){
                   nextfield();
-                  event->accept();
+                  event->ignore();
                   return true;
               }
           }
@@ -1567,22 +1587,37 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       if(keyEventString != "\010" && keyEventString != "" && status->b_overwrite)
       {
 
-          if(LineEdit *le = qobject_cast<LineEdit *> (obj))
-          {
-             QString lestring;
-             int pos;
-             lestring = WidgetHelper::fieldText(le);
-             pos = le->cursorPosition();
-             lestring.replace(pos,1,keyEventString);
-             WidgetHelper::setFieldText(le, lestring);
+          if(keyEvent->key() != Qt::Key_Delete) {
+              if(LineEdit *le = qobject_cast<LineEdit *> (obj))
+              {
+                  //Inhalt erst im after field prüfen da sonst kein valides datum...
+                  if(le->hasSelectedText()) {
+                      le->clear();
+                  }
+                  QString lestring;
+                  int pos;
+                  if(le->dataType() != Fgl::DTYPE_DATE) {
+                    lestring = WidgetHelper::fieldText(le);
+                  } else {
+                    lestring = le->text();
+                  }
 
-             le->setCursorPosition(pos+1);
-             return true;
-          }
-          if(TextEdit *te = qobject_cast<TextEdit *> (obj))
-          {
-             te->setOverwriteMode(true);
+                  pos = le->cursorPosition();
+                  lestring.replace(pos,1,keyEventString);
+                  if(le->dataType() != Fgl::DTYPE_DATE) {
+                    WidgetHelper::setFieldText(le, lestring);
+                  } else {
+                      le->setText(lestring);
+                  }
 
+                  le->setCursorPosition(pos+1);
+                  return true;
+              }
+              if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+              {
+                 te->setOverwriteMode(true);
+
+              }
           }
       }
       if(keyEvent->key() == Qt::Key_Home)
@@ -1649,23 +1684,6 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
-   if(event->type() == QEvent::Move)
-   {
-       if(this->isEnabled() && this->isActiveWindow())
-       {
-           widgetWidth = size().width();
-           widgetHeight = size().height();
-           widgetPosX = pos().x();
-           widgetPosY = pos().y();
-           if(!saveTimer)
-           {
-               saveTimer = new QTimer(this);
-               saveTimer->setSingleShot(true);
-               connect(saveTimer, SIGNAL(timeout()), this, SLOT(saveWindowPos()));
-               saveTimer->start(1000);
-           }
-       }
-   }
 /*
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
@@ -1689,6 +1707,23 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    return QMainWindow::eventFilter(obj, event);
 }
 
+void FglForm::moveEvent(QMoveEvent *) {
+    if(this->isEnabled() && this->isActiveWindow())
+    {
+        widgetWidth = size().width();
+        widgetHeight = size().height();
+        widgetPosX = pos().x();
+        widgetPosY = pos().y();
+        if(!saveTimer)
+        {
+            saveTimer = new QTimer(this);
+            saveTimer->setSingleShot(true);
+            connect(saveTimer, SIGNAL(timeout()), this, SLOT(writeSettingsLocal()));
+            saveTimer->start(1000);
+        }
+    }
+}
+
 QMenu* FglForm::createMenuHideShowFields(QObject *obj)
 {
     Q_UNUSED(obj);
@@ -1696,14 +1731,16 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
         for(int i=0; i < this->ql_fglFields.count(); i++) {
             if(Label *la = qobject_cast<Label*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
             {
-                if(!la->getIsHidden())
+                if(!la->getIsHidden() && !la->getNoHideMenu())
                 {
-                    int hideColumn = VDC::readSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn")).toInt();
+                    int hideColumn = VDC::readSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn"), "-1").toInt();
                     if(!la->text().isEmpty()) {
                         rightAct = new QAction(la->text(), this);
                         rightAct->setObjectName(ql_fglFields.at(i)->colName());
                         rightAct->setCheckable(true);
-                        if(hideColumn > 0) {
+                        if(hideColumn == -1 && la->getNoShow()) {
+                            rightAct->setChecked(false);
+                        } else if(hideColumn > 0) {
                             rightAct->setChecked(false);
 
                         } else {
@@ -1754,18 +1791,9 @@ void FglForm::saveFieldSettings(QAction *action)
 {
 //MainFrame::vdcdebug("Fglform", "saveFieldSettings");
 
-    int labelTabIndex;
+    int labelTabIndex = 0;
+    bool hideField = false;
 
-    //hide label
-    if(Label *label = qobject_cast<Label*> (findFieldByName(action->objectName()))) {
-        if(label->isHidden()) {
-            VDC::removeSettingsFromIni(formName(), QString(label->objectName() + "/hideColumn"));
-            p_currscreenhandler->setFieldHidden(label->objectName(), 0);
-        } else {
-            VDC::saveSettingsToIni(formName(), QString(label->objectName() + "/hideColumn"), QString::number(1));
-            p_currscreenhandler->setFieldHidden(label->objectName(), 1);
-        }
-    }
 
     for(int i=0; i < ql_fglFields.count(); i++) {
         if(ql_fglFields.at(i)->colName() == action->objectName()) {
@@ -1774,20 +1802,30 @@ void FglForm::saveFieldSettings(QAction *action)
         }
     }
 
+    //hide label
+    if(Label *label = qobject_cast<Label*> (findFieldByName(action->objectName()))) {
+       if(label->isHidden()) {
+           hideField = 0;
+       } else {
+           hideField = 1;
+       }
+
+       VDC::saveSettingsToIni(formName(), QString(label->objectName() + "/hideColumn"), QString::number(hideField));
+       p_currscreenhandler->setFieldHidden(label->objectName(), hideField);
+    }
+
     //hide the input field from the label
     for (int i=0; i < ql_fglFields.count(); i++) {
         if(ql_fglFields.at(i)->tabIndex() == labelTabIndex + 1)
         {
-            QWidget *widget = qobject_cast<QWidget*> (findFieldByName(ql_fglFields.at(i)->colName()));
-            if(widget->isHidden())
-            {
-                VDC::removeSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn"));
-                p_currscreenhandler->setFieldHidden(ql_fglFields.at(i)->colName(), 0);
-            } else {
-                VDC::saveSettingsToIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn"), QString::number(1));
-                p_currscreenhandler->setFieldHidden(ql_fglFields.at(i)->colName(), 1);
+            for(int j=i; j < ql_fglFields.count(); j++) {
+                if(ql_fglFields.at(j)->colName().contains("txx_")) {
+                    return;
+                }
+
+                VDC::saveSettingsToIni(formName(), QString(ql_fglFields.at(j)->colName() + "/hideColumn"), QString::number(hideField));
+                screenhandler()->setFieldHidden(ql_fglFields.at(j)->colName(), hideField);
             }
-            break;
         }
     }
 }
@@ -1836,6 +1874,10 @@ Fgl::Event FglForm::getFormEvent(Fgl::Event type, QWidget *widget)
 
      case Fgl::BEFORE_INSERT_DELETE_EVENT:
      case Fgl::AFTER_INSERT_DELETE_EVENT:
+     case Fgl::BEFORE_INSERT_EVENT:
+     case Fgl::AFTER_INSERT_EVENT:
+     case Fgl::BEFORE_DELETE_EVENT:
+     case Fgl::AFTER_DELETE_EVENT:
      case Fgl::BEFORE_MENU_EVENT:
      case Fgl::AFTER_MENU_EVENT:
      case Fgl::BEFORE_INPUT_EVENT:
@@ -1921,8 +1963,8 @@ if(type.attribute == "cancel"){
 //------------------------------------------------------------------------------
 // Method       : dragSuccess()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 
 void FglForm::dragSuccess()
@@ -1991,19 +2033,28 @@ void FglForm::reopenPulldown()
 
 void FglForm::saveWindowPos()
 {
-    VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
-    VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
+    if(widgetPosX >= -100 && widgetPosY >= -100)
+    {
+        VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
+        VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
+    }
     saveTimer = NULL;
 }
 
 void FglForm::changeEvent(QEvent *event)
 {
-
     if(event->type() == QEvent::WindowStateChange)
     {
-        if(this->isMaximized() && this->isVisible())
+//        #ifndef Q_OS_MAC
+//        if(this->isMaximized() && this->isVisible())
+//        {
+//            VDC::saveSettingsToIni(formName(), "windowIsMaximized", QString::number(1));
+//        }
+//        #endif
+
+        if(this->isMinimized())
         {
-            VDC::saveSettingsToIni(formName(), "windowIsMaximized", QString::number(1));
+            wasMinimized = true;
         }
 
         /*if(!this->isMaximized() && this->isVisible())
@@ -2015,10 +2066,16 @@ void FglForm::changeEvent(QEvent *event)
 
 void FglForm::writeSettingsLocal()
 {
+
+    if(this->b_dummy) {
+        return;
+    }
+    #ifndef Q_OS_MAC
     if(!this->isMaximized())
     {
         VDC::removeSettingsFromIni(formName(), "windowIsMaximized");
     }
+    #endif
 
     VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
     VDC::saveSettingsToIni(formName(), "height", QString::number(widgetHeight));
@@ -2030,7 +2087,7 @@ void FglForm::writeSettingsLocal()
     }
 
     /*//If rememberMainMenu is 2 then do not save the expand state from the menu
-    int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
+    int saveExpand = VDC::readSettingsFromLocalIni("","rememberMainMenu").toInt();
 
     if(saveExpand == 2)
     {
@@ -2085,11 +2142,6 @@ void FglForm::writeSettingsLocal()
 void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
-   widgetPosX = pos().x();
-   widgetPosY = pos().y();
-   widgetHeight = size().height();
-   widgetWidth = size().width();
-   writeSettingsLocal();
    if(!b_allowClose){
       //Dirty Fix until we implement the COMMAND KEY stuff
       if(state() == Fgl::MENU)
@@ -2133,7 +2185,7 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
 // Method       : sendMenuCommand()
 // Filename     : fglform.cpp
 // Description  : sends commands from startmenus
-//               
+//
 //------------------------------------------------------------------------------
 void FglForm::sendMenuCommand(QString cmd)
 {
@@ -2150,7 +2202,7 @@ MainFrame::vdcdebug("FglForm","sendMenuCommand", "QString cmd");
 // Method       : setFormLayout()
 // Filename     : fglform.cpp
 // Description  : creates the formparser and adds its element
-//               
+//
 //------------------------------------------------------------------------------
 void FglForm::setFormLayout(const QDomDocument& docLayout)
 {
@@ -2166,16 +2218,39 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
       widget->hide();
       widget->deleteLater();
    }
+   formSplitter->insertWidget(0,formWidget);
    */
-   //formSplitter->insertWidget(0,formWidget);
-   p_splitter->addWidget(formWidget);
+
    //formParser->getFormWidget()->show();
 
    this->ql_formFields << formParser->getFieldList();
    this->ql_fglFields << formParser->getFglFields();
    this->ql_formFieldsConst << formParser->getFieldListConst();
 
+   for (int i = 0; i < this->ql_fglFields.count(); i++) {
+       if(TableView *tv = qobject_cast<TableView*> (this->ql_fglFields.at(i)->parent())) {
+           hasTable = true;
+           break;
+       }
+   }
 
+   if (hasTable) {
+       hLayout->addWidget(formWidget);
+   } else {
+       formWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+       p_scroll = new QScrollArea(this);
+       p_scroll->setWidget(formWidget);
+       p_scroll->setWidgetResizable(true);
+       p_scroll->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
+       p_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+       p_scroll->setFocusPolicy(Qt::NoFocus);
+       hLayout->addWidget(p_scroll);
+
+       p_scroll->setFrameShape(QFrame::NoFrame);
+       p_scroll->setStyleSheet("QScrollArea { background-color: transparent; }");
+       p_scroll->widget()->setObjectName("viewport"); //to prevent the scrollbar from being affected
+       p_scroll->widget()->setStyleSheet("#viewport { background-color: transparent; }");
+   }
 
    QList<QWidget*> ql_formelements = formElements();
    int i_cntelements = ql_formelements.size();
@@ -2198,7 +2273,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
       }
 
       if(TextEdit *textEdit = qobject_cast<TextEdit *> (ql_formelements.at(i))){
-       //  connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
+         //connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
          connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(setLastCursor()));
          //connect(textEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          textEdit->installEventFilter(this);
@@ -2223,7 +2298,6 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
          delegate->setForm(this);
       }
    }
-
 }
 
 QList<QWidget*> FglForm::formElements()
@@ -2235,8 +2309,8 @@ MainFrame::vdcdebug("FglForm","formElements", "");
 //------------------------------------------------------------------------------
 // Method       : clearCurrentFocus()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::clearCurrentFocus()
 {
@@ -2340,14 +2414,19 @@ void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
         QMetaObject::invokeMethod(le, "markup", Qt::QueuedConnection);
   }
 
+  /*if(TextEdit *te = qobject_cast<TextEdit*> (w))
+  {
+        QMetaObject::invokeMethod(te, "selectAll", Qt::QueuedConnection);
+  }*/
+
 }
 
 
 //------------------------------------------------------------------------------
 // Method       : acceptTriggered()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::acceptTriggered()
 {
@@ -2360,15 +2439,15 @@ MainFrame::vdcdebug("FglForm","acceptTriggered", "");
 //------------------------------------------------------------------------------
 // Method       : cancelTriggered()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::cancelTriggered()
 {
 MainFrame::vdcdebug("FglForm","cancelTriggered", "");
     Fgl::Event event;
-    event.type = Fgl::AFTER_ROW_EVENT;
-    fieldEvent(event);
+    /*event.type = Fgl::AFTER_ROW_EVENT;
+    fieldEvent(event);*/
 
     if(displayArray()) {
         event.type = Fgl::AFTER_INPUT_EVENT;
@@ -2383,8 +2462,8 @@ MainFrame::vdcdebug("FglForm","cancelTriggered", "");
 //------------------------------------------------------------------------------
 // Method       : accept()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::accept()
 {
@@ -2398,8 +2477,8 @@ MainFrame::vdcdebug("FglForm","accept", "");
 //------------------------------------------------------------------------------
 // Method       : interrupt()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::interrupt()
 {
@@ -2409,8 +2488,8 @@ MainFrame::vdcdebug("FglForm","interrupt", "");
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setStartMenu(const QDomDocument &doc)
 {
@@ -2423,9 +2502,17 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
    connect(xml2Menu, SIGNAL(sendMenuCommand(QString)), this, SLOT(sendMenuCommand(QString)));
 
    if(property("startMenuPosition") == "tree"){
-      p_splitter->addWidget(xml2Menu->getMenu());
+      p_splitter = new QSplitter;
+      p_splitter->setChildrenCollapsible(false);
 
-      int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
+      p_splitter->addWidget(xml2Menu->getMenu());
+      xml2Menu->getMenu()->setMinimumWidth(224);
+      xml2Menu->getMenu()->setMaximumWidth(321);
+      p_splitter->setContentsMargins(0,0,0,0);
+
+      hLayout->addWidget(p_splitter);
+
+      int saveExpand = VDC::readSettingsFromLocalIni("","rememberMainMenu").toInt();
 
       if(saveExpand == 2)
       {
@@ -2471,8 +2558,8 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setStyles(const QDomDocument& doc)
 {
@@ -2486,8 +2573,8 @@ MainFrame::vdcdebug("FglForm","setStyles", "const QDomDocument& doc");
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setToolBarPosition(const QString &sm)
 {
@@ -2528,13 +2615,14 @@ MainFrame::vdcdebug("FglForm","ToolBarArea FglForm", """");
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setRingMenuPosition(const QString &sm)
 {
 MainFrame::vdcdebug("FglForm","setRingMenuPosition", "const QString &sm");
    sm.toLower();
+   /*
    if(sm == "top" ||
       sm == "bottom" ||
       sm == "left" ||
@@ -2545,8 +2633,6 @@ MainFrame::vdcdebug("FglForm","setRingMenuPosition", "const QString &sm");
    else{
       return;
    }
-   
-
 
       if(sm == "top" ||
          sm == "bottom"){
@@ -2573,19 +2659,20 @@ MainFrame::vdcdebug("FglForm","setRingMenuPosition", "const QString &sm");
             }
          }
       }
+      p_splitter->setStretchFactor(0,0); */
 }
 
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setActionPanelPosition(const QString &sm)
 {
 MainFrame::vdcdebug("FglForm","setActionPanelPosition", "const QString &sm");
-
    sm.toLower();
+   /*
    if(sm == "top" ||
       sm == "bottom" ||
       sm == "left" ||
@@ -2622,13 +2709,14 @@ MainFrame::vdcdebug("FglForm","setActionPanelPosition", "const QString &sm");
             }
          }
       }
+      p_splitter->setStretchFactor(0,0); */
 }
 
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setSizable(const QString &sm)
 {
@@ -2639,8 +2727,8 @@ MainFrame::vdcdebug("FglForm","setSizable", "const QString &sm");
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setDefaultStatusBar(const bool &sm)
 {
@@ -2651,8 +2739,8 @@ MainFrame::vdcdebug("FglForm","setDefaultStatusBar", "const bool &sm");
 //------------------------------------------------------------------------------
 // Method       : setStartMenu()
 // Filename     : fglform.cpp
-// Description  : 
-//               
+// Description  :
+//
 //------------------------------------------------------------------------------
 void FglForm::setWindowType(const QString &sm)
 {
@@ -2874,6 +2962,13 @@ QList<QWidget*> FglForm::getConstrainList()
                     tmpList << this->ql_formFieldsConst.at(i);
                 }
             }
+            if(DateEdit *edit = qobject_cast<DateEdit*> (this->ql_formFieldsConst.at(i)))
+            {
+                if(!edit->noEntry())
+                {
+                    tmpList << this->ql_formFieldsConst.at(i);
+                }
+            }
             if(ButtonEdit *edit = qobject_cast<ButtonEdit*> (this->ql_formFieldsConst.at(i)))
             {
                 if(!edit->noEntry())
@@ -2906,16 +3001,6 @@ if(this->context == NULL)
 {
     return;
 }
-if(context)
-{
-    if(b_constrained)
-    {
-        context->setConstrained(b_constrained);
-        context->ql_formFields = getConstrainList();
-    }
-}
-//qDebug() << "context->fieldList()" << context->fieldList();
-
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
                                                    // Programatical change (NEXT FIELD NEXT)-> No AFTER_FIELD_EVENT
@@ -2951,35 +3036,47 @@ if(context)
 
       QWidget *next = NULL;
       QWidget *field = NULL;
-      for(int i=0; i<=context->fieldList().count()-1; i++){
-          if(context->fieldList().at(i) == currentField()){
+      QList<QWidget*> fieldList;
+
+      if(b_constrained) {
+          fieldList = getConstrainList();
+      } else {
+          fieldList = context->fieldList();
+      }
+
+      for(int i=0; i<=fieldList.count()-1; i++){
+          if(fieldList.at(i) == currentField()){
               // fixed segmentation fault fieldlist.count is 0
-              if(i >= context->fieldList().count()-1) {
-                next = NULL;
+              if(i >= fieldList.count()-1) {
+                //emit after field event
+                Fgl::Event event;
+                event.type = Fgl::AFTER_FIELD_EVENT;
+                event.attribute = currentWidget->objectName();
+                fieldEvent(event);
                 break;
               } else {
-                  next = context->fieldList().at(i+1);
+                  next = fieldList.at(i+1);
                   if(!next->isEnabled() || next->isHidden())
                   {
-                      for(int j=i; j<context->fieldList().count()-1; j++)
+                      for(int j=i; j<fieldList.count()-1; j++)
                       {
-                          next = context->fieldList().at(j+1);
+                          next = fieldList.at(j+1);
 
-                          if(j >= context->fieldList().count()-1) {
+                          if(j >= fieldList.count()-1) {
                             next = NULL;
                             break;
                           }
 
                           if(next->isEnabled() && next->isVisible())
                           {
-                              field = context->fieldList().at(j+1);
+                              field = fieldList.at(j+1);
                               break;
                           }
                       }
                       //next = NULL;
                       break;
                   } else {
-                      field = context->fieldList().at(i+1);
+                      field = next;
                       break;
                   }
               }
@@ -2987,20 +3084,25 @@ if(context)
       }
 
       if(field == NULL){ //no next field -> go to first field
-          if(context->fieldList().isEmpty() || context->fieldList().count() < 2)
+          if(fieldList.isEmpty() || fieldList.count() < 2)
           {
-             return;
+             field = currentWidget;
           } else {
               //check if the first field is enabled and visible
-              for (int j=0; j < context->fieldList().count()-1; j++)
+              for (int j=0; j < fieldList.count()-1; j++)
               {
-                  if(context->fieldList().at(j)->isEnabled() && !context->fieldList().at(j)->isHidden())
+                  if(fieldList.at(j)->isEnabled() && !fieldList.at(j)->isHidden())
                   {
-                      field = context->fieldList().at(j);
+                      field = fieldList.at(j);
                       break;
                   }
               }
           }
+      }
+
+      //failsafe if there is no field
+      if(field == NULL) {
+          return;
       }
 
       setCurrentField(field->objectName(), b_sendEvent);
@@ -3026,6 +3128,13 @@ if(context)
                }
                int rowCount = table->rowCount(QModelIndex());
                int column = -1;
+
+               //Do not change row if the row nect row is greater as the row count.
+               if(row+1 >= rowCount)
+               {
+                   return;
+               }
+
                if(view->eventfield.column() != -1)
                {
                    //No After Field + After Row Event if its nextfield/prevfield/current etc
@@ -3061,8 +3170,13 @@ if(context)
                         {
 
 
+                            //view->setUpdatesEnabled(false);
                             view->setCurrentField(j+1, column+1, change);
                             return;
+                        } else {
+                            if(!change) {
+                                change = true;
+                            }
                         }
                         column = 0;
                     }
@@ -3121,7 +3235,7 @@ if(context)
 // Filename     : fglform.cpp
 // Description  : ActionDefaults
 //------------------------------------------------------------------------------
-void FglForm::prevfield()
+void FglForm::prevfield(bool sendEvent)
 {
 
 MainFrame::vdcdebug("FglForm","prevfield", "");
@@ -3132,21 +3246,22 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
        return;
    }
 
-   if(b_constrained)
-   {
-       context->setConstrained(b_constrained);
-       context->ql_formFields = getConstrainList();
-   }
-
-
    if(!screenRecord()){
 
 
        QWidget *prev = NULL;
        QWidget *tmp  = NULL;
-       int i_currpos = context->fieldList().indexOf(currentField()) - 1;
+       QList<QWidget*> fieldList;
+
+       if(b_constrained) {
+           fieldList = getConstrainList();
+       } else {
+           fieldList = context->fieldList();
+       }
+
+       int i_currpos = fieldList.indexOf(currentField()) - 1;
        for(int i=i_currpos; i>=0; i--){
-          tmp = context->fieldList().at(i);
+          tmp = fieldList.at(i);
           if(tmp->isEnabled() && tmp->isVisible())
           {
              prev = tmp;
@@ -3154,24 +3269,23 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
           }
        }
 
-
        if(prev == NULL){ //no next field -> go to last! field
-           if(context->fieldList().isEmpty())
+           if(fieldList.isEmpty())
            {
                return;
            } else {
-               for(int i=context->fieldList().count()-1; i > 0; i--)
+               for(int i=fieldList.count()-1; i > 0; i--)
                {
-                   QWidget *field = context->fieldList().at(i);
+                   QWidget *field = fieldList.at(i);
                    if(field->isEnabled() && field->isVisible())
                    {
-                       prev = context->fieldList().at(i);
+                       prev = fieldList.at(i);
                        break;
                    }
                }
            }
        }
-       jumpToField(prev);
+       jumpToField(prev, sendEvent);
        //setCurrentField(prev->objectName(), b_sendEvent);
    }
    else{
@@ -3339,19 +3453,45 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
 
 void FglForm::insert()
 {
-
 MainFrame::vdcdebug("FglForm","nextrow", "");
-   //find active screenRecord
-   QList<QWidget*> ql_widgets = formElements();
-   int cnt_ele = ql_widgets.size();
-   for(int i=0; i<cnt_ele; i++){
-      if(ql_widgets.at(i)->inherits("TableView")){
-         TableView *view = (TableView*) ql_widgets.at(i);
-         if(view->isEnabled()){
-           view->insertRow();
-         }
-      }
-   }
+    Fgl::Event event;
+    int found = 0;
+
+    event.type = Fgl::BEFORE_INSERT_EVENT;
+    event.id = "-1";
+    fieldEvent(event);
+
+    for(int i=0; i < ql_formEvents.size(); i++)
+    {
+        if(ql_formEvents.at(i).attribute == "2014")
+        {
+            found = 1;
+            break;
+        }
+    }
+
+    if(found == 1)
+    {
+        event.type = Fgl::GUI_ACTION_EVENT;
+        event.attribute = "2014";
+        fieldEvent(event);
+    } else {
+       //find active screenRecord
+       QList<QWidget*> ql_widgets = formElements();
+       int cnt_ele = ql_widgets.size();
+       for(int i=0; i<cnt_ele; i++){
+          if(ql_widgets.at(i)->inherits("TableView")){
+             TableView *view = (TableView*) ql_widgets.at(i);
+             if(view->isEnabled()){
+               view->insertRow();
+             }
+          }
+       }
+    }
+
+    event.type = Fgl::AFTER_INSERT_EVENT;
+    event.id = "-1";
+    fieldEvent(event);
 }
 
 void FglForm::remove()
@@ -3360,11 +3500,12 @@ MainFrame::vdcdebug("FglForm","nextrow", "");
 Fgl::Event event;
 int found = 0;
 
-qDebug() << "size: " << ql_formEvents.size();
+event.type = Fgl::BEFORE_DELETE_EVENT;
+event.id = "-1";
+fieldEvent(event);
+
 for(int i=0; i < ql_formEvents.size(); i++)
 {
-    qDebug() << "name:" << ql_formEvents.at(i).attribute;
-    qDebug() << "key:" << Fgl::stringToKey(ql_formEvents.at(i).attribute);
     if(ql_formEvents.at(i).attribute == "2015")
     {
         found = 1;
@@ -3389,6 +3530,10 @@ if(found == 1)
            }
        }
 }
+
+event.type = Fgl::AFTER_DELETE_EVENT;
+event.id = "-1";
+fieldEvent(event);
 }
 
 //------------------------------------------------------------------------------
@@ -3396,7 +3541,7 @@ if(found == 1)
 // Filename     : fglform.cpp
 // Description  : ActionDefaults
 //------------------------------------------------------------------------------
-void FglForm::nextrow()
+void FglForm::nextrow(bool sendEvent)
 {
 MainFrame::vdcdebug("FglForm","nextrow", "");
    //find active screenRecord
@@ -3414,8 +3559,8 @@ MainFrame::vdcdebug("FglForm","nextrow", "");
                }
             }
             else{
-               if(currentRow <= view->model()->rowCount()){
-                   view->setCurrentField(currentRow+1, currentColumn);
+               if(currentRow+1 <= view->model()->rowCount()){
+                   view->setCurrentField(currentRow+1, currentColumn, sendEvent);
                }
             }
          }
@@ -3428,7 +3573,7 @@ MainFrame::vdcdebug("FglForm","nextrow", "");
 // Filename     : fglform.cpp
 // Description  : ActionDefaults
 //------------------------------------------------------------------------------
-void FglForm::prevrow()
+void FglForm::prevrow(bool sendEvent)
 {
 MainFrame::vdcdebug("FglForm","prevrow", "");
    //find active screenRecord
@@ -3493,7 +3638,7 @@ MainFrame::vdcdebug("FglForm","prevrow", "");
             }
             else{
                if(currentRow+1 <= view->model()->rowCount()){
-                   view->setCurrentField(currentRow+1, column+1);
+                   view->setCurrentField(currentRow+1, column+1, sendEvent);
                }
             }
          }
@@ -3781,7 +3926,7 @@ QList<Fgl::Event> FglForm::getInputEvents(int start, int end, bool b_backward, b
 //------------------------------------------------------------------------------
 // Method       : checkToolBar()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 /*
 void FglForm::checkToolBar()
@@ -3845,7 +3990,7 @@ MainFrame::vdcdebug("FglForm","checkToolBar", "");
 //------------------------------------------------------------------------------
 // Method       : revertState()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::revertState(Fgl::State state){
 
@@ -3856,24 +4001,24 @@ void FglForm::revertState(Fgl::State state){
          break;
       }
    }
-   checkState();
+   //checkState();
 }
 
 
 //------------------------------------------------------------------------------
 // Method       : checkState()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::checkState()
 {
 MainFrame::vdcdebug("FglForm","checkState", "");
+   Fgl::State state = ql_states.last();
+
    if(p_dialog != NULL || p_ringMenuPulldown != NULL){
       checkActions();
       return;
    }
-
-   Fgl::State state = ql_states.last();
 
    bool enable = (state == Fgl::MENU);
 
@@ -3892,39 +4037,31 @@ MainFrame::vdcdebug("FglForm","checkState", "");
    else
    {
       setMenuEnabled(enable);
+      setActionMenuEnabled(!enable);
    }
-/*
-   if(state == Fgl::INPUT ||
-      state == Fgl::CONSTRUCT ||
-      state == Fgl::DISPLAYARRAY ||
-      state == Fgl::INPUTARRAY){
-      setActionMenuEnabled(true);
-      setMenuEnabled(false);
-   }
-   else{
-      setActionMenuEnabled(false);
-      setMenuEnabled(true);
-   }
-*/
-
-    if(state != Fgl::IDLE)
-    {
-        checkActions();
-    }
 }
 
 //------------------------------------------------------------------------------
 // Method       : readSettingsLocal()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 void FglForm::readSettingsLocal()
 {
 MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
-    QPoint widgetPos(VDC::readSettingsFromIni(formName(), "posX").toInt(), VDC::readSettingsFromIni(formName(), "posY").toInt());
-        move(widgetPos);
-    update();
+    int posX = VDC::readSettingsFromIni(formName(), "posX").toInt();
+    int posY = VDC::readSettingsFromIni(formName(), "posY").toInt();
 
+    int screenWidth = QApplication::desktop()->availableGeometry().width();
+    int screenHeight = QApplication::desktop()->availableGeometry().height();
+
+    if(posX < screenWidth && posY < screenHeight) {
+        move(posX, posY);
+        update();
+    } else {
+        VDC::saveSettingsToIni(formName(), "posX", QString::number(0));
+        VDC::saveSettingsToIni(formName(), "posY", QString::number(0));
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -3939,7 +4076,7 @@ Q_UNUSED(ev);
 //ev->accept();
 
 //createContextMenu(ev->globalPos());
-   
+
 }
 
 void FglForm::createContextMenu(const QPoint &pos)
@@ -4119,6 +4256,11 @@ MainFrame::vdcdebug("FglForm","findFieldByName", "QString fieldName");
             Fgl::Link link = links.at(j);
             if(link.colName == fieldName)
             {
+                //Failsafe no segmentation fault id fieldIdRef greater als ql_fields
+                if(ql_fields.count() <= link.fieldIdRef) {
+                    qWarning("Invalid fieldIdRef");
+                    return NULL;
+                }
                 //DISPLAY BY NAME Failsafe, if a inputarray have a member with the same field like a edit field
                 if(LineEditDelegate *led = qobject_cast<LineEditDelegate*> (ql_fields.at(link.fieldIdRef)))
                 {
@@ -4223,28 +4365,28 @@ MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
 
 QWidget* FglForm::findFieldById(int id)
 {
+    QList<QWidget*> ql_fields = ql_formFields;
+
     if(id == -1)
     {
-        qDebug() << "bin da";
         return NULL;
     }
 
-       QList<QWidget*> ql_fields = ql_formFields;
-       if(ql_formFields.size() <= 0)
-       {
-           if(p_currscreenhandler->getContexts().last()->fieldList().count() >= id)
-           {
-               return p_currscreenhandler->getContexts().last()->fieldList().at(id);
-           }
+    if(ql_formFields.size() <= 0)
+    {
+        if(p_currscreenhandler->getContexts().last()->fieldList().count() >= id)
+        {
+            return p_currscreenhandler->getContexts().last()->fieldList().at(id);
+        }
+    }
 
-       }
-       if(id < 0)
-       {
-           qWarning("Invalid FieldId");
-           return NULL;
-       }
-       return ql_fields.at(id);
-      
+    if(id < 0 || id >= ql_fields.count())
+    {
+        qWarning("Invalid FieldId");
+        return NULL;
+    }
+    return ql_fields.at(id);
+
 }
 
 void FglForm::setScreenRecordArrLine(int line)
@@ -4515,7 +4657,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                         if(QPushButton *button = qobject_cast<QPushButton *> (mAction->parent())){
                            if(!fAction->image().isEmpty()){
                               mAction->setImage(fAction->image());
-                              button->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                              button->setIcon(QIcon(QString(":pics/%1").arg(fAction->image())));
                            }
                            if(p_menu->isActionButton(button)){
                               button->setText(fAction->text());
@@ -4540,7 +4682,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                         if(QPushButton *button = qobject_cast<QPushButton *> (dAction->parent())){
                            if(!fAction->image().isEmpty()){
                               dAction->setImage(fAction->image());
-                              button->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                              button->setIcon(QIcon(QString(":pics/%1").arg(fAction->image())));
                            }
                         }
                         break;
@@ -4561,7 +4703,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                      if(pAction->name() == fAction->name()){
                         fAction->setEnabled(true);
                            if(!fAction->image().isEmpty()){
-                              pAction->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                              pAction->setIcon(QIcon(QString(":pics/%1").arg(fAction->image())));
                               pc_pulldown->refresh();
                            }
                         }
@@ -4581,7 +4723,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                      if(pAction->name() == fAction->name()){
                         fAction->setEnabled(true);
                            if(!fAction->image().isEmpty()){
-                              pAction->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                              pAction->setIcon(QIcon(QString(":pics/%1").arg(fAction->image())));
                               pc_pulldown->update();
                            }
                         }
@@ -4643,10 +4785,12 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
             }
          }
       }
+      checkShortcuts();
    }
 
-    checkShortcuts();
-   //checkToolBar();
+    if(toolBar() != NULL) {
+        checkToolBar();
+    }
 }
 
 void FglForm::checkGuiActions()
@@ -4654,7 +4798,7 @@ void FglForm::checkGuiActions()
 MainFrame::vdcdebug("FglForm","checkGuiActions", "");
    QList<QAction*> formActions = this->actions();
    for(int i=0; i<formActions.count(); i++){
-      
+
       if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
          if(fAction->name() == "accept")
             fAction->setEnabled((input() || construct() || screenRecord()));
@@ -4711,7 +4855,7 @@ MainFrame::vdcdebug("FglForm","checkGuiActions", "");
             fAction->setEnabled((state() != Fgl::IDLE));
 
       }
-      
+
    }
 
 }
@@ -4720,7 +4864,7 @@ void FglForm::checkMenu()
 {
 MainFrame::vdcdebug("FglForm","checkMenu", "");
 
-   
+
 }
 
 bool FglForm::handleGuiAction(Action* fAction)
@@ -4859,7 +5003,7 @@ MainFrame::vdcdebug("FglForm","checkShortcuts", "");
                 if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
                    if(action == action2 || !action2->isEnabled())
                       continue;
-   
+
                    if(bool enable = Fgl::stringToKey(action2->acceleratorName()) == Fgl::stringToKey(s1)){
                       action2->setAccNameEnabled(!enable);
                    }
@@ -4884,7 +5028,7 @@ MainFrame::vdcdebug("FglForm","checkShortcuts", "");
                 if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
                    if(action == action2 || !action2->isEnabled())
                       continue;
-   
+
                    if(bool enable = Fgl::stringToKey(action2->acceleratorName2()) == Fgl::stringToKey(s1)){
                       action2->setAccName2Enabled(!enable);
                    }
@@ -4905,7 +5049,7 @@ MainFrame::vdcdebug("FglForm","checkShortcuts", "");
                 if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
                    if(action == action2 || !action2->isEnabled())
                       continue;
-   
+
                    if(bool enable = Fgl::stringToKey(action2->acceleratorName3()) == Fgl::stringToKey(s1)){
                       action2->setAccName3Enabled(!enable);
                    }
@@ -4922,7 +5066,7 @@ MainFrame::vdcdebug("FglForm","checkShortcuts", "");
                 if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
                    if(action == action2 || !action2->isEnabled())
                       continue;
-   
+
                    if(bool enable = Fgl::stringToKey(action2->acceleratorName4()) == Fgl::stringToKey(s1)){
                       action2->setAccName4Enabled(!enable);
                    }
@@ -5135,10 +5279,12 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               {
                   if(Fgl::isValidForType(Fgl::DTYPE_INT, text, widget->format())){
                       WidgetHelper::setFieldText(widget, text);
+                      connect(this, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
                   }
                   else{
                      emit error("ERROR in Character conversion");
-                     WidgetHelper::setFieldText(widget, "");
+                      jumpToField(widget, false);
+                      QObject::disconnect(this, SLOT(acceptTriggered()));
                   }
 
               }
@@ -5182,6 +5328,9 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                               this->error("Date Field is not Valid.");
                               this->setFocusOnWidget(widget, Qt::OtherFocusReason);
                               this->jumpToField(widget, false);
+                              QObject::disconnect(this, SLOT(acceptTriggered()));
+                          } else {
+                              connect(this, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
                           }
                       } else {
                           for(int i=0; i < dates.count(); i++)
@@ -5192,6 +5341,9 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                                   this->error("Date Field is not Valid.");
                                   this->setFocusOnWidget(widget, Qt::OtherFocusReason);
                                   this->jumpToField(widget, false);
+                                  QObject::disconnect(this, SLOT(acceptTriggered()));
+                              } else {
+                                  connect(this, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
                               }
                           }
                       }
@@ -5206,7 +5358,6 @@ MainFrame::vdcdebug("FglForm","checkField", "");
 void FglForm::setUserInputEnabled(bool enabled)
 {
   if(!enabled)
-    b_keybuffer = true;
 
     if (context) {
         foreach (QWidget *widget, context->fieldList())
@@ -5234,8 +5385,10 @@ void FglForm::setUserInputEnabled(bool enabled)
         }
     }
     RingMenu *ringMenu = menu();
-    if (ringMenu)
+    if (ringMenu) {
         ringMenu->setEnabled(enabled);
+        ringMenu->setFocus();
+    }
 
 
 }
@@ -5245,7 +5398,7 @@ void FglForm::sendFieldChange()
     if(!isFieldChangeSend)
     {
         if(TableView *tv = qobject_cast<TableView *> (currentField()))
-        {            
+        {
             QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
             TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
             tv->ignoreFieldChangeEvent = false;
@@ -5253,17 +5406,10 @@ void FglForm::sendFieldChange()
             QModelIndex nextIndex;
 
             if(inputArray()) {
-                if(tv->currentIndex().row() > 0)
-                {
-                    prevIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row()-1, tv->currentIndex().column()));
-                    nextIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row(),tv->currentIndex().column()));
-                } else {
-                    prevIndex = proxyModel->mapFromSource(table->index(0, 0));
-                    nextIndex = proxyModel->mapFromSource(table->index(0, 0));
-                }
+                emit tv->fieldChanged(QModelIndex(), QModelIndex());
             }
 
-            /*if(displayArray()) {
+            if(displayArray()) {
                 if(tv->currentIndex().row() > 0)
                 {
                     prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
@@ -5272,7 +5418,7 @@ void FglForm::sendFieldChange()
                     prevIndex = table->index(0, 0);
                     nextIndex = table->index(0, 0);
                 }
-            }*/
+            }
 
             emit tv->fieldChanged(nextIndex, prevIndex);
             isFieldChangeSend = true;
@@ -5316,18 +5462,25 @@ void FglForm::saveScreenshot()
                                                     tr("Image File(*.png *.gif *.jpg *.jpeg)"));
     if(!fileName.isEmpty())
     {
-        QPixmap p = QPixmap::grabWidget(this);
+        QPixmap p = this->grab();
         p.save(fileName);
     }
 }
 
 void FglForm::printScreenshot()
 {
+    QPainter painter;
     QPrinter screenPrinter;
+    screenPrinter.setPageSize(QPrinter::A4);
+    screenPrinter.setResolution(600);
+
+    QPixmap pm(this->size());
     QPrintDialog *printDialog = new QPrintDialog(&screenPrinter, this);
     if (printDialog->exec() == QDialog::Accepted) {
-        QPainter p(&screenPrinter);
-        QPixmap pm = QPixmap::grabWidget(this);
-        p.drawPixmap(0, 0, pm);
+        this->render(&pm);
+        painter.begin(&screenPrinter);
+        screenPrinter.paintEngine()->drawPixmap(QRectF(0, 0, pm.width(), pm.height()), pm , QRectF(0, 0, pm.width(), pm.height()));
+        painter.end();
+
     }
 }

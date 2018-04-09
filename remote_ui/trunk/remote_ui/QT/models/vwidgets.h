@@ -34,7 +34,7 @@
 #include <QCalendarWidget>
 #include <QDialog>
 #include <QProgressBar>
-#include <QWebView>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 #include <QTabWidget>
 #include <QTextBlock>
 #include <QTextCursor>
@@ -76,6 +76,7 @@ public:
    bool getNoShow() { return b_isOnlyHidden; }
    void setIsHidden(bool ro) { b_isHidden = ro; }
    bool getIsHidden() { return b_isHidden; }
+
 /*
    virtual QString text(int row = 0);
    virtual void setText(QString s = "", int row = 0);
@@ -349,6 +350,7 @@ public:
     bool img;
     QString fieldValue; //Attribute to check that the image is changed(avoiding repaint of the whole mask if the same image is displayed)
     int x,y,w;
+    bool autoScale;
 
     void setIsHidden(bool ro) { b_isHidden = ro; }
     bool getIsHidden() { return b_isHidden; }
@@ -356,9 +358,13 @@ public:
     void setNoShow(bool ro) { b_noshow = ro; }
     bool getNoShow() { return b_noshow; }
 
+    void setNoHideMenu(bool ro) { b_noHideMenu = ro; }
+    bool getNoHideMenu() { return b_noHideMenu; }
+
 private:
     bool b_isHidden;
     bool b_noshow;
+    bool b_noHideMenu;
 
 };
 
@@ -612,7 +618,7 @@ public:
 
 };
 
-class WebPage : public QWebPage
+class WebPage : public QWebEnginePage
 {
     virtual QString userAgentForUrl(const QUrl& url) const {
     Q_UNUSED(url);
@@ -620,7 +626,7 @@ class WebPage : public QWebPage
     }
 };
 
-class WebView : public QWebView
+class WebView : public QWebEngineView
 {
    Q_OBJECT
 
@@ -645,6 +651,7 @@ class WidgetHelper
 
 public:
    static bool setDisplayAttributes(int, QWidget*);
+   //static bool autoScale = false;
    static int getLengthBySqlType(const QString& sqlType);
    static QString getWidgetName(QObject*);
    static QString getWidgetColName(QObject*);

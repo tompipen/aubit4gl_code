@@ -71,6 +71,7 @@ public:
     void setCurrentColumn(int);
     void setCurrentField(int, int, bool b_sendevents = true);
     void setText(QString, int, int);
+    void setAutoRepeat(bool value) { b_isAutoRepeat = value; }
     virtual QSize sizeHint () const;
 
     void setCurrMouseRow(int);
@@ -79,7 +80,7 @@ public:
     int getCurrMouseColumn();
     void setMouseModelIndex(QModelIndex);
     QModelIndex getMouseModelIndex();
-    bool eventFilter(QObject *, QEvent *);
+    bool isAutoRepeat() { return b_isAutoRepeat; }
 
     void restoreSortOrder();
     void setUnsortedFields(int, QStringList);
@@ -96,6 +97,7 @@ private:
     QVector< QVector<QString> >unsortedFields;
   //  bool b_palette;
 
+    bool b_isAutoRepeat;
     bool b_ignoreRowChange;
     bool checkBounds(const QModelIndex);
     int i_currrowmouse;
@@ -129,6 +131,8 @@ public slots:
 
 protected:
    QModelIndex mouseindex;
+   bool eventFilter(QObject *, QEvent *);
+
 /*
    void nextfield();
    void prevfield();
@@ -246,13 +250,14 @@ public:
    void setModelData(QWidget *editor, QAbstractItemModel *model,
                      const QModelIndex &index) const;
 
-   void updateEditorGeometry(QWidget *editor,
-   const QStyleOptionViewItem &option, const QModelIndex &index) const;
+   void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+   void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
    QSize *fieldSize;
 
    void setForm(QWidget *form);// {p_fglform = form; };
 
+   void setColor(QString value) { m_color = value; }
    void setColumn(int c) { i_column = c; };
    int column() { return i_column; } ;
    bool readOnly() { return b_readOnly; };
@@ -274,6 +279,8 @@ private:
    QDomElement formElement;
    QString qs_text;
    bool b_readOnly;
+
+   QString m_color;
 
    int i_column;
 };

@@ -1,4 +1,7 @@
 #include "models/webbrowser.h"
+#include "models/dialog.h"
+#include "mainframe.h"
+
 #include <QTextEdit>
 
 /*WebBrowser::WebBrowser()
@@ -8,12 +11,8 @@
 
 void WebBrowser::createBrowser()
 {
+MainFrame::vdcdebug("createBrowser","~createBrowser()", "");
     mTb = NULL;
-    QFile file;
-    file.setFileName(":/jquery.min.js");
-    file.open(QIODevice::ReadOnly);
-    jQuery = file.readAll();
-    file.close();
     //QUrl url = QUrl("http://www.google.de");
     _scalefactor = 1;
     QNetworkProxyFactory::setUseSystemConfiguration(true);
@@ -34,7 +33,7 @@ void WebBrowser::createBrowser()
 
     //WebView->page()->settings()->fontSize(QWebSettings::DefaultFontSize)
 
-    fontSize = WebView->page()->settings()->fontSize(QWebSettings::DefaultFontSize);
+    fontSize = WebView->page()->settings()->fontSize(QWebEngineSettings::DefaultFontSize);
     defaultFontSize = fontSize;
 
     setWindowTitle("VENTAS.browser");
@@ -56,50 +55,59 @@ void WebBrowser::createBrowser()
 }
 void WebBrowser::loadUrl(const QUrl &http)
 {
-  QString file = http.toString();
+MainFrame::vdcdebug("WebBrowser","loadUrl", "");
+  m_file = http.toString();
 
-  if(QFile::exists(QDir::tempPath() + "/" + file))
+  if(QFile::exists(QDir::tempPath() + "/" + m_file))
   {
-     file = QDir::tempPath() + "/" + file;
+     m_file = QDir::tempPath() + "/" + m_file;
   }
 
-  QFile fileRead(file);
+  QFile fileRead(m_file);
   if(!fileRead.open(QIODevice::ReadOnly))
   {
-    qDebug() << QString("WEBBROWSER: Cannot open file %").arg(file);
+    qDebug() << QString("WEBBROWSER: Cannot open file %").arg(m_file);
   }
 
-  if(!file.contains("https://") && !file.contains("http://") && !file.contains("www."))
+  if(!m_file.contains("https://") && !m_file.contains("http://") && !m_file.contains("www."))
   {
-      WebView->page()->mainFrame()->setContent(fileRead.readAll());
+      WebView->page()->load(m_file);
   } else {
-     QUrl nurl(file, QUrl::TolerantMode);
+     QUrl nurl(m_file, QUrl::TolerantMode);
      WebView->setUrl(nurl);
   }
 
-  locationEdit->setText(file);
+  locationEdit->setText(m_file);
 }
 
 void WebBrowser::adjustLocation()
 {
+MainFrame::vdcdebug("WebBrowser","adjustLocation", "");
     locationEdit->setText(WebView->url().toString());
 }
 
 void WebBrowser::closeBrowser()
 {
+MainFrame::vdcdebug("WebBrowser","closeBrowser", "");
     this->close();
 }
 
 void WebBrowser::changeLocation()
 {
-    QUrl url = QUrl(locationEdit->text());
-    WebView->load(url);
-    WebView->setFocus();
+MainFrame::vdcdebug("WebBrowser","changeLocation", "");
+    QString value = locationEdit->text();
+    if(!value.startsWith("http://") && !value.startsWith("https://")) {
+        value.prepend("http://");
+    }
+
+    QUrl url = QUrl(value, QUrl::TolerantMode);
+    WebView->setUrl(url);
 }
 
 
 void WebBrowser::adjustTitle(QString title)
 {
+MainFrame::vdcdebug("WebBrowser","adjustTitle", "");
     setWindowTitle(title);
 }
 
@@ -110,44 +118,69 @@ void WebBrowser::setProgress(int p)
 
 void WebBrowser::finishLoading(bool)
 {
-    WebView->page()->mainFrame()->evaluateJavaScript(jQuery);
+    //WebView->page()->mainFrame()->evaluateJavaScript(jQuery);
 
 }
 
 void WebBrowser::printpage()
 {
-
+MainFrame::vdcdebug("WebBrowser","printpage", "");
   QPrinter printer;
-  printer.setPageSize(QPrinter::Letter);
+  QPrintDialog dialog(&printer, this);
+  QString filePath = m_file;
+
+  printer.setPageSize(QPrinter::A4);
   printer.setPageMargins(-0.6, -0.4, -0.8, -0.8, QPrinter::Inch);
 
-  QPrintDialog dialog(&printer, this);
+  if(filePath.contains("www") || filePath.contains("http://")) {
+      Dialog *dialog = new Dialog("VENTAS", "Printing is only allowed for local files.", "", "information", this, Qt::WindowStaysOnTopHint);
+      QPalette palette;
+      palette.setBrush(this->backgroundRole(), QBrush(QImage(":pics/VENTAS_11_bg.png")));
+      dialog->setPalette(palette);
+      dialog->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_11_btn_dialog_gruen.png); padding-right: 10; text-align: left; min-width: 88px; }" "QPushButton:focus { border-image: url(:pics/VENTAS_11_btn_dialog_gelb.png); outline: none;}" "QPushButton:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gruen_grau.png);}" "QPushButton:focus:hover { border-image: url(:pics/VENTAS_11_btn_dialog_gelb_grau.png);}");;
+      dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+      dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+      connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+      dialog->show();
+      return;
+  }
 
   if(dialog.exec() == QDialog::Accepted)
   {
-     //WebView->print(QWebView::print);
+      //Qt5.6 - printing is not supportet only with version 5.8
+      /*QTextEdit *textEdit = new QTextEdit;
+      WebView->page()->toHtml([textEdit](const QString &result){ textEdit->setHtml(result); });*/
 
-     QWebFrame *webFrame = WebView->page()->mainFrame();
+      if(QFile::exists(filePath))
+      {
+          QFile file(filePath);
+          if(!file.open(QIODevice::ReadOnly)) {
+              qDebug() << "cannot open file for printing";
+              return;
+          }
 
-     QTextEdit htmlDocument;
-     htmlDocument.setHtml(webFrame->toHtml());
-     QFont font;
-     font.setFamily("Courier");
-     font.setPointSize(fontSize-8);
-     htmlDocument.setFont(font);
-     htmlDocument.print(&printer);
+          QFont font;
+          font.setFamily("Courier");
+          font.setPointSize(fontSize-8);
+          QTextEdit *text = new QTextEdit;
+          text->setHtml(file.readAll());
+          text->setFont(font);
+          text->print(&printer);
+      }
   }
 }
 
 void WebBrowser::highlightAllLinks()
 {
+MainFrame::vdcdebug("WebBrowser","highlightAllLinks", "");
     QString code = "$('a').each( function () { $(this).css('background-color', 'yellow') } )";
-    WebView->page()->mainFrame()->evaluateJavaScript(code);
+    //WebView->page()->mainFrame()->evaluateJavaScript(code);
 }
 
 
 void WebBrowser::openSearch()
 {
+MainFrame::vdcdebug("WebBrowser","openSearch", "");
     if(mTb)
     {
         mTb->close();
@@ -196,6 +229,7 @@ void WebBrowser::openSearch()
 
 void WebBrowser::forBackSearch(QString searchRichtung)
 {
+MainFrame::vdcdebug("WebBrowser","forBackSearch", "");
     if(searchRichtung == "forward")
     {
         emit searchForward(mSearchString);
@@ -207,15 +241,17 @@ void WebBrowser::forBackSearch(QString searchRichtung)
 
 void WebBrowser::searchBackward(QString search = "")
 {
+MainFrame::vdcdebug("WebBrowser","searchBackward", "");
     mSearchString = search;
-    this->WebView->page()->findText(search, QWebPage::FindWrapsAroundDocument | QWebPage::FindBackward);
+    this->WebView->page()->findText(search, QWebEnginePage::FindBackward);
 
 }
 
 void WebBrowser::searchForward(QString search = "")
 {
+MainFrame::vdcdebug("WebBrowser","searchForward", "");
     mSearchString = search;
-    this->WebView->page()->findText(search, QWebPage::FindWrapsAroundDocument);
+    this->WebView->page()->findText(search);
 
 }
 
@@ -263,29 +299,31 @@ void MainWindow::removeEmbeddedElements()
 
 void WebBrowser::setNavigationIcons()
 {
+MainFrame::vdcdebug("WebBrowser","setNavigationIcons", "");
+
   //Getting Actions
   QAction *print = new QAction(tr("Print"), this);
   QAction *saveAs = new QAction("Save As", this);
-  QAction *backward = WebView->pageAction(QWebPage::Back);
-  QAction *forward = WebView->pageAction(QWebPage::Forward);
-  QAction *reload = WebView->pageAction(QWebPage::Reload);
+  QAction *backward = WebView->pageAction(QWebEnginePage::Back);
+  QAction *forward = WebView->pageAction(QWebEnginePage::Forward);
+  QAction *reload = WebView->pageAction(QWebEnginePage::Reload);
   reload->setToolTip("Neu laden");
-  QAction *stop = WebView->pageAction(QWebPage::Stop);
+  QAction *stop = WebView->pageAction(QWebEnginePage::Stop);
   QAction *plus = new QAction("Zoom +", this);
   QAction *minus = new QAction("Zoom -", this);
   QAction *reset = new QAction(tr("Reset zoom"), this);
 
 
 
-  QPixmap back(("pics:browser-zurueck.png"));
-  QPixmap forw(("pics:browser-vor.png"));
-  QPixmap relo(("pics:browser-neuladen.png"));
-  QPixmap st(("pics:browser-abbrechen.png"));
-  QPixmap dr(("pics:browser-drucken.png"));
-  QPixmap mi(("pics:browser-kleiner.png"));
-  QPixmap pl(("pics:browser-groesser.png"));
-  QPixmap re(("pics:browser-reset.png"));
-  QPixmap sa(("pics:editor-speichern-unter.png"));
+  QPixmap back((":pics/browser-zurueck.png"));
+  QPixmap forw((":pics/browser-vor.png"));
+  QPixmap relo((":pics/browser-neuladen.png"));
+  QPixmap st((":pics/browser-abbrechen.png"));
+  QPixmap dr((":pics/browser-drucken.png"));
+  QPixmap mi((":pics/browser-kleiner.png"));
+  QPixmap pl((":pics/browser-groesser.png"));
+  QPixmap re((":pics/browser-reset.png"));
+  QPixmap sa((":pics/editor-speichern-unter.png"));
 
   //Override
 
@@ -353,13 +391,14 @@ MyWebBrowser::MyWebBrowser(QWidget *parent)
 }
 void MyWebBrowser::contextMenuEvent(QContextMenuEvent *event)
 {
+MainFrame::vdcdebug("WebBrowser","contextMenuEvent", "");
     QMenu *menu = new QMenu();
 
-    QAction *reload = this->pageAction(QWebPage::Reload);
+    QAction *reload = this->pageAction(QWebEnginePage::Reload);
     reload->setToolTip("Reload");
-    QAction *selectAll = this->pageAction(QWebPage::SelectAll);
+    QAction *selectAll = this->pageAction(QWebEnginePage::SelectAll);
     selectAll->setToolTip(tr("Select All"));
-    QAction *copySelected = this->pageAction(QWebPage::Copy);
+    QAction *copySelected = this->pageAction(QWebEnginePage::Copy);
     selectAll->setToolTip(tr("Copy selected Text"));
 
     menu->addAction(reload);
@@ -372,6 +411,7 @@ void MyWebBrowser::contextMenuEvent(QContextMenuEvent *event)
 
 void WebBrowser::saveAsFile()
 {
+MainFrame::vdcdebug("WebBrowser","saveAsFile", "");
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "ASCII-Report.txt",
                                                     tr("Text Files(*.txt *.html)"));
@@ -382,13 +422,21 @@ void WebBrowser::saveAsFile()
         return;
     }
 
+    QFile file1(m_file);
+    if(!file1.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+
     QTextStream out(&file);
     out.setCodec("ISO-8859-15");
 
     if(fileName.contains(".html") || fileName.contains(".htm")) {
-        out << WebView->page()->mainFrame()->toHtml();
+        out << file1.readAll();
     } else {
-        out << WebView->page()->mainFrame()->toPlainText();
+        QTextEdit edit;
+        edit.setHtml(file1.readAll());
+        out << edit.toPlainText();
     }
 
     file.close();
@@ -397,20 +445,23 @@ void WebBrowser::saveAsFile()
 
 void WebBrowser::increaseSize()
 {
+MainFrame::vdcdebug("WebBrowser","increaseSize", "");
    fontSize = fontSize + 2;
-   WebView->settings()->setFontSize(QWebSettings::DefaultFontSize, fontSize);
+   WebView->settings()->setFontSize(QWebEngineSettings::DefaultFontSize, fontSize);
 }
 
 void WebBrowser::decreaseSize()
 {
+MainFrame::vdcdebug("WebBrowser","decreaseSize", "");
     fontSize = fontSize - 2;
-    WebView->settings()->setFontSize(QWebSettings::DefaultFontSize, fontSize);
+    WebView->settings()->setFontSize(QWebEngineSettings::DefaultFontSize, fontSize);
 }
 
 void WebBrowser::resetSize()
 {
+MainFrame::vdcdebug("WebBrowser","resetSize", "");
     fontSize = defaultFontSize;
-    WebView->settings()->setFontSize(QWebSettings::DefaultFontSize, fontSize);
+    WebView->settings()->setFontSize(QWebEngineSettings::DefaultFontSize, fontSize);
 }
 
 /*
@@ -431,10 +482,10 @@ void WebBrowser::inittoolbar()
   QAction *stop = WebView->pageAction(QWebPage::Stop);
 
 
-  QPixmap back(("pics:browser-zurueck.png"));
-  QPixmap forw(("pics:browser-vor.png"));
-  QPixmap relo(("pics:browser-neuladen.png"));
-  QPixmap st(("pics:browser-abbrechen.png"));
+  QPixmap back((":pics/browser-zurueck.png"));
+  QPixmap forw((":pics/browser-vor.png"));
+  QPixmap relo((":pics/browser-neuladen.png"));
+  QPixmap st((":pics/browser-abbrechen.png"));
 
 
   //Set Icons for Actions
@@ -472,4 +523,3 @@ void WebBrowser::inittoolbar()
   hb_lay->addWidget(qpb_stop);
   hb_lay->addWidget(locationEdit);
 }*/
-

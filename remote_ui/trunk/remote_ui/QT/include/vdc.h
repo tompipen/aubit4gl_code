@@ -14,6 +14,10 @@ namespace VDC
 {
   const int DEFAULT_HEIGHT = 21;
 
+  extern QString m_dblocale;
+
+  QColor getVentasColor(QString);
+
   void setSSHCompressionsLevel(int );
   int getSSHCompressionLevel();
   void waitCursor();
@@ -23,6 +27,11 @@ namespace VDC
   void setFieldSizeFactor(double);
   extern double fieldsizefactor;
   void removeSettingsKeysWith(QString, QString);
+  QString getAllKeysFromGroup(QString group);
+
+  QString readSettingsFromLocalIni(QString, QString);
+  void saveSettingsToLocalIni(QString, QString, QString);
+  void removeSettingsFromLocalIni(QString group, QString key);
   QString readSettingsFromIni(QString, QString);
   QString readSettingsFromIni(QString, QString, QString);
   QByteArray readSettingsFromIni1(QString, QString);
@@ -36,7 +45,11 @@ namespace VDC
   QPoint widgetPositionValidate(int, int);
 
   void setTableViewRowHeight(int qs_value);
+  QString removeUmlauts(QString absolutePath);
   int getTableViewRowHeight();
+
+  void setDBLocale(QString locale);
+  QString getDBLocale();
 
 
   void logMessage(QString, QString);

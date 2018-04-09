@@ -20,6 +20,7 @@
 #include <QAction>
 #include <QItemDelegate>
 #include <QTreeWidget>
+#include <QHeaderView>
 
 #include "xml2menu.h"
 #include "include/vdc.h"
@@ -65,7 +66,7 @@ void XML2Menu::outputTree(const QDomNode& domNode)
    QDomNodeList children = domNode.childNodes();
 
    // checking domNodes childNodes for relevant form elements
-   // and handle theire attributes 
+   // and handle their attributes
    //
    bool dummy = false;
    for(int i=0; i<children.count(); ++i){
@@ -77,9 +78,9 @@ void XML2Menu::outputTree(const QDomNode& domNode)
          }
 
          QDomElement childElement = child.toElement();
-         if(childElement.nodeName() == "StartMenu"){
-               treeWidget->setHeaderLabel(childElement.attribute("text"));
-         }
+//         if(childElement.nodeName() == "StartMenu"){
+//               treeWidget->setHeaderLabel(childElement.attribute("text"));
+//         }
 
 
          if(childElement.nodeName() == "StartMenuGroup"){
@@ -213,9 +214,9 @@ int XML2Menu::readXML(const QDomDocument& doc)
 {
 
    QString menu;
-   QString menuType = VDC::readSettingsFromIni("","startMenuPosition");
+   QString menuType = VDC::readSettingsFromLocalIni("","startMenuPosition");
 
-   if(!menuType.isEmpty())
+   if(!menuType.isEmpty() && menuType != "-1")
    {
        menu = menuType;
    } else {
@@ -225,6 +226,11 @@ int XML2Menu::readXML(const QDomDocument& doc)
    if(menu == "tree"){
       treeWidget = new QTreeWidget;
       treeWidget->setMinimumSize(50*5,20*10);
+      treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+      treeWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+      treeWidget->header()->hide();
+      treeWidget->setStyleSheet("QTreeWidget { border: none; outline: none; margin-top: 2px; } QTreeView::item:selected { background-color: #005a9f; color: white; }"
+                                                   "QTreeView::item:hover:!selected { background-color: #f7f7f7; }" );
       createTreeMenu(doc);
       connect(this->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(execAction()));
       connect(this->treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(saveExpanded()));
@@ -257,9 +263,9 @@ void XML2Menu::createTreeMenu(const QDomNode &domNode)
       }
 
       QDomElement childElement = child.toElement();
-      if(childElement.nodeName() == "StartMenu"){
-            treeWidget->setHeaderLabel(childElement.attribute("text"));
-      }
+//      if(childElement.nodeName() == "StartMenu"){
+//            treeWidget->setHeaderLabel(childElement.attribute("text"));
+//      }
 
 
       if(childElement.nodeName() == "StartMenuGroup"){
@@ -423,7 +429,7 @@ void XML2Menu::execAction()
 void XML2Menu::saveExpanded()
 {
     //If rememberMainMenu is 2 then do not save the expand state from the menu
-    int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
+    int saveExpand = VDC::readSettingsFromLocalIni("","rememberMainMenu").toInt();
 
     if(saveExpand == 2)
     {

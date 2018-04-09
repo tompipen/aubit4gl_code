@@ -82,7 +82,9 @@ MainFrame::vdcdebug("Parser","parseForm", "QDomDocument xmlForm");
       for(int i=0; i<ql_formFields.count(); i++){
          QWidget *w = ql_formFields.takeAt(i);
 
-         ql_formFields.insert(w->property("fieldId").toInt(), w);
+         if(w->property("fieldId").toInt() >= 0) {
+             ql_formFields.insert(w->property("fieldId").toInt(), w);
+         }
       }
       sorted = true;
       for(int i=0; i<ql_formFields.count(); i++){
@@ -248,6 +250,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
             tabWidget->addTab(wi, text);
             currentWidget = wi;
             currentLayout = NULL;
+            hasTabs = true;            
          }
          else{
             if(QTabWidget *tabWidget = qobject_cast<QTabWidget *> (currentWidget->parent()->parent())){
@@ -320,11 +323,13 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          int gridWidth = currentElement.attribute("gridWidth").toInt();
          bool hidden = currentElement.attribute("hidden").toInt();
 
-
          QLabel *label = new QLabel;
+         QPalette palette;
+         palette.setColor(QPalette::WindowText, Qt::lightGray);
 
          label->setFrameShape(QFrame::HLine);
-         label->setFrameShadow(QFrame::Sunken);
+         label->setFrameShadow(QFrame::Plain);
+         label->setPalette(palette);
          QFontMetrics fm(label->font());
          //label->setFixedWidth((gridWidth*fm.width("W")));
          label->setAccessibleName(nodeName);
@@ -335,7 +340,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          addWidgets(label, false, posY, posX, gridWidth);
       }
 
-      if(nodeName == "Label" || nodeName == "RipLABEL"){
+      if(nodeName == "Label" || nodeName == "RipLABEL"  || nodeName == "BlankLine"){
          QString text = currentElement.attribute("text");
          int posX = currentElement.attribute("posX").toInt();
          int posY = currentElement.attribute("posY").toInt();
@@ -345,6 +350,12 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
             continue;
 
          QLabel *label = new QLabel(text);
+         if(nodeName == "BlankLine") {
+             label->setObjectName("BlankLine");
+         }
+
+         label->setProperty("fieldId", posY);
+         label->setProperty("posX", posX);
 
          //label->setAccessibleName(text);
 
@@ -448,8 +459,21 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    }
 
    QList<QWidget*> labelList = ql_formFields;
+   int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
    QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
-   header->restoreState(state);
+
+   if(!state.isEmpty()) {
+      if(labelList.count() == lastColumnCount || lastColumnCount == 0) {
+         header->restoreState(state);
+      } else {
+         VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
+         for(int i=0; i < ql_formFields.count(); i++) {
+             VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
+         }
+      }
+   }
+
+   VDC::saveSettingsToIni(formName, "columnCount", QString::number(labelList.count()));
 
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
@@ -476,7 +500,7 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       TableColumn *tableColumn = (TableColumn*) WidgetHelper::createFormField(currentElement, p_screenRecord);
       ql_fglFields << tableColumn;
       tableColumn->addField(wi);
-      int w = wi->width();
+      int w = wi->width()-5;
       delete wi;
  
       //int fieldCount = ql_formFields.count();
@@ -513,16 +537,14 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
           int hideColumn = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
           if(hideColumn > 0)
           {
-              header->hideSection(VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
+             header->hideSection(VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
           }
-          QString text = p_screenRecord->getColumnLabel(i)->objectName();
           // restore the width for each column.
           int columnId = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
           int columnWidth = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
           if( columnWidth > 0 && columnId > 0)
           {
-            //header->resizeSection(i, w+1);
-              header->resizeSection(columnId, columnWidth);
+             header->resizeSection(columnId, columnWidth);
           }
           else
           {
@@ -542,6 +564,10 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       de->setProperty("fieldId", fieldId);
       de->setForm(p_fglform);
       de->setColumn(i);
+
+      ScreenHandler *p_screen = MainFrame::ql_screenhandler->last();
+
+      de->installEventFilter(p_screen);
 
 
       p_screenRecord->setItemDelegateForColumn(i,de);
@@ -573,19 +599,6 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    {
        VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
    }
-
-   int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
-   if(labelList.count() != lastColumnCount || lastColumnCount > 0)
-   {
-       VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
-       for(int i=0; i < ql_formFields.count(); i++)
-       {
-           VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
-       }
-   }
-
-   VDC::saveSettingsToIni(formName, "columnCount", QString::number(labelList.count()));
-
 
 /*
    for(int i=0; i<vert->count(); i++){
@@ -707,6 +720,13 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
    if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){
       layout->setColumnMinimumWidth(y,0);
       layout->setRowMinimumHeight(x,0);
+
+//        if (hasTabs == false) {
+//           QLabel *spacerLabel = new QLabel;
+//           spacerLabel->setMinimumHeight(50); //NS
+//           layout->addWidget(spacerLabel,0,5);
+//        }
+
       //The HLine have no Qt::AlignLeft, because the HLine are not strechting then.
       if(Label *w = qobject_cast<Label *> (widget)){
           if(w->img)

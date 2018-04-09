@@ -21,11 +21,12 @@ public:
 
     QHash<QString,QString> parseXmlFile(QString file);
 public slots:
-    void readVersionXml(QNetworkReply*);
+    void readVersionXml(QNetworkReply *reply = NULL);
     void openPatcher();
 protected:
     bool mAutoUpdate;
     bool mShowErrorMsg;
+    bool mUpdateRequired;
 
 };
 

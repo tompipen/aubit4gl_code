@@ -10,12 +10,14 @@ INCLUDEPATH += .
 
 QT += network
 QT += xml
-QT += webkit
 QT += svg
+QT += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += webenginewidgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
+
+CONFIG += force_debug_info
 
 unix:!macx {
     QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
@@ -27,8 +29,10 @@ macx {
 }
 
 win32 {
-    LIBS += -lwsock32
-    *-msvc*: DEFINES += SSH_USE NOMINMAX _WINSOCKAPI_
+    LIBS += -lwsock32 -lversion -lole32 -loleaut32 -luuid -lstrmiids
+    *-msvc*: DEFINES += NOMINMAX WIN32_LEAN_AND_MEAN
+    *-msvc*: QMAKE_CXXFLAGS_RELEASE += /Zi
+    *-msvc*: QMAKE_LFLAGS_RELEASE += /DEBUG
 }
 
 VREPGEN_PATH = $$(VREPGEN)
@@ -45,12 +49,14 @@ include("ssh/ssh.pri")
 message("VREPGEN erkannt")
 DEFINES += VREPGEN_USE
 INCLUDEPATH += ./quazip/
-LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
-LIBS += -L"$$OUT_PWD/lib" -lquazip
-LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
+LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazipQt5
+LIBS += -L"$$OUT_PWD/lib" -lquazipQt5
+LIBS += -L"$$OUT_PWD/quazip/lib" -lquazipQt5
 
 include("models/reportgen.pri")
 }
+
+include("dashboard.pri")
 
 HEADERS += confwin.h \
     login.h \
@@ -82,12 +88,11 @@ HEADERS += confwin.h \
     include/vdc.h \
     models/webbrowser.h \
     models/texteditor.h \
-    ventasupdate.h \
     models/progress.h \
     masterupdate.h \
     tools/htmleditor.h \
-    tools/vdcupdate.h \
-    tools/umlauts.h
+    tools/umlauts.h \
+    revision.h
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -119,12 +124,10 @@ SOURCES += confwin.cpp \
     include/vdc.cpp \
     models/webbrowser.cpp \
     models/texteditor.cpp \
-    ventasupdate.cpp \
     models/progress.cpp \
     masterupdate.cpp \
     tools/htmleditor.cpp \
-    tools/vdcupdate.cpp \
-    tools/umlauts.cpp
+    tools/umlauts.cpp \
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc

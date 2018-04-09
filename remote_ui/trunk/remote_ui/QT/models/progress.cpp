@@ -11,7 +11,7 @@ Progress::Progress(QWidget *parent) :
     progressLabel = new QProgressBar(this);
 
     QLabel *icon = new QLabel(this);
-    QPixmap pm("pics:vdc.png");
+    QPixmap pm(":pics/vdc.png");
     QPixmap scaled_pixmap = pm.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     icon->setPixmap(scaled_pixmap);
@@ -25,7 +25,7 @@ Progress::Progress(QWidget *parent) :
     this->progressbar->hide();
 
     QMovie *movie = new QMovie(this->progressbar);
-    movie->setFileName("pics:progressbar.gif");
+    movie->setFileName(":pics/progressbar.gif");
     this->progressbar->setMovie(movie);
     movie->start();
 
