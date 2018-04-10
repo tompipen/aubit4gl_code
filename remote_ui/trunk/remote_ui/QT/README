@@ -2,7 +2,7 @@
 ----------
 1.1 Preparation
 ---------------
-You need to download Qt from 
+You need to download Qt from
 
 https://www.qt.io/download-qt-installer
 
@@ -77,6 +77,8 @@ cd /path/to/your/VDC/directory
 If you want to build VDC with ssh you need to set 2 enviroment variables:
 export VSSH=YES
 export VREPGEN=YES
+qmake quazip/quazip.pro
+make
 
 qmake vdc-app.pro
 make
