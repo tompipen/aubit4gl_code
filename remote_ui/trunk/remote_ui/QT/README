@@ -29,7 +29,7 @@ set %VSSH%=YES
 set %VREPGEN%=YES
 
 after this you can run:
-qmake -tp vc VDC.pro
+qmake -tp vc vdc-app.pro
 
 Now qmake created a new file named "VDC.vcxproj". You can open this file with the Visual Studio IDE and build the project. (Build -> Build Solution)
 
@@ -38,7 +38,7 @@ OTHERWISE if you don't have added the Qtbin to your %PATH% Variable:
 
 
 cd /path/to/your/VDC
-/path/to/your/qt/installation/bin/qmake -tp vc VDC.pro
+/path/to/your/qt/installation/bin/qmake -tp vc vdc-app.pro
 nmake
 
 1.3.1.2 Download and install Qt VS Addin for Visual Studio
@@ -77,10 +77,8 @@ cd /path/to/your/VDC/directory
 If you want to build VDC with ssh you need to set 2 enviroment variables:
 export VSSH=YES
 export VREPGEN=YES
-qmake quazip/quazip.pro
-make
 
-qmake vdc-app.pro
+qmake VDC.pro
 make
 
 2.4 Starting VDC
