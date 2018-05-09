@@ -650,24 +650,14 @@ void VSSH::loadSettings()
   const char* user;
   const char* compression;
 
-  int port    = 22; //Todo: Eingabemaske
-
   QSettings settings;
-  QString username = settings.value("user").toString();
-  QString password = settings.value("password").toString();
+  //int port    = 22; //Todo: Eingabemaske
+  int port = settings.value("port").toInt();
 
-
-  if(username == "demovm" && password == "demovm")
-  {
-      server = "1.78.143.248";
-      this->setHost("1.78.143.248");
-
-      user = "demouser";
-      this->setUser("demouser");
-
-      this->setPassword("bB$12g%23=)assa");
-
+  if(port == 0) {
+      port = 22;
   }
+
 
   QByteArray ba_compression = QString::number(VDC::getSSHCompressionLevel()).toLocal8Bit();
   compression = ba_compression.constData();

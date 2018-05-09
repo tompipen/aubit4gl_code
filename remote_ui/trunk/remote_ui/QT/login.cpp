@@ -1629,6 +1629,7 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    QString user   = usernameLineEdit->text();
    QString pass   = passwordLineEdit->text();
    QString app    = applicationLineEdit->text();
+   int port       = portLineEdit->text().toInt();
 
    if(pass.isEmpty())
    {
@@ -1652,6 +1653,7 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
 
    settings.setValue("server", server);
    settings.setValue("user", user);
+   settings.setValue("port", port);;
    settings.setValue("application", app);
    if(rb_telnet->isChecked())
      settings.setValue("checked", "telnet");
