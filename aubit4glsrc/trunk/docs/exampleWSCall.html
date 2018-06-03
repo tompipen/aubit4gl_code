@@ -1,0 +1,166 @@
+<head>
+<script type="text/javascript" language="javascript" src="jquery-3.3.1.js"></script>
+<script type="text/javascript" language="javascript" src="xml2json.js"></script>
+<script type="text/javascript" language="javascript" src="jquery.soap.js"></script>
+
+<script type="text/javascript">
+
+// This comes from prototypes.js
+var exportedFunctions_fglservername={
+   contractratelookup: {
+      returns: [
+         { type:'int', nm:'rval_0'}
+      ],
+      parameters:[
+         {type:'string', nm:'p-p-code', origName:'p_code'}
+      ]
+   }
+,
+   contractdump: {
+      returns: [
+         { type:'string', nm:'rval_0'},
+         { type:'int', nm:'rval_1'}
+      ],
+      parameters:[
+         {type:'string', nm:'p-p-code', origName:'p_code'}
+      ]
+   }
+};
+
+//-- Generate and consume javascript functions
+function getData(method, definition, data) {
+var dt={};
+var a;
+
+ for (a=0;a<definition.parameters.length;a++) {
+	dt[definition.parameters[a].nm]=data[0];
+ }
+
+return dt;
+}
+
+function getResponse(method, definition, response) {
+var rval=null;
+var rvalObj= response.toJSON();
+if (rvalObj) {
+		if (definition.returns.length>1) { 
+			var compoundName="ns:s-ret-"+method;
+			// Multiple values ? 
+			if (rvalObj["#document"]["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][compoundName]) {
+				rval= rvalObj["#document"]["SOAP-ENV:Envelope"]["SOAP-ENV:Body"][compoundName];
+			}
+		} else {
+				rval= rvalObj["#document"]["SOAP-ENV:Envelope"]["SOAP-ENV:Body"]["ns:"+method+"Response"];
+		}
+}
+return rval;
+}
+
+function generateStubs(url, nm) {
+var exports=window["exportedFunctions_"+nm];
+var rval={};
+if (exports) {
+	var rval={};
+	
+	var generateFunction=function(methodName, definition) {
+		var callFunc=function() {
+			var args=[];
+			var a;
+			for (a=0;a<arguments.length;a++) {
+				args[a]=arguments[a];
+			}
+			var callback=args.pop();
+			
+			return callServer(url, methodName,definition,args, callback);
+		}
+		return callFunc;
+	}
+
+	 for (var property in exports) {
+            if (exports.hasOwnProperty(property)) {
+		if (!exports[property].fn) {
+			exports[property].fn=generateFunction(property, exports[property]);
+			rval[property]=exports[property].fn;
+		}
+            }
+        }
+}
+return rval;
+
+}
+
+
+function callServer(url, method, definition, data, callback) {
+	$.soap({
+		//enableLogging: true,
+		//namespaceQualifier:'ns',
+		url: url,
+		soap12: true,
+		method: "ns:"+method,
+		envAttributes: {
+			'xmlns:ns': 'http://localhost:9090//fglserver.wsdl'
+		},
+		data:  getData(method,definition, data),
+		success: function (soapResponse) {
+			// do stuff with soapResponse
+			// if you want to have the response as JSON use soapResponse.toJSON();
+			// or soapResponse.toString() to get XML string
+			// or soapResponse.toXML() to get XML DOM
+			var rval;
+	
+			if (rval=getResponse(method,definition, soapResponse)) {
+				callback({
+					success: true,
+					rval: rval
+				});
+			} else {
+				callback({success: false});
+			}
+		},
+		error: function (SOAPResponse) {
+			callback({success: false});
+		}
+	});
+}
+//-- User code
+// Generate our methods : 
+var server=generateStubs("http://192.168.2.92:9091/","fglservername");
+
+
+function doRateLookup() {
+// Use the method
+server.contractratelookup($('#rateCode').val(), function(response) {
+	if (response && response.success) {
+		alert(response.rval.ret);
+	} else {
+		alert("Some error");
+	}
+	console.dir(response);
+});
+}
+
+
+function doDualLookup() {
+server.contractdump($('#rateCode').val(), function(response) {
+if (response && response.success) {
+alert(response.rval["rval-0"]+" "+response.rval["rval-1"]);
+} else {
+alert("Some error");
+}
+	console.dir(response);
+});
+}
+
+</script>
+</head>
+<body>
+         <select id="rateCode">                   
+                    <option value='top'>Top</option>
+                    <option value='middle'>Middle</option>
+                    <option value='bottom'>Bottom</option>
+         </select>
+	<button onclick='doRateLookup()'>Lookup</button>
+	<button onclick='doDualLookup()'>Lookup 2</button>
+</body>
+
+
