@@ -10,6 +10,8 @@ static char fglservername[2000]="fglserver";
 static char default_url[2000]="http://localhost:9090/";
 char *funcprefix="aclfgl_";
 
+#define INTASLONG 0
+
 #define MODE_TRY 0
 #define MODE_BUY 1
 
@@ -73,6 +75,7 @@ struct function
   int called;
   int isInLibraryModule;
   int isStatic;
+  char *comment;
 };
 
 
@@ -83,6 +86,7 @@ int functions_cnt = 0;
 FILE *output = 0;
 FILE *output_unl = 0;
 FILE *output_soap = 0;
+FILE *output_js = 0;
 
 
 
@@ -481,7 +485,7 @@ call_report_called (void)
 
 static void
 add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr, int isInLibrary, s_commands * commands,
-	      expr_str_list * params, s_call_list * call_list, int isInLibraryModule, int isStatic)
+	      expr_str_list * params, s_call_list * call_list, int isInLibraryModule, int isStatic, char *comment)
 {
   struct s_commands *all_cmds;
   int a;
@@ -502,6 +506,7 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
   functions[functions_cnt - 1].called = 0;
   functions[functions_cnt - 1].isStatic = isStatic;
   functions[functions_cnt - 1].isInLibraryModule = isInLibraryModule;
+  functions[functions_cnt - 1].comment=comment;
 
   if (params)
     {
@@ -894,7 +899,7 @@ proto_program (module_definition * mods, int nmodules)
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.func_commands,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.parameters,
 			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
-			    mods[a].moduleIsInLibrary, 1);
+			    mods[a].moduleIsInLibrary, 1, mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.comment);
 
 	      break;
 
@@ -913,7 +918,7 @@ proto_program (module_definition * mods, int nmodules)
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.parameters,
 			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
 			    mods[a].moduleIsInLibrary,
-			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.function_type==E_FTYPE_STATIC);
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.function_type==E_FTYPE_STATIC, mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.comment);
 	      break;
 
 	    case E_MET_REPORT_DEFINITION:
@@ -927,7 +932,7 @@ proto_program (module_definition * mods, int nmodules)
 			    mods[a].moduleIsInLibrary, NULL,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.parameters,
 			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.call_list,
-			    mods[a].moduleIsInLibrary, 1);
+			    mods[a].moduleIsInLibrary, 1, mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.comment);
 	      break;
 
 	    case E_MET_PDF_REPORT_DEFINITION:
@@ -942,7 +947,7 @@ proto_program (module_definition * mods, int nmodules)
 			    mods[a].moduleIsInLibrary, NULL,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.parameters,
 			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.call_list,
-			    mods[a].moduleIsInLibrary, 1);
+			    mods[a].moduleIsInLibrary, 1, mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.comment);
 
 	      break;
 
@@ -1470,6 +1475,18 @@ generate_blacklist (void)
 
 #include "expr_as_string_when_possible.c"
 
+
+static char *replaceUnderScoreWithDash(char *s) {
+static char buff[2000];
+int a;
+for (a=0;a<strlen(s);a++) {
+buff[a]=s[a];
+if (buff[a]=='_') buff[a]='-';
+}
+return buff;
+}
+
+
 void
 dump_soap (void)
 {
@@ -1481,6 +1498,10 @@ FILE *output_functionmapping;
 //char freebuff[20000]="";
   output_functionmapping=fopen("prototypes_map.h","w");
   output_soap = fopen ("prototypes.h", "w");
+  output_js = fopen ("prototypes.js", "w");
+
+  fprintf(output_js,"var exportedFunctions_fglservername={\n");
+
   fprintf (output_soap, "//gsoap ns service name: %s\n",fglservername);
   fprintf (output_soap, "//gsoap ns service port: %s\n",default_url);
   fprintf (output_soap, "//gsoap ns service namespace: %s/%s.wsdl\n",default_url, fglservername);
@@ -1498,22 +1519,38 @@ FILE *output_functionmapping;
 	{
 	  continue;
 	}
+      if (a) {
+      fprintf(output_js,",\n");
+      }
+      fprintf(output_js,"   %s: { \n", functions[a].function);
       fprintf (output_soap, "/* gsoap ns service documentation:  %s from %s %d */\n", functions[a].function, functions[a].module,
-	       functions[a].line);
+	       functions[a].line); // Header
 
+	if (functions[a].comment && strlen(functions[a].comment)) { 
+      		fprintf (output_soap, "/* gsoap ns service method: %s */\n",  functions[a].comment);
+	}
+ 
 
       nrets = 0;
-      if (functions[a].return_datatypes && functions[a].return_datatypes[0]->nreturns > 1)
+      fprintf(output_js,"      returns: [ \n");
+      if (functions[a].return_datatypes)
 	{
 	  int b;
-	  fprintf (output_soap, "struct ns__s_ret_%s {\n", functions[a].function);
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
+	  	fprintf (output_soap, "struct ns__s_ret_%s {\n", functions[a].function);
+	  }
 	  // We'll assume the first RETURN is the same as the rest of them
 	  // if its not - it'll cause problems - but we can put that in as a check after (maybe)
 	  nrets = functions[a].return_datatypes[0]->nreturns;
 	  for (b = 0; b < functions[a].return_datatypes[0]->nreturns; b++)
 	    {
 	      int dtype = functions[a].return_datatypes[0]->returns[b] & DTYPE_MASK;
+
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 	      fprintf (output_soap, "   ");
+		}
+		if (b) { fprintf (output_js, ",\n"); }
+	       fprintf (output_js, "         { type:");
 
 	      switch (dtype)
 		{
@@ -1524,41 +1561,70 @@ FILE *output_functionmapping;
 		case DTYPE_INTERVAL:
 		case DTYPE_NCHAR:
 		case DTYPE_NVCHAR:
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 		  fprintf (output_soap, "char *");
+		}
+		  fprintf (output_js, "'string'");
 		  break;
 		case DTYPE_SMINT:
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 		  fprintf (output_soap, "short ");
+		}
+		  fprintf (output_js, "'short'");
 		  break;
 
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+		  fprintf (output_js, "'int'");
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
+#if INTASLONG
 		  fprintf (output_soap, "long ");
+#else
+		  fprintf (output_soap, "int ");
+#endif
+	}
 		  break;
 
 		case DTYPE_FLOAT:
 		case DTYPE_DECIMAL:
 		case DTYPE_MONEY:
+		  fprintf (output_js, "'double'");
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 		  fprintf (output_soap, "double ");
+	}
 		  break;
 
 		case DTYPE_SMFLOAT:
+		  fprintf (output_js, "'float'");
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 		  fprintf (output_soap, "float ");
+	}
 		  break;
 		case DTYPE_TEXT:
 		case DTYPE_BYTE:
+		  fprintf (output_js, "'byte'");
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 		  fprintf (output_soap, " byte ");	// <- wont compile for now
+	}
 		  break;
 
 		default:
+		  fprintf (output_js, "'other'");
 		  A4GL_assertion (1, "Unhandled datatype");
 		}
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 	      fprintf (output_soap, "%s;\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
+	}
+	      fprintf (output_js, ", nm:'%s'}", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 	      //fprintf (output_soap, "rval_%d; /* %s */\n", b, functions[a].return_datatypes[0]->retexprs[b]);
 	    }
+  	  if (functions[a].return_datatypes[0]->nreturns > 1) { 
 	  fprintf (output_soap, "};\n");
 	}
-
-
+	}
+        
+      fprintf(output_js,"\n      ],\n");
+      fprintf(output_js,"      parameters:[\n");
 
       fprintf (output_soap, "int ns__%s( ", functions[a].function);
 
@@ -1567,6 +1633,10 @@ FILE *output_functionmapping;
 	  int b;
 	  for (b = 0; b < functions[a].nparameters; b++)
 	    {
+		if (b) {
+      			fprintf(output_js,",\n");
+		}
+
 	      if (printed_soap)
 		{
 		  fprintf (output_soap, ",");
@@ -1576,6 +1646,7 @@ FILE *output_functionmapping;
 		  printed_soap++;
 		}
 
+      		fprintf(output_js,"         {type:");
 
 	      switch (functions[a].parameters[b] & DTYPE_MASK)
 		{
@@ -1586,37 +1657,51 @@ FILE *output_functionmapping;
 		case DTYPE_INTERVAL:
 		case DTYPE_NCHAR:
 		case DTYPE_NVCHAR:
+		  fprintf (output_js, "'string'");
 		  fprintf (output_soap, "char *");
 		  break;
 		case DTYPE_SMINT:
+		  fprintf (output_js, "'short'");
 		  fprintf (output_soap, "short ");
 		  break;
 
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+		  fprintf (output_js, "'int'");
+#if INTASLONG
 		  fprintf (output_soap, "long ");
+#else
+		  fprintf (output_soap, "int ");
+#endif
 		  break;
 
 		case DTYPE_FLOAT:
 		case DTYPE_DECIMAL:
 		case DTYPE_MONEY:
+		  fprintf (output_js, "'double'");
 		  fprintf (output_soap, "double ");
 		  break;
 
 		case DTYPE_SMFLOAT:
+		  fprintf (output_js, "'float'");
 		  fprintf (output_soap, "float ");
 		  break;
+
 		case DTYPE_TEXT:
 		case DTYPE_BYTE:
+		  fprintf (output_js, "'byte'");
 		  fprintf (output_soap, " byte ");	// <- wont compile for now
 		  break;
 
 		default:
+		  fprintf (output_js, "'other'");
 		  A4GL_assertion (1, "Unhandled datatype");
 		}
 	      fprintf (output_soap, "p_%s", functions[a].paramnames[b]);
+	    fprintf (output_js, ", nm:'p-%s', origName:'%s'}", replaceUnderScoreWithDash(functions[a].paramnames[b]), functions[a].paramnames[b]);
 	    }
 	}
+	  fprintf (output_js, "\n");
 
 
 
@@ -1662,9 +1747,15 @@ FILE *output_functionmapping;
 
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+#if INTASLONG
 		  fprintf (output_soap, "long *");
 		  sprintf (return_string[a], "long *ret");
 		  sprintf (return_string_client[a], "long ret");
+#else
+		  fprintf (output_soap, "int *");
+		  sprintf (return_string[a], "int *ret");
+		  sprintf (return_string_client[a], "int ret");
+#endif
 		  break;
 
 		case DTYPE_FLOAT:
@@ -1715,11 +1806,19 @@ FILE *output_functionmapping;
 	    {
 	      fprintf (output_soap, ",");
 	    }
+#if INTASLONG
 	  fprintf (output_soap, " long *ret");
+#else
+	  fprintf (output_soap, " int *ret");
+#endif
 	}
+      fprintf(output_js,"      ]\n");
       fprintf (output_soap, ");\n");
+      fprintf(output_js,"   }\n");
     }
   fclose (output_soap);
+  fprintf(output_js,"};\n");
+  fclose (output_js);
 
 /* *********************************************************************************/
 /* *********************************************************************************/
@@ -1787,7 +1886,11 @@ FILE *output_functionmapping;
 
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+#if INTASLONG
 		  fprintf (output_soap, "long ");
+#else
+		  fprintf (output_soap, "int ");
+#endif
 		  break;
 
 		case DTYPE_FLOAT:
@@ -1820,7 +1923,11 @@ FILE *output_functionmapping;
 	}
       else
 	{
+#if INTASLONG
 	  fprintf (output_soap, ",long *ret /* dummy */");
+#else
+	  fprintf (output_soap, ",int *ret /* dummy */");
+#endif
 
 	}
 
@@ -2025,7 +2132,11 @@ FILE *output_functionmapping;
 
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+#if INTASLONG
 		  fprintf (output_soap, "long ");
+#else
+		  fprintf (output_soap, "int ");
+#endif
 		  break;
 
 		case DTYPE_FLOAT:
@@ -2077,7 +2188,11 @@ FILE *output_functionmapping;
 
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+#if INTASLONG
 		  fprintf (output_soap, "long r_%d=0;\n", b);
+#else
+		  fprintf (output_soap, "int r_%d=0;\n", b);
+#endif
 		  break;
 
 		case DTYPE_FLOAT:
@@ -2104,7 +2219,11 @@ FILE *output_functionmapping;
 	if (functions[a].return_datatypes && functions[a].return_datatypes[0]->nreturns) {
       		fprintf (output_soap, "%s; // MJA\n", return_string_client[a]);
 	} else {
+#if INTASLONG
       		fprintf (output_soap, "long ret; // MJA\n");
+#else
+      		fprintf (output_soap, "int ret; // MJA\n");
+#endif
 	}
       fprintf (output_soap, "struct soap *soap = soap_new();\n");
       fprintf (output_soap, "   if (nparam!=%d && nparam!=%d) {\n", functions[a].nparameters, functions[a].nparameters + 1);
