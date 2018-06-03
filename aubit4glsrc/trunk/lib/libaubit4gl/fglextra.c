@@ -78,6 +78,20 @@ aclfgl_fgl_username (int n)
 
 
 
+int
+aclfgl_aclfgl_get_userid (int n)
+{
+A4GL_push_int(getuid ());
+  return 1;
+}
+
+
+int
+aclfgl_fgl_userid (int n)
+{
+A4GL_push_int(getuid ());
+  return 1;
+}
 
 /* 
 // Added with permission :
