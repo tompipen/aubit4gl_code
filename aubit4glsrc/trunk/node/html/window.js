@@ -42,7 +42,7 @@ if (frm)  {
 // 
 var win;
 var cfg={
-	modal:true,
+	modal:false,
 	closable:false,
 	layout:'fit',
 
@@ -180,7 +180,7 @@ var cfg={
 	},
 	setMessage:function(text) {
 		tbMsg.setText(text);
-		if (text.length==0) {
+		if (!text || text.length==0) {
 			messageLine.setVisible(false);
 		} else {
 			messageLine.setVisible(true);
@@ -212,11 +212,73 @@ if (d.STYLE) {
 
 if (d.NAME=='screen' && !fullScreen) {
 	cfg.constrain=true;
-	cfg.renderTo='DivPanel';
+	//cfg.renderTo='DivPanel';
 	//cfg.closable=true;
 	cfg.maximizable=true;
 	//cfg.minimizable=true;
 	cfg.collapsible=true;
+
+        var updateLog=function(fld, data) {
+
+		fld.up("#stdOutPanel").setVisible(true);
+
+                fld.setValue(   fld.getValue()  + data + '\n');
+        //Get the text area component, the textarea input element and
+        //dom scroll height
+                inputElDom = fld.inputEl.dom,
+                scrollHeight = inputElDom.scrollHeight;
+
+                //Set the input element dom scroll top to the height to force
+                //it to scroll to the bottom
+                inputElDom.scrollTop = scrollHeight;
+        };
+
+        // Theses probably shouldnt be here - they should be per app
+        // but for testing....
+
+        stdOutLog=Ext.widget("textareafield", {
+                flex:1,
+                //height:'100%',
+                //width:'100%',
+                autoScroll:true,
+                itemId:'stdOutLogField',
+                append: function(txt) {
+                        updateLog(stdOutLog,txt);
+                }
+        });
+
+        stdErrLog=Ext.widget("textareafield", {
+                flex:1,
+                height:'100%',
+                width:'100%',
+                autoScroll:true,
+                itemId:'stdErrLogField',
+                append: function(txt) {
+
+                        updateLog(stdErrLog,txt);
+                }
+        });
+
+	currentApplication.stdOut=stdOutLog;
+	currentApplication.stdErr=stdErrLog;
+
+	cfg.dockedItems.push({
+        	xtype: 'panel',
+		collapsible:true,
+        	dock: 'bottom',
+		height:200,
+		resizable:true,
+		
+		hidden:true,
+		itemId:'stdOutPanel',
+                layout:{type:'hbox', align:'stretch', pack:'start'},
+        	items: [
+                           {xtype:'panel', title:'StdOut',items: [ stdOutLog], flex:1, border:false, height:'100%', layout:'fit'},
+                           {xtype:'panel', title:'StdErr',items: [ stdErrLog], flex:1, border:false, height:'100%', layout:'fit'},
+        	]
+    	});
+	
+	
 
 }
 

@@ -8,7 +8,7 @@ var construct;
 var toolbar;
 
 
-var flds=findFields(currentApplication, d.Fields);
+var flds=findFields(currentApplication, d.fieldlist);
 var a;
 
 for (a=0;a<flds.length;a++) {
@@ -21,8 +21,8 @@ construct={
 	contextType:  AubitDesktop.FGLContextType.contextConstruct,
 	activeWindow: currentApplication.currentWindow,
 	activeApplication: currentApplication,
-	OriginalFields:d.Fields,
-	Columns:d.Columns,
+	OriginalFields:d.fieldlist,
+	Columns:d.columns,
 	Fields: flds,
 	getLastFocusFieldName:function() {
               if (construct.lastFocusField) {
@@ -54,7 +54,7 @@ construct={
 			case "INTERRUPT":
 				var val={ID:"INTERRUPT"};
 				construct.ContextDeactivate();
-				sendResponse(val,  construct.activeApplication);
+				currentApplication.sendResponse( val,  construct.activeApplication);
 				break;
 
 			// Need to get field values for these 
@@ -74,7 +74,7 @@ construct={
 				// @todo - Check isFormFieldValid
 				construct.ContextDeactivate();
 				console.dir(val);
-				sendResponse(val,  construct.activeApplication);
+				currentApplication.sendResponse( val,  construct.activeApplication);
 				break;
 
 			default:
@@ -85,7 +85,7 @@ construct={
 
 				Ext.apply(val, construct.getSyncValues());
 				construct.ContextDeactivate();
-				sendResponse(val, construct.activeApplication);
+				currentApplication.sendResponse( val, construct.activeApplication);
 				break;
 				
 		}
@@ -106,7 +106,8 @@ construct={
 				console.log("Fields : "+construct.Fields.length);
 				var a;
 				for (a=0;a<construct.Fields.length;a++) {
-					if (construct.Fields[a].A4GL_noentry===false) {
+					if (construct.Fields[a].currentContext && construct.Fields[a].fldIsEnabled && !(construct.Fields[a].readOnly || construct.Fields[a].disabled)) {
+
 						console.log("Setting focus ...");
 						
 						construct.Fields[a].focus(false, 10);
@@ -127,16 +128,16 @@ construct={
 		if (construct.active) {
 			construct.ContextDeactivate();
 		}
-		delete currentApplication.Contexts["C"+d.CONTEXT];
+		delete currentApplication.Contexts["C"+d.context];
 		construct.activeWindow.removeMenu(toolbar);
 	}
     };
 
-    toolbar= generateToolbar(construct, d.Events, function(toolbarActionId, eventType) {
+    toolbar= generateToolbar(construct, d.events[0], function(toolbarActionId, eventType) {
 	construct.action(toolbarActionId, eventType);
     }) ;
 
-    currentApplication.Contexts["C"+d.CONTEXT]=construct;
+    currentApplication.Contexts["C"+d.context]=construct;
 }
 
 

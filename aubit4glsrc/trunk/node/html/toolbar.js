@@ -111,32 +111,25 @@ function generateToolbar(context, events, callback) {
 
 
 	var a;
-	if (events && events.length) {
+	if (events && events.ONKEY_EVENT.length) {
 		// 
 		// Need to add toolbar items for ON KEY stuff...
 		//
-		for  (a=0;a<events.length;a++) {
-			var evt=events[a];
+		for  (a=0;a<events.ONKEY_EVENT.length;a++) {
+			var evt=events.ONKEY_EVENT[a];
 			evt.context=context;
 			evt.callback=callback;
-			switch (evt.event) {
-				case "ONKEY":
 					var itm= {
-						iconCls: getIconClassInternal(context.activeApplication, evt.KEY),
-                                		text: getKeyNameInternal(context.activeApplication, evt.KEY),
-                                		qtip: getKeyDescriptionInternal(context.activeApplication, evt.KEY),
-                                		tooltip: getKeyDescriptionInternal(context.activeApplication, evt.KEY),
+						iconCls: getIconClassInternal(context.activeApplication, evt.KEY.trim()),
+                                		text: getKeyNameInternal(context.activeApplication, evt.KEY.trim()),
+                                		qtip: getKeyDescriptionInternal(context.activeApplication, evt.KEY.trim()),
+                                		tooltip: getKeyDescriptionInternal(context.activeApplication, evt.KEY.trim()),
                                 		handler: onKeyHandler,
 						scope: evt
                                 	}
 					items.push(itm);
 					break;
 
-
-				default:
-					console.dir(evt);
-					break;
-			}
 		}
 	}
 	items=items.concat(tailitems);
@@ -156,7 +149,8 @@ function generateToolbar(context, events, callback) {
         	flex:1,
 		items: items,
 		height:60,
-		minWidgth:100
+		minWidgth:100,
+
 	});
 
 	return pan;

@@ -1,12 +1,12 @@
 function createPrompt(currentApplication, d) {
   var win;
-  var dtype=d.DTYPE_HINT&0xffff;
-  var dtype_sz=d.DTYPE_HINT>>16;
+  var dtype=d.dtype_hint&0xffff;
+  var dtype_sz=d.dtype_hint>>16;
   var prmpt={ 
 		activeApplication: currentApplication,
 		ContextActivate: function() {
 		cfg={
-                                cls: "PROMPT"+d.FIELDATTRIBUTE.trim(),
+                                cls: "PROMPT"+d.fieldattribute.trim(),
                                 listeners: {
                                         specialkey: function(field, e) {
                                                 if (e.getKey()==e.ENTER) {
@@ -32,20 +32,20 @@ function createPrompt(currentApplication, d) {
 
 		win=Ext.create('Ext.window.Window', {
 			modal:true,
-			title:d.TEXT,
-			cls: "PROMPT"+d.PROMPTATTRIBUTE.trim(),
+			title:d.text,
+			cls: "PROMPT"+d.promptattribute.trim(),
 			minWidth:200,
 			closable:false,
 	    		layout: 'fit',
     			items: [ tField ],
 			OK: function() {
 				var val={ID:"ACCEPT", SVS:[{ "Value":tField.getValue() }]};
-                         	sendResponse(val,  prmpt.activeApplication);
+                         	currentApplication.sendResponse(val,  prmpt.activeApplication);
 				win.close();
 			},
 			Cancel: function() {
 			        var val={ID:"INTERRUPT",  SVS:[{ "Value":"" }]};
-                         	sendResponse(val, prmpt.activeApplication);
+                         	currentApplication.sendResponse(val, prmpt.activeApplication);
 				win.close();
 			},
 			listeners: {
@@ -86,7 +86,7 @@ var val={ID:"ACCEPT", SVS:[{ "Value":text }]};
 		
 	}
 
-    currentApplication.Contexts["C"+d.CONTEXT]=prmpt
+    currentApplication.Contexts["C"+d.context]=prmpt
 
 }
 	

@@ -40,8 +40,8 @@ if (fields==null) {
 	console.log("null fields ? ???");
 	return;
 }
-for(a=0;a<fields.length;a++) {
-	var flds=findField(currentApplication, fields[a]);
+for(a=0;a<fields[0].FIELD.length;a++) {
+	var flds=findField(currentApplication, fields[0].FIELD[a]);
 	if (flds==null) continue;
 	var b;
 	for (b=0;b<flds.length;b++) {
@@ -53,19 +53,34 @@ return Flds;
 }
 
 
+function fieldIsNoEntry(fld, context) {
+
+if ( context && context.contextType== AubitDesktop.FGLContextType.contextConstruct) {
+	// Never explicitly blocked from a construct
+	return false;
+}
+
+if (fld.A4GL_noentry  || fld.A4GL_noupdate ) {
+	return true;
+} else {
+	return false;
+}
+
+
+}
 
 function enableActiveFields(currentApplication, fldList, context) {
 	var allFields=currentApplication.currentWindow.activeForm.query("[A4GL_fullname]");
 	var a;
 	for (a=0;a<allFields.length;a++) {
 		if (fldList.indexOf(allFields[a])==-1) {
-			allFields[a].disableField();
 			allFields[a].currentContext=null;
+			allFields[a].disableField();
 			allFields[a].el.dom.setAttribute('tabIndex', -1);
 			allFields[a].validate();
 		} else {
-			allFields[a].enableField();
 			allFields[a].currentContext=context;
+			allFields[a].enableField();
 			allFields[a].el.dom.setAttribute('tabIndex', a);
 			allFields[a].fieldIsLast=false;
 			allFields[a].validate();
@@ -74,7 +89,7 @@ function enableActiveFields(currentApplication, fldList, context) {
 
 	for (a=allFields.length-1;a>=0;a--) {
 			// Skip any disabled fields...
-			if (allFields[a].A4GL_noentry || allFields[a].isDisabled()) {
+			if (fieldIsNoEntry(allFields[a]) || allFields[a].isDisabled()) {
 				continue;
 			}
 			allFields[a].fieldIsLast=true;
@@ -108,6 +123,15 @@ function clearForm(currentApplication, def) {
 }
 
 
+function clearFields(currentApplication, fieldlist, todefault) {
+	var allFields=findFields(currentApplication, fieldlist);
+	var a;
+	for(a=0;a<allFields.length;a++) {
+		allFields[a].clearField(allFields[a], todefault);
+	}
+}
+
+
 function getAllFields(currentApplication) {
 	var fld_1=currentApplication.currentWindow.activeForm.query("[A4GL_fullname]");
 	return fld_1;
@@ -118,16 +142,16 @@ var flds=[];
 	var matchAllWithPrefix;
 	if (currentApplication.currentWindow==null) return null;
 	if (currentApplication.currentWindow.activeForm==null) return null;
-	var i=fld.Name.indexOf(".*")
+	var i=fld.NAME.indexOf(".*")
 	if (i!=-1) {
-		matchAllWithPrefix=fld.Name.substr(0,i);
+		matchAllWithPrefix=fld.NAME.substr(0,i);
 		console.log("MATCH : " + matchAllWithPrefix);
 	}
 	var fld_1=getAllFields(currentApplication); 
 	var a;
 	for ( a=0;a<fld_1.length;a++) {
 		var found=null;
-		if (fld_1[a].A4GL_fullname==fld.Name || fld_1[a].A4GL_colname==fld.Name) {
+		if (fld_1[a].A4GL_fullname==fld.NAME || fld_1[a].A4GL_colname==fld.NAME) {
 			found=true;
 			console.log(fld_1[a]);
 			flds.push(fld_1[a]);
@@ -148,13 +172,15 @@ var flds=[];
 
 function displayTo(currentApplication, fields, values) {
 	var Flds=findFields(currentApplication, fields);
-	if (values.length!=Flds.length) {
+
+	if (values[0].TEXT.length!=Flds.length) {
 		console.log("Internal error - field/values mismatch");
 		return;
 	}
 	var a;
 
 	for (a=0;a<Flds.length;a++) {
-		Flds[a].setFormFieldValue(Flds[a], values[a].Text, values[a].TYPE);
+		Flds[a].setFormFieldValue(Flds[a], values[0].TEXT[a].Data, 
+					values[0].TEXT[a].TYPE);
 	}
 }

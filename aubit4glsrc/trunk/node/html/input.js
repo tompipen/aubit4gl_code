@@ -8,7 +8,7 @@ var input;
 var toolbar;
 
 
-var flds=findFields(currentApplication, d.Fields);
+var flds=findFields(currentApplication, d.fieldlist);
 var a;
 
 
@@ -23,7 +23,7 @@ input={
 	activeWindow: currentApplication.currentWindow,
         activeApplication: currentApplication,
  	contextType:  AubitDesktop.FGLContextType.contextInput,
-	OriginalFields:d.Fields,
+	OriginalFields:d.fieldlist,
 	Fields: flds,
         getLastFocusFieldName:function() {
               if (input.lastFocusField) {
@@ -56,7 +56,7 @@ input={
 			case "INTERRUPT":
 				var val={ID:"INTERRUPT"};
 				input.ContextDeactivate();
-				sendResponse(val,  input.activeApplication);
+				currentApplication.sendResponse(val,  input.activeApplication);
 				break;
 
 			// Need to get field values for these 
@@ -70,7 +70,7 @@ input={
 				// @todo - Check isFormFieldValid
 				input.ContextDeactivate();
 				console.dir(val);
-				sendResponse(val, input.activeApplication);
+				currentApplication.sendResponse(val, input.activeApplication);
 				break;
 
 			default:
@@ -79,7 +79,7 @@ input={
 				};
 				Ext.apply(val, input.getSyncValues());
 				input.ContextDeactivate();
-				sendResponse(val, input.activeApplication);
+				currentApplication.sendResponse(val, input.activeApplication);
 				break;
 				
 		}
@@ -92,10 +92,13 @@ input={
 		toolbar.enable();
 		toolbar.setVisible(true);
 		var a;
-		if (d.Values && d.Values.length && d.CHANGED) {
-			for (a=0;a<flds.length;a++) {
-				if (d.Values[a] && d.Values[a].Changed) {
-        				flds[a].setFormFieldValue(flds[a], d.Values[a].Data);
+		if (d.vs) { 
+			var values=d.vs[0].V;
+			if (values && values.length && d.changed) {
+				for (a=0;a<flds.length;a++) {
+					if (values[a] && values[a].CHANGED) {
+        					flds[a].setFormFieldValue(flds[a], values[a].Data);
+					}
 				}
 			}
 		}
@@ -109,7 +112,7 @@ input={
 				console.log("Fields : "+input.Fields.length);
 				var a;
 				for (a=0;a<input.Fields.length;a++) {
-					if (input.Fields[a].A4GL_noentry===false) {
+					if (input.Fields[a].currentContext && input.Fields[a].fldIsEnabled && !(input.Fields[a].readOnly || input.Fields[a].disabled)) {
 						console.log("Setting focus ...");
 						
 						input.Fields[a].focus(false, 10);
@@ -130,18 +133,18 @@ input={
 		if (input.active) {
 			input.ContextDeactivate();
 		}
-		delete currentApplication.Contexts["C"+d.CONTEXT];
+		delete currentApplication.Contexts["C"+d.context];
 		input.activeWindow.removeMenu(toolbar);
 	}
     };
 
 
-    toolbar= generateToolbar(input, d.Events, function(toolbarActionId, eventType) {
+    toolbar= generateToolbar(input, d.events[0], function(toolbarActionId, eventType) {
 	input.action(toolbarActionId, eventType);
     }) ;
 
     //currentWindow.setMenu(pan);
-    currentApplication.Contexts["C"+d.CONTEXT]=input;
+    currentApplication.Contexts["C"+d.context]=input;
 }
 
 

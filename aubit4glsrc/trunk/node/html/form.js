@@ -265,7 +265,7 @@ var cfg= {
 
                 }
 
-                if (!FGLUtils.IsValidForType(me.datatype, txt, me.format,me.datatype_length))
+                if (!AubitDesktop.FGLUtils.isValidForType(me.datatype, txt, me.format,me.datatype_length))
                 {
                     if (me.fieldValidationFailed != null)
                     {
@@ -290,7 +290,7 @@ var cfg= {
                             l = arr[0];
                             r = arr[1];
 
-                            if (FGLUtils.compare_range(txt, l, r, me.datatype, me.datatype_length, me.format))
+                            if (AubitDesktop.FGLUtils.compare_range(txt, l, r, me.datatype, me.datatype_length, me.format))
                             {
                                 ok = true;
                             }
@@ -347,17 +347,24 @@ var cfg= {
 			return widget.getValue();
 		},
 		setFormFieldValue: function(widget, txt) {
-			widget.setValue(txt.trim());
+			if (txt) { 
+				widget.setValue(txt.trim());
+			} else {
+				widget.setValue(null);
+			}
 		},
-		enableField: function(widget) {
-			if (this.A4GL_noentry) return;
+		enableField: function() {
+			this.fldIsEnabled=true;
+			if (fieldIsNoEntry(this, this.currentContext)) {
+				return;
+			}
 			else {
 				this.setReadOnly(false);
 			//this.setDisabled(false);
 			}
 		},
-		disableField: function(widget) {
-			if (this.A4GL_noentry) return;
+		disableField: function() {
+			this.fldIsEnabled=false;
 			//this.setDisabled(true);
 			this.setReadOnly(true);
 		},
@@ -454,6 +461,19 @@ switch (d.widget.type) {
 
 		item=Ext.widget(fieldType,cfg);
 
+		item.on('keypress',  function(field, e) {
+			console.log("keypress");
+			
+		});
+
+		item.on('specialkey',  function(field, e) {
+                                 if (e.getKey()==e.ESC && item.currentContext && item.currentContext.action) {
+							item.currentContext.action(null,"ACCEPT");
+                                                }
+                                 }
+                );
+
+
 		item.on('blur', function() {
 			afterField(item);
 		});
@@ -544,7 +564,7 @@ var flds=[];
      store.createNewRow=function(arr) {
 	var flds={};
      	for (a=0;a<d.items.length;a++) {
-		flds[d.items[a].colName]=arr[a];
+		flds[d.items[a].colName]=arr.VS[0].V[a];
 	}
 	return flds
      }
@@ -585,7 +605,7 @@ return flds;
 
 
 function findTable(currentApplication, screenRecord) {
-	screenRecord=screenRecord.Name.replace(".*","");
+	screenRecord=screenRecord.NAME.replace(".*","");
 	var res=currentApplication.currentWindow.activeForm.query("[ScreenRecordName]");
 	if (res && res.length) {
 		return res[0];
@@ -789,11 +809,11 @@ for (a=0;a<fieldList.length;a++) {
 return true;
 }
 
-function createForm(d,currentApplication) {
+function createForm(d,frmName, currentApplication) {
 //d=Data
 
 
-var str=Base64.decode(d.join());
+var str=Base64.decode(d);
 var frmDefinition=JSON.parse(str);
 
 if (!frmDefinition.layout) {

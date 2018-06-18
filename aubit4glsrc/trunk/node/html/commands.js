@@ -30,11 +30,11 @@ console.log("Process : " + d.type);
 
 switch (d.type) {
 	case "DISPLAYAT": 
-		console.log("DISPLAYAT:" + d.Data);
+		console.log("DISPLAYAT:" + d.data);
 		return ;
 
 	case "DISPLAY":
-		console.log(d.Data);
+		console.log(d.data);
 		return;
 
  	case "ERROR":
@@ -43,11 +43,11 @@ switch (d.type) {
    			title:'Error',
 			closable:true,
 			modal:true,
-   			msg: d.Data,
+   			msg: d.data,
 			buttons:Ext.window.MessageBox.OK
 		});
 		} else {
-			currentApplication.currentWindow.setError(d.Data);
+			currentApplication.currentWindow.setError(d.data);
 		}
 		return;
 
@@ -55,12 +55,12 @@ switch (d.type) {
 		if (!currentApplication.currentWindow) {
 		Ext.MessageBox.show({
    			title: 'Message',
-   			msg: d.Data,
+   			msg: d.data,
 			modal:true,
 			buttons:Ext.window.MessageBox.OK
 			});
 		} else {
-			currentApplication.currentWindow.setMessage(d.Data);
+			currentApplication.currentWindow.setMessage(d.data);
 		}
 		return;
 
@@ -82,11 +82,11 @@ switch (d.type) {
 		return;
   
 	case "FREE":
-		var context=d.CONTEXT;
+		var context=d.context;
 		var c=currentApplication.Contexts["C"+context];
 		if (!c) {
-			console.log("FREE No context "+d.CONTEXT);
-			alert("FREE No context"+d.CONTEXT);
+			console.log("FREE No context "+d.context);
+			alert("FREE No context"+d.context);
 			return;
 		}
 
@@ -103,11 +103,11 @@ switch (d.type) {
 
 
 	case "WAITFOREVENT":
-		var context=d.CONTEXT;
+		var context=d.context;
 		var c=currentApplication.Contexts["C"+context];
 		if (!c) {
-			console.log("WAITFOREVENT No context"+d.CONTEXT);
-			alert("WAITFOREVENT No context"+d.CONTEXT);
+			console.log("WAITFOREVENT No context"+d.context);
+			alert("WAITFOREVENT No context"+d.context);
 			return;
 		}
 		if (c.ContextActivate) {
@@ -120,8 +120,16 @@ switch (d.type) {
 
 
 	case "PROGRAMSTOP": 
-		Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, d.Data.join("<br>"));
-		socket.disconnect();
+		currentApplication.stopping=true;
+		if (d.data) {
+			if (d.data.join) {
+				Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, d.data.join("<br>"), function() { });
+			} else {
+				Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, d.data, function() { });
+			}
+		} else {
+				Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, "", function() { });
+		}
 		break;
 
 	case "PROGRAMSTARTUP":
@@ -132,6 +140,7 @@ switch (d.type) {
 		//applicationsByPid[d.PID]=app;
 		currentApplication.programStartup(d);
 		var screen=createWindow(currentApplication, null);
+		
 		if (false) { // Doing full screen ...
                 	document.title=d.ProgramName;
 			screen.show();
@@ -152,12 +161,22 @@ switch (d.type) {
 
 
 	case "OPENFORM":
-		if (d.Form && d.Form.Data) {
-			var frm=createForm(d.Form.Data, currentApplication);
-
-			currentApplication.Forms[d.FORMNAME]={
-				source: d.SOURCE,
+		if (d.data) {
+			var fObj=Ext.JSON.decode(d.data);
+			var dt="";
+			if (Ext.isArray(fObj.Data)) {
+				dt=fObj.Data.join("");
+			} else {
+				dt=fObj.Data;
+			}
+			var frm=createForm(dt, d.formname, currentApplication);
+			if (frm) { 
+			currentApplication.Forms[d.formname]={
+				source: d.source,
 				form: frm
+			}
+			} else {
+				currentApplication.sendError({errMsg:'Invalid form'});
 			}
 		}
 		break;
@@ -178,9 +197,12 @@ switch (d.type) {
 		break;
 
 		
+	case "CLEAR":
+		clearFields(currentApplication,d.fieldlist, d.todefault);
+		break;
 
 	case "CLEARFORM": 
-		clearForm(currentApplication, d.TODEFAULTS);
+		clearForm(currentApplication, d.todefaults);
 		console.log("@Fixme - clear form");
 		break;
 
@@ -231,13 +253,13 @@ switch (d.type) {
 		break;
 
 	case "SETHELPFILE":
-		helpFilePrefix=d.FileName;
+		helpFilePrefix=d.filename;
 		break;
 		//"FileName":"helpdemo"
 
 
 	case "DISPLAYTO":
-		displayTo(currentApplication, d.Fields,d.Values);
+		displayTo(currentApplication, d.fieldlist,d.vs,d.attribute);
 		break;
 
 	case "NEXTOPTION":
@@ -245,32 +267,37 @@ switch (d.type) {
 		break;
 
 	case "DISPLAYFORM":
-		var frm=currentApplication.Forms[d.FORMNAME].form;
+		var frm=currentApplication.Forms[d.formname].form;
 
-		if (currentApplication.currentWindow) {
-			currentApplication.currentWindow.setActiveForm(frm);
-		} else {
-			console.log("Uuurrgghh - no current application window");
-
-			var win=Ext.create("Ext.window.Window", {
-        			//width:200,
-        			//height:200,
-        			layout:'fit',
-				items: [
-					frm
-        			]
-			});
-			win.show();
+		if (frm) { 
+			if (currentApplication.currentWindow) {
+				currentApplication.currentWindow.setActiveForm(frm);
+			} else {
+				console.log("Uuurrgghh - no current application window");
+	
+				var win=Ext.create("Ext.window.Window", {
+        				//width:200,
+        				//height:200,
+        				layout:'fit',
+					items: [
+						frm
+        				]
+				});
+				win.show();
+			}
+		}  else {
+			currentApplication.sendError({ errMsg:'Invalid form', formName:d.formname});
 		}
 		break;
 
 	case "HIDEOPTION":
-		var context=d.CONTEXT;
+		var context=d.context;
 		var c=currentApplication.Contexts["C"+context];
 		c.hideOption(d.OPTION);
 		break;
+
 	case "SHOWOPTION":
-		var context=d.CONTEXT;
+		var context=d.context;
 		var c=currentApplication.Contexts["C"+context];
 		c.showOption(d.OPTION);
 		break;
@@ -279,10 +306,17 @@ switch (d.type) {
 		break;
 		
 	case "OPENWINDOWWITHFORM":
-		var frm=createForm(d.FORM.Data,currentApplication);
+		var frm=createForm(d.FORM.Data,"fixme",currentApplication);
 		createWindow(currentApplication, d,frm);
 		break;
 
+
+	case "SLEEPING":
+		currentApplication.windows["screen"].setLoading("Application is sleeping..");
+		break;
+	case "SLEPT":
+		currentApplication.windows["screen"].setLoading(false);
+		break;
 
 /*
 ATTRIBUTE: 0

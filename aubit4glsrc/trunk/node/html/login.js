@@ -6,11 +6,14 @@ var win=Ext.create('Ext.window.Window', {
     minWidth: 200,
     layout: 'fit',
     items: [
-		{xtype:'form',items:[
+		{xtype:'form',
+			bodyPadding:6,
+			items:[
 				{
 					xtype:'textfield',
                 			fieldLabel:'Username', 
                 			itemId:'loginUsername', 
+					value:'aubit4gl',
                 			name:'loginUsername', 
                 			allowBlank:false 
             			},
@@ -28,6 +31,7 @@ var win=Ext.create('Ext.window.Window', {
                 			fieldLabel:'Program', 
                 			itemId:'loginProgram', 
                 			name:'loginProgram', 
+					value:'fgldemo/fgldemo',
                 			allowBlank:false 
             			},
 		]}

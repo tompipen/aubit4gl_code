@@ -1,4 +1,5 @@
-function sendResponse(d, app) {
+/*
+function sendResponse(socket, d, app) {
 	if (!app) {
 		app=currentApplication; // This should never get hit - should always be set....
 	}
@@ -11,3 +12,12 @@ function sendResponse(d, app) {
 	console.dir(d);
 	socket.emit('trigger',d);
 }
+
+function sendError(socket, d, app) {
+	if (!app) {
+		app=currentApplication; // This should never get hit - should always be set....
+	}
+
+	socket.emit('uierror',d);
+}
+*/

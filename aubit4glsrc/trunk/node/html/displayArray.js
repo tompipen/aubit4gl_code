@@ -10,13 +10,13 @@ var displayArray;
 var toolbar;
 
 
-var tab=findTable(currentApplication, d.Fields[0]);
+var tab=findTable(currentApplication, d.fieldlist[0].FIELD[0]);
 var a;
 var rowData=[];
-for (a=0;a<d.Rows.length;a++) {
+for (a=0;a<d.rows[0].ROW.length;a++) {
 	// The last one is normally null so we dont need to worry about "," in the json object
-	if (d.Rows[a]==null) continue;
-    var f=tab.store.createNewRow(d.Rows[a].Data);
+	if (d.rows[0].ROW[a]==null) continue;
+    var f=tab.store.createNewRow(d.rows[0].ROW[a]);
     rowData.push(f);
 }
 
@@ -35,7 +35,7 @@ displayArray={
 			case "INTERRUPT":
 				var val={ID:"INTERRUPT"};
 				displayArray.ContextDeactivate();
-				sendResponse(val, displayArray.activeApplication);
+				currentApplication.sendResponse(val, displayArray.activeApplication);
 				break;
 
 			case "ACCEPT":
@@ -51,14 +51,14 @@ displayArray={
 
 				displayArray.ContextDeactivate();
 				console.dir(val);
-				sendResponse(val, displayArray.activeApplication);
+				currentApplication.sendResponse(val, displayArray.activeApplication);
 				break;
 
 			default:
 				var val={ID:toolbarActionId };
 				Ext.apply(val, displayArray.getSyncValues());
 				displayArray.ContextDeactivate();
-				sendResponse(val, displayArray.activeApplication);
+				currentApplication.sendResponse(val, displayArray.activeApplication);
 				break;
 				
 		}
@@ -86,18 +86,18 @@ displayArray={
 		if (displayArray.active) {
 			displayArray.ContextDeactivate();
 		}
-		delete currentApplication.Contexts["C"+d.CONTEXT];
+		delete currentApplication.Contexts["C"+d.context];
 		displayArray.activeWindow.removeMenu(toolbar);
 	}
     };
 
 
-    toolbar= generateToolbar(displayArray, d.Events, function(toolbarActionId, eventType) {
+    toolbar= generateToolbar(displayArray, d.events[0], function(toolbarActionId, eventType) {
 	displayArray.action(toolbarActionId, eventType);
     }) ;
 
     //currentWindow.setMenu(pan);
-    currentApplication.Contexts["C"+d.CONTEXT]=displayArray;
+    currentApplication.Contexts["C"+d.context]=displayArray;
 }
 
 

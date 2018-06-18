@@ -4,22 +4,19 @@ function createMenu(currentApplication, d) {
   var pan;
   var menu;
 
-  for (var vv=0;vv<d.MenuCommands.length;vv++) {
-
-	var v=d.MenuCommands[vv];
-
-	if (v==null) continue;
-
-	if (vv==null) {
-	 continue; 
-	}
+var menucommands;
+	
+menucommands=convertToType(d.menucommands[0].MENUCOMMAND,"MENUCOMMAND");
+menucommands=Ext.Array.merge(menucommands, convertToType(d.menucommands[0].MENUACTION,"MENUACTION"));
 
 
+  Ext.Array.each(menucommands, function(v) { 
+	if (v==null) return;
 	var item;
 
 	if (v.ACTION) {
 		if (v.ACTION=="fgl_exit_menu")  {
-			continue;
+			return;
 		}
 
 		item={      
@@ -29,7 +26,7 @@ function createMenu(currentApplication, d) {
 				A4GL_ACTION: v.ACTION,
 				handler: function() {
 					var val={ID:this.A4GL_ID};
-					sendResponse(val, pan.activeApplication);
+					currentApplication.sendResponse(val, pan.activeApplication);
 					pan.ContextDeactivate();
 				}
 	
@@ -45,7 +42,7 @@ function createMenu(currentApplication, d) {
 				A4GL_ACTION: v.ACTION,
 				handler: function() {
 					var val={ID:this.A4GL_ID};
-					sendResponse(val,  pan.activeApplication);
+					currentApplication.sendResponse(val,  pan.activeApplication);
 					pan.ContextDeactivate();
 				}
 	
@@ -56,7 +53,7 @@ function createMenu(currentApplication, d) {
 	}
 
 	itms.push(item);
-  }
+  });
 
  
 
@@ -65,16 +62,16 @@ function createMenu(currentApplication, d) {
 			//activeApplication: currentApplication,
 			//icon:d.IMAGE,
 			//title:d.TITLE,
-			A4GLContext: d.CONTEXT,
+			A4GLContext: d.context,
 			items : itms
 			
   });
 
 
   pan=Ext.create('Ext.panel.Panel', {
-    title: d.TITLE,
+    title: d.title,
     activeApplication: currentApplication,
-    A4GL_Context: d.CONTEXT,
+    A4GL_Context: d.context,
 	flex:1,
     //minWidth: 800,
     //closable:false,
@@ -96,7 +93,7 @@ function createMenu(currentApplication, d) {
 		pan.setVisible(false);
 		//pan.close();
 		menu.activeWindow.removeMenu(pan);
-		delete currentApplication.Contexts["C"+d.CONTEXT];
+		delete currentApplication.Contexts["C"+d.context];
 		pan=null;
 	},
 	showOption: function(opt) {
@@ -132,7 +129,7 @@ function createMenu(currentApplication, d) {
 		]
     });
 
-    currentApplication.Contexts["C"+d.CONTEXT]=pan;
+    currentApplication.Contexts["C"+d.context]=pan;
 }
 
 
