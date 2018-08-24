@@ -1305,6 +1305,7 @@ execute_sql_fetch (int *raffected,int *err_at_col)
 
 //A4GL_debug("Fetching");
 /* FETCH1.... */
+//ifx_lvar_alloc(1);
       prepare_for_fetch_into_descriptor(master_desc,master_qualifiers);
       EXEC SQL FETCH crExec USING DESCRIPTOR master_desc;
 /*
@@ -3308,6 +3309,11 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CLVCHARTYPE:
+        case SQLLVARCHAR:
+	  col->sqltype = CFIXCHARTYPE;	/* get all bytes */
+	  fld_len = 32739+1; // col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
 
 #ifdef ESQLC_IUSTYPES  /* Do unload */
 	
@@ -3315,7 +3321,6 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
         case SQLSET:
         case SQLMULTISET:
         case SQLLIST:
-        case SQLLVARCHAR:
 			fld_len = rtypmsize (col->sqltype, col->sqllen);
 			col->sqltype = CLVCHARPTRTYPE;
                 break;
