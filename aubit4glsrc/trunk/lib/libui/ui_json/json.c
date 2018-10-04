@@ -1,5 +1,7 @@
+
 #include <stdarg.h>
 #include <stdio.h>
+
 #include "a4gl_libaubit4gl.h"
 #include "comms.h"
 #include "uilib.h"
@@ -16,6 +18,8 @@ char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
 char *uilib_json_escape(char *s);
 void write_json_form(FILE *ofile, char *fname, struct_form *f) ;
+
+char executionGuid[200]="unset";
 
 int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
 
@@ -77,6 +81,21 @@ ignull (char *s)
     return s;
   return "";
 
+}
+
+
+
+// We dont need a "proper" UUID/GUID - just something random enough that we wont get clashes
+// on the same machine
+void setUUID(char *strUuid) {
+srand(time(NULL)*getpid());
+
+sprintf(strUuid, "%x%x-%x-%x-%x-%x%x%x", 
+    rand(), rand(),                 // Generates a 64-bit Hex number
+    rand(),                         // Generates a 32-bit Hex number
+    ((rand() & 0x0fff) | 0x4000),   // Generates a 32-bit Hex number of the form 4xxx (4 indicates the UUID version)
+    rand() % 0x3fff + 0x8000,       // Generates a 32-bit Hex number in the range [0x8000, 0xbfff]
+    rand(), rand(), rand());        // Generates a 96-bit Hex number
 }
 
 int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
@@ -1697,6 +1716,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     "DBMONEY",
     "A4GL_NUMERIC",
     "DB_LOCALE",
+    "CONNECTIONGUID",
     "LANG",
     0
   };
@@ -1721,13 +1741,16 @@ A4GL_debug("added window 'screen'");
 	}
   }
 A4GL_debug("...");
+setUUID( executionGuid);
+
   send_to_ui ("   { \"type\":\"PROGRAMSTARTUP\",\"ProgramName\":\"%s\",\"ID\":%d, \"EnvironmentVariables\":[", argv[0], get_ui_id ('r'));
   for (a = 0; nm[a]; a++)
     {
       send_to_ui ("      { \"name\":\"%s\",\"value\":\"%s\"},", nm[a], uilib_json_escape (char_encode(acl_getenv (nm[a]))));
     }
       send_to_ui ("      { \"name\":\"A4GL_VERSION\",\"value\":\"%s.%d\"},",  uilib_json_escape (char_encode(A4GL_internal_version ())),A4GL_internal_build());
-      send_to_ui ("      { \"name\":\"XML_VERSION\",\"value\":\"1.3\"}");
+      send_to_ui ("      { \"name\":\"XML_VERSION\",\"value\":\"1.3\"},");
+      send_to_ui ("      { \"name\":\"EXECUTIONGUID\",\"value\":\"%s\"}",executionGuid );
 
   send_to_ui ("   ]},");
   tmpnam (stderr_fname);
@@ -4270,7 +4293,7 @@ void UILIB_A4GL_sync_fields(void *sio) {
 
 
 void UILIB_A4GL_report_pause(char*s) {
-  send_to_ui ("      {\"type\":\"REPORTPAUSE\",Data:\"%s\"},",  uilib_json_escape (char_encode(s)));
+  send_to_ui ("      {\"type\":\"REPORTPAUSE\",\"Data\":\"%s\"},",  uilib_json_escape (char_encode(s)));
 }
 
 

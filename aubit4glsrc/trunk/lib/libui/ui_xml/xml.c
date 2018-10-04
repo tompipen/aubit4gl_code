@@ -11,6 +11,7 @@ static char *get_field_with_subscript_as_string(char *field, int i);
 FILE *def_stderr = NULL;
 char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
+int read_metrics_json (struct s_form_dets * formdets);
 
 int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
 
@@ -20,6 +21,8 @@ void fixup_data_on_stack(int dtype) ;
 #include "lib/libpacker/formxml/formxml.h"
 static int last_w=1;
 static int last_h=1;
+char executionGuid[200]="unset";
+
 
 #ifdef MOVED
 char screen[200][200];
@@ -73,6 +76,21 @@ ignull (char *s)
   return "";
 
 }
+
+// We dont need a "proper" UUID/GUID - just something random enough that we wont get clashes
+// on the same machine
+void setUUID(char *strUuid) {
+srand(time(NULL)*getpid());
+
+sprintf(strUuid, "%x%x-%x-%x-%x-%x%x%x",
+    rand(), rand(),                 // Generates a 64-bit Hex number
+    rand(),                         // Generates a 32-bit Hex number
+    ((rand() & 0x0fff) | 0x4000),   // Generates a 32-bit Hex number of the form 4xxx (4 indicates the UUID version)
+    rand() % 0x3fff + 0x8000,       // Generates a 32-bit Hex number in the range [0x8000, 0xbfff]
+    rand(), rand(), rand());        // Generates a 96-bit Hex number
+}
+
+
 
 int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
 return 0;
@@ -1539,7 +1557,11 @@ UILIB_A4GL_sleep_i ()
 
   flush_ui ();
   a = A4GL_pop_int ();
+  send_to_ui ("<SLEEPING DURATION=\"%d\"/>", a);
+  flush_ui ();
   sleep (a);
+  send_to_ui ("<SLEPT/>");
+  flush_ui ();
 }
 
 
@@ -1553,6 +1575,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     "DBMONEY",
     "A4GL_NUMERIC",
     "DB_LOCALE",
+    "CONNECTIONGUID",
     "LANG",
     0
   };
@@ -1576,6 +1599,8 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
   }
 
 
+setUUID( executionGuid);
+
   send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\">", argv[0], get_ui_id ('r'));
   for (a = 0; nm[a]; a++)
     {
@@ -1583,6 +1608,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     }
       send_to_ui ("<ENV NAME=\"A4GL_VERSION\" VALUE=\"%s.%d\"/>",  uilib_xml_escape (char_encode(A4GL_internal_version ())),A4GL_internal_build());
       send_to_ui ("<ENV NAME=\"XML_VERSION\" VALUE=\"1.6\"/>");
+      send_to_ui ("<ENV NAME=\"EXECUTIONGUID\" VALUE=\"%s\"/>", executionGuid);
 
 
   send_to_ui ("</PROGRAMSTARTUP>");
@@ -2910,9 +2936,11 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   char *action;
   int generated_xml_form=0;
 
-
-
   formdets = formdetsv;
+#ifdef JSONFORMMODE
+	return read_metrics_json (formdets);
+#endif 
+
   if (generate_xml_forms) {
 		FILE *f;
 		char buff[200];

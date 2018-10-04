@@ -21,11 +21,14 @@ else
 	PROXY=proxy
 endif
 
-all: ${PLUGINDIR}/libUI_XML${SO_EXT} $(PROXY)
+all: ${PLUGINDIR}/libUI_XML${SO_EXT} $(PROXY) ${PLUGINDIR}/libUI_XMLJSON${SO_EXT} 
 
 
-${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
+${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o json_sub.o
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  xml.o json_sub.o  $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
+
+${PLUGINDIR}/libUI_XMLJSON${SO_EXT}: xml.json.o json_sub.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formjson.o
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  xml.json.o json_sub.o  $(ROOT)/lib/libpacker/formxml/formjson.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
 
 
 ./uilib/xml/pregenerated/triggers.o: ./uilib/xml/pregenerated/triggers.c
@@ -37,6 +40,8 @@ ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/f
 proxy: proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o 
 	${CC} ${CFLAGS} -DCOMPILING_PROXY -g -o proxy proxy.o pipe.c debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o
 
+xml.json.o: xml.c
+	${CC} ${CFLAGS} -g -c -DJSONFORMMODE  xml.c -o xml.json.o
 noproxy: noproxy.o pipe.o debug.o
 	${CC} ${CFLAGS} -g -o noproxy noproxy.o pipe.o debug.o
 

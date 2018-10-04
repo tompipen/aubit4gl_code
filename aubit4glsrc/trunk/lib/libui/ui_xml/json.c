@@ -4,7 +4,7 @@
 #include "comms.h"
 #include "uilib.h"
 #include "pipe.h"
-#include "uilib/attr.h"
+#include "attr.h"
 #include "a4gl_API_ui_lib.h"
 char *A4GL_pull_off_data_for_display (int n, int display_type);
 extern struct s_attr *last_attr;
@@ -1556,6 +1556,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     "DBMONEY",
     "A4GL_NUMERIC",
     "DB_LOCALE",
+    "CONNECTIONGUID",
     "LANG",
     0
   };
