@@ -1,0 +1,68 @@
+﻿.icon-enable{
+    background-image: url(../img/enable.png);
+}
+.icon-disable{
+    background-image: url(../img/disable.png);
+}
+
+
+.icon-cancel
+{
+    background-image: url(../img/cancel.png);
+}
+
+.icon-ok
+{
+    background-image: url(../img/ok.png);
+}
+
+.icon-output
+{
+    background-image: url(../img/output.png);
+}
+
+.icon-current
+{
+    background-image: url(../img/current.png);
+}
+
+.icon-Query
+{
+    background-image: url(../img/query.png);
+}
+.icon-Next
+{
+    background-image: url(../img/next.png);
+}
+.icon-Previous
+{
+    background-image: url(../img/previous.png);
+}
+.icon-Add
+{
+    background-image: url(../img/add.png);
+}
+.icon-Update
+{
+    background-image: url(../img/update.png);
+}
+.icon-Remove
+{
+    background-image: url(../img/remove.png);
+}
+.icon-Screen
+{
+    background-image: url(../img/screen.png);
+}
+.icon-Master
+{
+    background-image: url(../img/master.png);
+}
+.icon-Detail
+{
+    background-image: url(../img/detail.png);
+}
+.icon-Exit
+{
+    background-image: url(../img/exit.png);
+}
