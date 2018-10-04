@@ -6,6 +6,7 @@ unset CALLERRHOOK
 unset A4GL_GDB_ATTACH
 export DUMP_CORE=Y
 
+export LOGPROXY=Y
 
 if [ "$1" = "" ]
 then

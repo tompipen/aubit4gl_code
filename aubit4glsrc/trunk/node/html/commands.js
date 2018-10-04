@@ -121,14 +121,15 @@ switch (d.type) {
 
 	case "PROGRAMSTOP": 
 		currentApplication.stopping=true;
+		if (d.exitcode===undefined) d.exitcode=-1;
 		if (d.data) {
 			if (d.data.join) {
-				Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, d.data.join("<br>"), function() { });
+				Ext.Msg.alert( "Program stopped - edit code : " +d.exitcode, d.data.join("<br>"), function() {location.href=location.href; });
 			} else {
-				Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, d.data, function() { });
+				Ext.Msg.alert( "Program stopped - edit code : " +d.exitcode, d.data, function() { location.href=location.href;});
 			}
 		} else {
-				Ext.Msg.alert( "Program stopped - edit code : " +d.EXITCODE, "", function() { });
+				Ext.Msg.alert( "Program stopped - edit code : " +d.exitcode, "", function() {location.href=location.href; });
 		}
 		break;
 
@@ -142,10 +143,10 @@ switch (d.type) {
 		var screen=createWindow(currentApplication, null);
 		
 		if (false) { // Doing full screen ...
-                	document.title=d.ProgramName;
+                	document.title=getProgramName(d.programname);
 			screen.show();
 		} else {
-			screen.setTitle(d.ProgramName);
+			screen.setTitle(getProgramName(d.programname));
 			screen.show();
 		}
 		console.log("Shown 'screen'");
@@ -182,7 +183,7 @@ switch (d.type) {
 		break;
 
 	case "CURRENTWINDOW":
-		var cwin=d.WINDOW;
+		var cwin=d.window;
 		var cw_win=currentApplication.windows[cwin];
 
 		if (cw_win) {
@@ -192,7 +193,7 @@ switch (d.type) {
 
 
 	case "CLEARWINDOW":
-		var cwin=d.WINDOW;
+		var cwin=d.window;
 		console.log("@Fixme - clear window " +cwin);
 		break;
 
@@ -215,7 +216,7 @@ switch (d.type) {
 		break;
 
 	case "CLOSEWINDOW": 
-		var clsWindow=d.WINDOW;
+		var clsWindow=d.window;
 		var cls_win=currentApplication.windows[clsWindow];
 		cls_win.closeWindow();
 		break;
@@ -228,10 +229,9 @@ switch (d.type) {
 
 
 	case "SHOWHELP":
-			var w;
-			w = new Ext.Window({
+			var helpWindow = new Ext.Window({
   			autoLoad: {
-    			    url: "/"+helpFilePrefix+"/"+d.HelpId+".html",
+    			    url: "/"+helpFilePrefix+"/"+d.helpid+".html",
     			//discardUrl: true,
     			nocache: false,
     			text: "Loading...",
@@ -239,15 +239,19 @@ switch (d.type) {
     			//scripts: false 
   			},
   			height: 300,
+			x:10,
+			y:10,
   			width: 600,
 			title: 'Application Help',
 			buttons: [
 				{text:'OK', handler: function () {
-					w.close();
+					helpWindow.close();
 				}}
 			]
 			});
-			w.show();
+			helpWindow.show();
+			 
+			
 		
 		//"HelpId":1002
 		break;
@@ -293,20 +297,20 @@ switch (d.type) {
 	case "HIDEOPTION":
 		var context=d.context;
 		var c=currentApplication.Contexts["C"+context];
-		c.hideOption(d.OPTION);
+		c.hideOption(d.option);
 		break;
 
 	case "SHOWOPTION":
 		var context=d.context;
 		var c=currentApplication.Contexts["C"+context];
-		c.showOption(d.OPTION);
+		c.showOption(d.option);
 		break;
 
 	case "FIELDDELIMITERS": 
 		break;
 		
 	case "OPENWINDOWWITHFORM":
-		var frm=createForm(d.FORM.Data,"fixme",currentApplication);
+		var frm=createForm(d.form.Data,"fixme",currentApplication);
 		createWindow(currentApplication, d,frm);
 		break;
 
@@ -317,6 +321,10 @@ switch (d.type) {
 	case "SLEPT":
 		currentApplication.windows["screen"].setLoading(false);
 		break;
+
+	case "REPORTPAUSE": 
+		// ignore it..
+		break; 
 
 /*
 ATTRIBUTE: 0

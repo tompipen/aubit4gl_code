@@ -1,6 +1,42 @@
-function displayArrayDblClickHandler(displayArray) {
-this.action("ACCEPT","ACCEPT");
+function displayArrayDblClickHandler( grid, td, cellIndex, record, tr, rowIndex, e, eOpts ) {
+	this.action("ACCEPT","ACCEPT");
 }
+
+function displayArrayClickHandler( grid, td, cellIndex, record, tr, rowIndex, e, eOpts ) {
+var evt;
+var lst=[];
+if (this.lastRowIndex>=0) {
+	if (this.events[0]["AFTER_ROW_EVENT"]) {
+			evt=this.events[0]["AFTER_ROW_EVENT"];
+			Ext.Array.each(evt, function(x) {
+					var val={ID: x.ID};
+                                        Ext.apply(val, {
+                                            "ARRLINE":this.lastRowIndex,
+                                            "SCRLINE":this.lastRowIndex
+                                        });
+					lst.push(val);
+			});
+	}
+}
+
+if (this.events[0]["BEFORE_ROW_EVENT"]) {
+		evt=this.events[0]["BEFORE_ROW_EVENT"];
+		Ext.Array.each(evt, function(x) {
+				var val={ID: x.ID};
+                                       Ext.apply(val, {
+                                           "ARRLINE":rowIndex,
+                                           "SCRLINE":rowIndex
+                                       });
+				lst.push(val);
+		});
+}
+
+this.lastRowIndex=rowIndex;
+this.sendResponse(lst);
+
+
+}
+
 
 function createDisplayArray(currentApplication, d)  {
 
@@ -25,10 +61,15 @@ tab.store.loadData(rowData,false);
 displayArray={
 	first:true,
 	active:false,
+	events: d.events,
  	contextType:  AubitDesktop.FGLContextType.contextDisplayArray,
 	activeWindow: currentApplication.currentWindow,
         activeApplication: currentApplication,
 	Table: tab,
+	lastRowIndex:-1,
+	sendResponse: function(val) {
+		currentApplication.sendResponse(val, displayArray.activeApplication);
+	},
 	action: function(toolbarActionId, eventType) {
 		switch (eventType) {
 
@@ -72,6 +113,7 @@ displayArray={
 		toolbar.setVisible(true);
 		tab.setDisabled(false);
 		tab.on('celldblclick', displayArrayDblClickHandler, displayArray);
+		tab.on('cellclick', displayArrayClickHandler, displayArray);
 
 		//enableTable(....
 	},
@@ -80,6 +122,7 @@ displayArray={
 		tab.setDisabled(true);
 		toolbar.setVisible(false);
 		tab.un('celldblclick', displayArrayDblClickHandler, displayArray);
+		tab.un('cellclick', displayArrayClickHandler, displayArray);
 		disableAllFields(currentApplication);
 	},
 	ContextFree: function() {

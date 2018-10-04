@@ -1,8 +1,6 @@
-
-
-
-
-function initializeSocket(p_username,p_password, p_program , callback) {
+Ext.define('Aubit4GL.client', {
+statics : {
+initializeSocket: function (p_username,p_password, p_program , callback) {
 var socket;
 
 try { 
@@ -140,11 +138,11 @@ console.error(Err);
 }
 
 return true;
-}
+},
 
 
 // Convert our 
-function convertToType(obj,defType) {
+convertToType: function(obj,defType) {
 	var arr=[];
 	if (!obj) return [];
 
@@ -170,3 +168,5 @@ function convertToType(obj,defType) {
 	}
 	return arr;
 }
+}
+});

@@ -27,10 +27,16 @@ var win=Ext.create('Ext.window.Window', {
                 			allowBlank:false 
           			},
 				{
-					xtype:'textfield',
+					xtype:'combo',
                 			fieldLabel:'Program', 
                 			itemId:'loginProgram', 
                 			name:'loginProgram', 
+					store: [
+						'fgldemo/fgldemo',
+						'fgldemo/hideShowMenu',
+						'fgldemo/dArrTest',
+						'fgldemo/window'
+					],
 					value:'fgldemo/fgldemo',
                 			allowBlank:false 
             			},

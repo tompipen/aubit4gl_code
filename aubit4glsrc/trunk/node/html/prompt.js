@@ -4,6 +4,7 @@ function createPrompt(currentApplication, d) {
   var dtype_sz=d.dtype_hint>>16;
   var prmpt={ 
 		activeApplication: currentApplication,
+		events: d.events,
 		ContextActivate: function() {
 		cfg={
                                 cls: "PROMPT"+d.fieldattribute.trim(),

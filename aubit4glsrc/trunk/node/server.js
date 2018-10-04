@@ -76,9 +76,17 @@ function convertTriggerJsonToXML(json) {
 // Convert from XML into some usable JSON object
 // 
 function convertXMLEnvelopeToObject(xml) {
-//console.log("XML="+xml);
+console.log("XML="+xml);
+try { 
 var x=xml2json.toJson(xml,  toJsonOptions );
+} catch (Err) {
+console.log("Error reading XML : " );
+console.log(xml);
+console.log(Err);
+return null
+}
 if (x && x.ENVELOPE) {
+	console.log("xml2json.toJson returns:");
         console.dir(x,{ depth:null});
         var y={
                 id: x.ENVELOPE[0].ID,
@@ -124,11 +132,11 @@ var callbackServer = net.createServer((c) => {
     // to the socket associated with the connection GUID we detected in our stream
     var processLine=function(d) { 
 				allLines+=d;
-	console.log("d="+d);
+	//console.log("d="+d);
 				// The protocol for Json should send the whole object with a trailing } + newline...
 				// We'll do a test for that..
 				if (d=="}\n" || d=="</ENVELOPE>\n") {
-		console.log("end of block");
+		//console.log("end of block");
 					try {
 
 						if (connGuid) {
@@ -140,8 +148,8 @@ var callbackServer = net.createServer((c) => {
 							if (child) {
 								if (child.associatedWebSocket) { 
 									console.log("Sending envelope to "+connGuid);
-									//console.dir(x,{ depth:null});
-									//console.log("\n\n\n");
+									console.dir(x,{ depth:null});
+									console.log("\n\n\n");
 									child.associatedWebSocket.emit('envelope',x);
 								} else {
 									console.error("Child.associatedWebSocket not set");
@@ -174,7 +182,7 @@ var callbackServer = net.createServer((c) => {
 			console.dir(o, { depth :null} );
 
 			console.log(o.commands);
-			console.log(o.pid);
+			console.log("O.Pid="+o.pid);
 			console.log(o.commands.length);
 			console.log(o.commands[0].type);
 			if (o.commands && o.pid && o.commands.length>0 && o.commands[0].type=="PROGRAMSTARTUP") {
@@ -205,7 +213,7 @@ var callbackServer = net.createServer((c) => {
 
 					if (child) {
 						child.associatedProgramSocket=c;
-						child.associatedPID=pid;
+						child.associatedPID=o.pid;
 					}
 
 					for (a=0;a<pendingData.length;a++) { 
@@ -426,11 +434,13 @@ io.sockets.on('connection', function(socket) {
 
         child.stderr.on('data', function(d) {
 		console.log("STDERR:" +d);
-            child.associatedWebSocket.emit('stderr', {guid:guid, data: d, pid: child.associatedPID});
+	console.log("On pid : " + child.associatedPID);
+            child.associatedWebSocket.emit('stderr', {guid:guid, data: d, pid: child.associatedPID, a:1});
         });
         child.stdout.on('data', function(d) {
 		console.log("STDOUT:" +d);
-            child.associatedWebSocket.emit('stdout', {guid:guid, data: d, pid: child.associatedPID});
+	console.log("On pid : " + child.associatedPID);
+            child.associatedWebSocket.emit('stdout', {guid:guid, data: d, pid: child.associatedPID, a:2});
         });
 
 

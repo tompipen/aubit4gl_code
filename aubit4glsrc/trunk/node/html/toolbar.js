@@ -4,6 +4,8 @@ function onKeyHandler() {
 
 
 
+
+
 function getIconClassInternal(currentApplication, nm) {
 	var activeFormName;
 	var windowName=currentApplication.currentWindow.A4GL_name;
@@ -111,7 +113,7 @@ function generateToolbar(context, events, callback) {
 
 
 	var a;
-	if (events && events.ONKEY_EVENT.length) {
+	if (events && events.ONKEY_EVENT && events.ONKEY_EVENT.length) {
 		// 
 		// Need to add toolbar items for ON KEY stuff...
 		//
@@ -148,8 +150,8 @@ function generateToolbar(context, events, callback) {
 		originalEvents: events,
         	flex:1,
 		items: items,
-		height:60,
-		minWidgth:100,
+		//height:90,
+		//minWidth:100,
 
 	});
 

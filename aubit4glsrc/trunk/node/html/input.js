@@ -25,6 +25,14 @@ input={
  	contextType:  AubitDesktop.FGLContextType.contextInput,
 	OriginalFields:d.fieldlist,
 	Fields: flds,
+	events: d.events,
+        beforeField: function(eventId) {
+                input.action(eventId,"BeforeField");
+        },
+        afterField: function(eventId) {
+                input.action(eventId,"AfterField");
+        },
+
         getLastFocusFieldName:function() {
               if (input.lastFocusField) {
                         return input.lastFocusField.A4GL_fullname;

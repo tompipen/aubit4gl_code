@@ -2,7 +2,7 @@ function createWindow(currentApplication, d, frm) {
 var fullScreen=false;
 
 if (frm) {
-	d.NAME=d.WINDOW;
+	d.name=d.window;
 }
 
 if (d==null) {
@@ -85,16 +85,23 @@ var cfg={
 			if (this.y<0) {
 				this.setPosition(this.x,10);
 			}
+		},
+		beforeclose: function() {
+			if (d.name=="screen") {
+			this.setLoading("Closing...")
+				currentApplication.sendResponse({ID:"DIE"}, currentApplication);
+				return false;
+			}
 		}
 	},
 
 	ensureCurrent: function() {
-		if (currentApplication.currentWindow!=d.NAME) {
-			win.makeCurrent(d.NAME);
+		if (currentApplication.currentWindow!=d.name) {
+			win.makeCurrent(d.name);
 		}
 	},
 	makeCurrent: function() {
-		var winName=d.NAME;
+		var winName=d.name;
 		console.log("Current window is " + winName);
 		if (currentApplication.windows[winName]!=null) {
 		
@@ -117,7 +124,7 @@ var cfg={
 		}
 	},
 	closeWindow: function() {
-		var winName=d.NAME;
+		var winName=d.name;
 		console.log("remove window " + winName);
 
 		if (currentApplication.windows[winName]!=null) {
@@ -190,47 +197,53 @@ var cfg={
 
 
 
-if (d.X) {
-	cfg.x=d.X*xMultiplier;
-	cfg.y=d.Y*yMultiplier;
+if (d.x) {
+	cfg.x=d.x*xMultiplier;
+	cfg.y=d.y*yMultiplier;
 }
 
 
-if (d.BORDER) {
-	cfg.cls="BorderWindow "+d.NAME;
+if (d.border) {
+	cfg.cls="BorderWindow "+d.name;
 } else {
-	cfg.cls="BorderlessWindow "+d.NAME;
+	cfg.cls="BorderlessWindow "+d.name;
 }
 
-if (d.TEXT) {
-	cfg.text=d.TEXT;
+if (d.text) {
+	cfg.text=d.text;
 }
 
-if (d.STYLE) {
-	cfg.cls= d.STYLE
+if (d.style) {
+	cfg.cls= d.style
 }
 
-if (d.NAME=='screen' && !fullScreen) {
+if (d.name=='screen' && !fullScreen) {
 	cfg.constrain=true;
 	//cfg.renderTo='DivPanel';
 	//cfg.closable=true;
 	cfg.maximizable=true;
 	//cfg.minimizable=true;
 	cfg.collapsible=true;
+	cfg.closable=true;
+
 
         var updateLog=function(fld, data) {
 
-		fld.up("#stdOutPanel").setVisible(true);
+		try { 
+			fld.up("#stdOutPanel").setVisible(true);
+	
+                	fld.setValue(   fld.getValue()  + data + '\n');
+        		//Get the text area component, the textarea input element and
+        		//dom scroll height
+                	inputElDom = fld.inputEl.dom,
+                	scrollHeight = inputElDom.scrollHeight;
+	
+                	//Set the input element dom scroll top to the height to force
+                	//it to scroll to the bottom
+                	inputElDom.scrollTop = scrollHeight;
+		} catch (Err) {
+		}
 
-                fld.setValue(   fld.getValue()  + data + '\n');
-        //Get the text area component, the textarea input element and
-        //dom scroll height
-                inputElDom = fld.inputEl.dom,
-                scrollHeight = inputElDom.scrollHeight;
-
-                //Set the input element dom scroll top to the height to force
-                //it to scroll to the bottom
-                inputElDom.scrollTop = scrollHeight;
         };
 
         // Theses probably shouldnt be here - they should be per app
@@ -238,6 +251,8 @@ if (d.NAME=='screen' && !fullScreen) {
 
         stdOutLog=Ext.widget("textareafield", {
                 flex:1,
+		cls:'fixedWidth',
+		fieldStyle: 'font-family: monospace;',
                 //height:'100%',
                 //width:'100%',
                 autoScroll:true,
@@ -250,7 +265,9 @@ if (d.NAME=='screen' && !fullScreen) {
         stdErrLog=Ext.widget("textareafield", {
                 flex:1,
                 height:'100%',
+		cls:'fixedWidth',
                 width:'100%',
+		fieldStyle: 'font-family: monospace;',
                 autoScroll:true,
                 itemId:'stdErrLogField',
                 append: function(txt) {
@@ -263,7 +280,7 @@ if (d.NAME=='screen' && !fullScreen) {
 	currentApplication.stdErr=stdErrLog;
 
 	cfg.dockedItems.push({
-        	xtype: 'panel',
+        	xtype: 'tabpanel',
 		collapsible:true,
         	dock: 'bottom',
 		height:200,
@@ -271,10 +288,10 @@ if (d.NAME=='screen' && !fullScreen) {
 		
 		hidden:true,
 		itemId:'stdOutPanel',
-                layout:{type:'hbox', align:'stretch', pack:'start'},
+                //layout:{type:'hbox',  align:'stretch', pack:'start'},
         	items: [
-                           {xtype:'panel', title:'StdOut',items: [ stdOutLog], flex:1, border:false, height:'100%', layout:'fit'},
-                           {xtype:'panel', title:'StdErr',items: [ stdErrLog], flex:1, border:false, height:'100%', layout:'fit'},
+                           {xtype:'panel', collapsible:true,  title:'StdOut',items: [ stdOutLog], flex:1, border:false, height:'100%', layout:'fit'},
+                           {xtype:'panel', collapsible:true,  title:'StdErr',items: [ stdErrLog], flex:1, border:false, height:'100%', layout:'fit'},
         	]
     	});
 	
@@ -297,8 +314,8 @@ if (fullScreen) {
 } else {
    if (!frm) {
    	Ext.apply(cfg,{
-		height: d.H*yMultiplier,
-		width: d.W*xMultiplier,
+		height: d.h*yMultiplier,
+		width: d.w*xMultiplier,
    	});
    } else {
    	Ext.apply(cfg,{
@@ -312,10 +329,10 @@ if (fullScreen) {
 console.log("height : " + cfg.height);
 console.log("width  : " + cfg.width);
 
-win.A4GL_name=d.NAME;
+win.A4GL_name=d.name;
 win.activeApplication=currentApplication;
-currentApplication.windows[d.NAME]=win;
-currentApplication.windowsStack.unshift(d.NAME);
+currentApplication.windows[d.name]=win;
+currentApplication.windowsStack.unshift(d.name);
 currentApplication.currentWindow=win;
 return win;
 }

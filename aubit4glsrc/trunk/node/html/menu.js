@@ -6,8 +6,8 @@ function createMenu(currentApplication, d) {
 
 var menucommands;
 	
-menucommands=convertToType(d.menucommands[0].MENUCOMMAND,"MENUCOMMAND");
-menucommands=Ext.Array.merge(menucommands, convertToType(d.menucommands[0].MENUACTION,"MENUACTION"));
+menucommands=Aubit4GL.client.convertToType(d.menucommands[0].MENUCOMMAND,"MENUCOMMAND");
+menucommands=Ext.Array.merge(menucommands, Aubit4GL.client.convertToType(d.menucommands[0].MENUACTION,"MENUACTION"));
 
 
   Ext.Array.each(menucommands, function(v) { 
@@ -71,11 +71,12 @@ menucommands=Ext.Array.merge(menucommands, convertToType(d.menucommands[0].MENUA
   pan=Ext.create('Ext.panel.Panel', {
     title: d.title,
     activeApplication: currentApplication,
+	events: d.events,
     A4GL_Context: d.context,
 	flex:1,
     //minWidth: 800,
     //closable:false,
-    layout: 'fit',
+    //layout: 'fit',
 	//anchor: '100% 100%'
 	ContextActivate: function() {
 		menu.activeWindow.ensureCurrent();

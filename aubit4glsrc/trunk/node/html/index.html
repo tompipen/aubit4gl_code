@@ -17,6 +17,7 @@
         <script src="/menu.js"></script>
         <script src="/window.js"></script>
         <script src="/prompt.js"></script>
+        <script src="/base64.js"></script>
         <script src="/form.js"></script>
         <script src="/AubitDesktop_ext.js"></script>
         <script src="/app.js"></script>
@@ -33,109 +34,47 @@
 
         Ext.onReady(function(){
 		Ext.QuickTips.init();
-		/*
-		divPanel=Ext.widget('panel', {
-			renderTo:'DivPanel',
-			flex:1,
-			height:600
 
-		});*/
 
-/*
-	var updateLog=function(fld, data) {
-          	fld.setValue(	fld.getValue()  + data + '\n');
-     	//Get the text area component, the textarea input element and
-    	//dom scroll height
-           	inputElDom = fld.inputEl.dom,
-           	scrollHeight = inputElDom.scrollHeight;
-        	
-        	//Set the input element dom scroll top to the height to force 
-        	//it to scroll to the bottom
-        	inputElDom.scrollTop = scrollHeight;
-    	};
-
-	// Theses probably shouldnt be here - they should be per app
-	// but for testing....
-
-	stdOutLog=Ext.widget("textareafield", {
-		flex:1,
-		//height:'100%',
-		//width:'100%',
-		autoScroll:true,
-		itemId:'stdOutLogField',
-		append: function(txt) {
-			updateLog(stdOutLog,txt);
-		}
-	});
-
-	stdErrLog=Ext.widget("textareafield", {
-		flex:1,
-		height:'100%',
-		width:'100%',
-		autoScroll:true,
-		itemId:'stdErrLogField',
-		append: function(txt) {
-			updateLog(stdErrLog,txt);
-		}
-	});
-*/
-	Ext.create('Ext.container.Viewport', {
-    		layout: 'border',
-    		items: [{
-			xtype:'panel',
-        		region: 'north',
-			header:false,
-			layout:{
-				type:'hbox',
-				pack:'start'
-				//align:'stretch'
-			},
-			items: [ 
-        			{ xtype:'image',src: 'img/aubit4gllogo.gif', height:83, width:150},
-				{xtype: 'box', html: '<h1>Aubit4GL Web Portal</h1>', flex:1}
-			],
-        		border: false
-        		//margins: '0 0 5 0'
-    		}, 
-		{
-        		region: 'west',
-        		collapsible: true,
-			border:false,
-        		title: 'Navigation',
-			hidden:true,
-        		width: 150
-        		// could use a TreePanel or AccordionLayout for navigational items
-    		},
-		/*
-		 {
-        		region: 'south',
-        		//title: 'South Panel',
-        		collapsible: true,
-			header:false,
-			//hidden:true,
-        		split: true,
-        		height: 100,
-			border:false,
-        		minHeight: 100,
-			layout:{type:'hbox', align:'stretch', pack:'start'},
-			items: [ 
-				{xtype:'panel', title:'StdOut',items: [ stdOutLog], flex:1, border:false, height:'100%', layout:'fit'},
-				{xtype:'panel', title:'StdErr',items: [ stdErrLog], flex:1, border:false, height:'100%', layout:'fit'},
-			]
-			
-    		},  */
-    		{
-        		region: 'center',
-			itemId:'centralPanel',
-			header:false,
-        		xtype: 'panel', 
-    		}]
+		Ext.create('Ext.container.Viewport', {
+    			layout: 'border',
+    			items: [{
+				xtype:'panel',
+        			region: 'north',
+				header:false,
+				layout:{
+					type:'hbox',
+					pack:'start'
+					//align:'stretch'
+				},
+				items: [ 
+        				{ xtype:'image',src: 'img/aubit4gllogo.gif', height:83, width:150},
+					{xtype: 'box', html: '<h1>Aubit4GL Web Portal</h1>', flex:1}
+				],
+        			border: false
+        			//margins: '0 0 5 0'
+    			}, 
+			{
+        			region: 'west',
+        			collapsible: true,
+				border:false,
+        			title: 'Navigation',
+				hidden:true,
+        			width: 150
+        			// could use a TreePanel or AccordionLayout for navigational items
+    			},
+    			{
+        			region: 'center',
+				itemId:'centralPanel',
+				header:false,
+        			xtype: 'panel', 
+    			}]
 		});
 
 
 		showLoginWindow(
 				function(username,password,prog) {
-					return initializeSocket(username,password,prog,function(app,d) {
+					return Aubit4GL.client.initializeSocket(username,password,prog,function(app,d) {
 						processCommand(app,d);
 					});
 					return true;
@@ -143,9 +82,6 @@
 					location.href="index.html";
 		});
 		
-		//var screen=createWindow(null);
-		//screen.show();
-
         }); //end onReady
         </script>
 

@@ -18,9 +18,17 @@ for (a=0;a<flds.length;a++) {
 construct={
 	first:true,
 	active:false,
+        beforeField: function(eventId) {
+		construct.action(eventId,"BeforeField");
+        },
+        afterField: function(eventId) {
+		construct.action(eventId,"AfterField");
+        },
+
 	contextType:  AubitDesktop.FGLContextType.contextConstruct,
 	activeWindow: currentApplication.currentWindow,
 	activeApplication: currentApplication,
+	events: d.events,
 	OriginalFields:d.fieldlist,
 	Columns:d.columns,
 	Fields: flds,

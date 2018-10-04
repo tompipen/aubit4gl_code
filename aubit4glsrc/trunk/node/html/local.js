@@ -1,6 +1,13 @@
 // publically editable file to set the icons for buttons..
 
 
+function getProgramName(nm) {
+if (Ext.String.endsWith(nm,"fgldemo.4ae")) {
+	return "Informix 4GL FGL Demo";
+}
+return nm;
+}
+
 function getIconClass(nm, parentFormName, parentWindowName) {
 	console.log("getIconClass : " + nm+" "+parentFormName+" "+parentWindowName);
 	

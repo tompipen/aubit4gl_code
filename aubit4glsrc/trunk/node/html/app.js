@@ -26,7 +26,20 @@ function createApplication(envelope, socket) {
 		
         		console.log("Respond to WAITFOREVENT with : ");
         		console.dir(d);
-        		app.socket.emit('trigger',d);
+			// If we've got an array - send it as a package..
+			if (Ext.isArray(d)) {
+				var cnt=1;
+
+				Ext.Array.each(d, function(r) {
+					r.CNT=cnt++;
+					r.MAXCNT=d.length;
+	
+					console.dir(r);
+        				app.socket.emit('trigger',r);
+				});
+			} else {
+        			app.socket.emit('trigger',d);
+			}
 		},
 		sendError: function ( d, app) {
         		app.socket.emit('uierror',d);
