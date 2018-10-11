@@ -6,9 +6,9 @@ drops_statement : drops_c  { $<sql_string>$=make_sql_string_and_free(acl_strdup(
 
 drops_c : DROP_TABLE table_name_not_for_column_prefix {
 			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
-				SPRINTF1($<str>$, "DROP TABLE %s CASCADE",$<str>2);
+				SPRINTF2($<str>$, "%s %s CASCADE",$<str>1, $<str>2);
 			} else {
-				SPRINTF1($<str>$, "DROP TABLE %s",$<str>2);
+				SPRINTF2($<str>$, "%s %s",$<str>1, $<str>2);
 			}
 			add_feature("DROP_TABLE");
 		}
