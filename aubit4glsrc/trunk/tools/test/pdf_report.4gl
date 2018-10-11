@@ -36,6 +36,7 @@ display "START"
 	
 	foreach c1 into t,c,n
 			output to report r1 (t,c,n)
+	exit foreach
 	end foreach
 	
 display "DONE"
@@ -57,6 +58,11 @@ define page_x_of_x CHAR(40)
 
 format
 first page header
+	set font name "Helvetica"
+	call pdf_function("set_info","Creator","Mike Aubury")
+	call pdf_function("set_info","Author","Terry Pratchett")
+	call pdf_function("set_info","Title","Aubit4GL PDF Report")
+	call pdf_function("set_info","Subject","Subject:Aubit4GL PDF Report")
 	print column 2.5 inches;
 	print image mv_logo AS JPEG SCALED BY 0.25
 	skip to 3 inches;

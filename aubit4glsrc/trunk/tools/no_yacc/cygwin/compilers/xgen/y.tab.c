@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -523,7 +523,7 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
 #line 355 "x.yacc" /* yacc.c:355  */
@@ -533,6 +533,8 @@ union YYSTYPE
 
 #line 535 "y.tab.c" /* yacc.c:355  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -546,7 +548,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 550 "y.tab.c" /* yacc.c:358  */
+#line 552 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1751,7 +1753,7 @@ yyreduce:
 		fprintf(cfi,"}\n");
 		fprintf(hsf,"typedef struct %s %s %s;\n",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));
 	}
-#line 1755 "y.tab.c" /* yacc.c:1646  */
+#line 1757 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
@@ -1767,7 +1769,7 @@ yyreduce:
 		fprintf(cfi,"}\n");
 		fprintf(hsf,"typedef %s %s;\n",(yyvsp[-1].str),(yyvsp[0].str));
 	}
-#line 1771 "y.tab.c" /* yacc.c:1646  */
+#line 1773 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
@@ -1783,7 +1785,7 @@ yyreduce:
 		fprintf(cfi,"}\n");
 		fprintf(hsf,"typedef %s %s;\n",(yyvsp[-1].str),(yyvsp[0].str));
 	}
-#line 1787 "y.tab.c" /* yacc.c:1646  */
+#line 1789 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
@@ -1799,19 +1801,19 @@ yyreduce:
 		fprintf(cfi,"}\n");
 		fprintf(hsf,"typedef %s %s %s;\n",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));
 	}
-#line 1803 "y.tab.c" /* yacc.c:1646  */
+#line 1805 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
 #line 462 "x.yacc" /* yacc.c:1646  */
     { fprintf(hsf,"typedef %s %s;\n",(yyvsp[-1].str),(yyvsp[0].str)); }
-#line 1809 "y.tab.c" /* yacc.c:1646  */
+#line 1811 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
 #line 463 "x.yacc" /* yacc.c:1646  */
     { fprintf(hsf,"typedef %s %s;\n",(yyvsp[-1].str),(yyvsp[0].str)); }
-#line 1815 "y.tab.c" /* yacc.c:1646  */
+#line 1817 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
@@ -1829,7 +1831,7 @@ yyreduce:
 			fprintf(cfo,"}\n");
 			fprintf(hsf,"typedef char *%s;\n",(yyvsp[-2].str));
 		}
-#line 1833 "y.tab.c" /* yacc.c:1646  */
+#line 1835 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
@@ -1864,7 +1866,7 @@ yyreduce:
 	}
 
 	}
-#line 1868 "y.tab.c" /* yacc.c:1646  */
+#line 1870 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
@@ -1880,7 +1882,7 @@ yyreduce:
 		fprintf(decode_enum,"}\n");
 	}
 }
-#line 1884 "y.tab.c" /* yacc.c:1646  */
+#line 1886 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
@@ -1898,7 +1900,7 @@ yyreduce:
 		}
 		enumv++; 
 	}
-#line 1902 "y.tab.c" /* yacc.c:1646  */
+#line 1904 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
@@ -1919,7 +1921,7 @@ yyreduce:
 
 		enumv++; 
 	}
-#line 1923 "y.tab.c" /* yacc.c:1646  */
+#line 1925 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
@@ -1927,7 +1929,7 @@ yyreduce:
     {
 	fprintf(hsf,"#define %s %s\n",(yyvsp[-3].str),(yyvsp[-1].str));
 	}
-#line 1931 "y.tab.c" /* yacc.c:1646  */
+#line 1933 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
@@ -1960,7 +1962,7 @@ yyreduce:
 
 
 }
-#line 1964 "y.tab.c" /* yacc.c:1646  */
+#line 1966 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
@@ -1976,7 +1978,7 @@ yyreduce:
 		fprintf(hsf,"#endif\n");
 	cu_cnt--;
 }
-#line 1980 "y.tab.c" /* yacc.c:1646  */
+#line 1982 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
@@ -1987,7 +1989,7 @@ yyreduce:
 		(yyval.mode).size=-1;
 		strcpy((yyval.mode).name,(yyvsp[0].str));
 	}
-#line 1991 "y.tab.c" /* yacc.c:1646  */
+#line 1993 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
@@ -1998,7 +2000,7 @@ yyreduce:
 		(yyval.mode).size=-1;
 		strcpy((yyval.mode).name,(yyvsp[-2].str));
 	}
-#line 2002 "y.tab.c" /* yacc.c:1646  */
+#line 2004 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
@@ -2009,7 +2011,7 @@ yyreduce:
 		(yyval.mode).size=atoi((yyvsp[-1].str));
 		strcpy((yyval.mode).name,(yyvsp[-3].str));
 	}
-#line 2013 "y.tab.c" /* yacc.c:1646  */
+#line 2015 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
@@ -2020,7 +2022,7 @@ yyreduce:
 		(yyval.mode).size=-1;
 		strcpy((yyval.mode).name,(yyvsp[0].str));
 	}
-#line 2024 "y.tab.c" /* yacc.c:1646  */
+#line 2026 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
@@ -2031,7 +2033,7 @@ yyreduce:
 		(yyval.mode).size=-1;
 		strcpy((yyval.mode).name,(yyvsp[-2].str));
 	}
-#line 2035 "y.tab.c" /* yacc.c:1646  */
+#line 2037 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
@@ -2042,67 +2044,67 @@ yyreduce:
 		(yyval.mode).size=atoi((yyvsp[-1].str));
 		strcpy((yyval.mode).name,(yyvsp[-3].str));
 	}
-#line 2046 "y.tab.c" /* yacc.c:1646  */
+#line 2048 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
 #line 651 "x.yacc" /* yacc.c:1646  */
     { print_elem("enum",(yyvsp[-1].str),(yyvsp[0].mode)); }
-#line 2052 "y.tab.c" /* yacc.c:1646  */
+#line 2054 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
 #line 652 "x.yacc" /* yacc.c:1646  */
     { print_elem("struct",(yyvsp[-1].str),(yyvsp[0].mode)); }
-#line 2058 "y.tab.c" /* yacc.c:1646  */
+#line 2060 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
 #line 653 "x.yacc" /* yacc.c:1646  */
     { print_elem("istypedefed",(yyvsp[-1].str),(yyvsp[0].mode)); }
-#line 2064 "y.tab.c" /* yacc.c:1646  */
+#line 2066 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
 #line 654 "x.yacc" /* yacc.c:1646  */
     { print_elem("bool","bool",(yyvsp[0].mode)); }
-#line 2070 "y.tab.c" /* yacc.c:1646  */
+#line 2072 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
 #line 655 "x.yacc" /* yacc.c:1646  */
     { print_elem("int","int",(yyvsp[0].mode)); }
-#line 2076 "y.tab.c" /* yacc.c:1646  */
+#line 2078 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
 #line 656 "x.yacc" /* yacc.c:1646  */
     { print_elem("long","long",(yyvsp[0].mode)); }
-#line 2082 "y.tab.c" /* yacc.c:1646  */
+#line 2084 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
 #line 657 "x.yacc" /* yacc.c:1646  */
     { print_elem("short","short",(yyvsp[0].mode)); }
-#line 2088 "y.tab.c" /* yacc.c:1646  */
+#line 2090 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
 #line 658 "x.yacc" /* yacc.c:1646  */
     { print_elem("string","string",(yyvsp[0].mode)); }
-#line 2094 "y.tab.c" /* yacc.c:1646  */
+#line 2096 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
 #line 659 "x.yacc" /* yacc.c:1646  */
     { print_elem("opaque","opaque",(yyvsp[0].mode)); }
-#line 2100 "y.tab.c" /* yacc.c:1646  */
+#line 2102 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
 #line 660 "x.yacc" /* yacc.c:1646  */
     { print_elem("double","double",(yyvsp[0].mode)); }
-#line 2106 "y.tab.c" /* yacc.c:1646  */
+#line 2108 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
@@ -2115,7 +2117,7 @@ yyreduce:
 
 
         }
-#line 2119 "y.tab.c" /* yacc.c:1646  */
+#line 2121 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
@@ -2124,7 +2126,7 @@ yyreduce:
                 sprintf(sw_elem,"%s %s",(yyvsp[-1].str),(yyvsp[0].str));
                 strcpy((yyval.str),(yyvsp[0].str));
         }
-#line 2128 "y.tab.c" /* yacc.c:1646  */
+#line 2130 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
@@ -2134,7 +2136,7 @@ yyreduce:
                 sprintf(sw_elem,"%s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));
 
         }
-#line 2138 "y.tab.c" /* yacc.c:1646  */
+#line 2140 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
@@ -2152,7 +2154,7 @@ yyreduce:
 	fprintf(cfo,"name=\"%s\";\n",(yyvsp[-2].str));
 
 	}
-#line 2156 "y.tab.c" /* yacc.c:1646  */
+#line 2158 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
@@ -2203,7 +2205,7 @@ yyreduce:
 	fprintf(hsf,"%s;\nunion {\n",sw_elem);
 
 }
-#line 2207 "y.tab.c" /* yacc.c:1646  */
+#line 2209 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
@@ -2231,7 +2233,7 @@ yyreduce:
 	}
 	cu_cnt--;
 }
-#line 2235 "y.tab.c" /* yacc.c:1646  */
+#line 2237 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
@@ -2252,7 +2254,7 @@ yyreduce:
 	fprintf(cfo,"case %s:\n",(yyvsp[-1].str));
 	fprintf(cfi,"case %s:\n",(yyvsp[-1].str));
 	}
-#line 2256 "y.tab.c" /* yacc.c:1646  */
+#line 2258 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
@@ -2274,7 +2276,7 @@ yyreduce:
 	fprintf(cfo,"         break;\n");
 	fprintf(cfi,"         break;\n");
 	}
-#line 2278 "y.tab.c" /* yacc.c:1646  */
+#line 2280 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
@@ -2288,11 +2290,11 @@ yyreduce:
 	ptr--;
 	free(ptr);
 }
-#line 2292 "y.tab.c" /* yacc.c:1646  */
+#line 2294 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2296 "y.tab.c" /* yacc.c:1646  */
+#line 2298 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -252,7 +252,7 @@ extern int a4gl_menu_yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
 #line 74 "menu.yacc" /* yacc.c:355  */
@@ -261,6 +261,8 @@ union YYSTYPE
 
 #line 263 "y.tab.c" /* yacc.c:355  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -274,7 +276,7 @@ int a4gl_menu_yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 278 "y.tab.c" /* yacc.c:358  */
+#line 280 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1381,7 +1383,7 @@ yyreduce:
         case 2:
 #line 118 "menu.yacc" /* yacc.c:1646  */
     {A4GL_write_menu(&the_menus);}
-#line 1385 "y.tab.c" /* yacc.c:1646  */
+#line 1387 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
@@ -1391,13 +1393,13 @@ yyreduce:
 		m->id=acl_strdup((yyvsp[0].str));
 		push_menu(m);
 	}
-#line 1395 "y.tab.c" /* yacc.c:1646  */
+#line 1397 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
 #line 130 "menu.yacc" /* yacc.c:1646  */
     {pop_menu();}
-#line 1401 "y.tab.c" /* yacc.c:1646  */
+#line 1403 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
@@ -1412,7 +1414,7 @@ yyreduce:
 		o->key_list=acl_strdup((yyvsp[-1].str));
 		o->align=atoi((yyvsp[0].str));
 	 	A4GL_debug("Ok option\n"); }
-#line 1416 "y.tab.c" /* yacc.c:1646  */
+#line 1418 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
@@ -1428,7 +1430,7 @@ yyreduce:
 		o->key_list=acl_strdup((yyvsp[-3].str));
 		o->align=atoi((yyvsp[-2].str));
 	}
-#line 1432 "y.tab.c" /* yacc.c:1646  */
+#line 1434 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
@@ -1449,56 +1451,56 @@ yyreduce:
 		push_menu(m);
 
 	}
-#line 1453 "y.tab.c" /* yacc.c:1646  */
+#line 1455 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
 #line 177 "menu.yacc" /* yacc.c:1646  */
     {pop_menu();}
-#line 1459 "y.tab.c" /* yacc.c:1646  */
+#line 1461 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
 #line 180 "menu.yacc" /* yacc.c:1646  */
     {strcpy((yyval.str),"");}
-#line 1465 "y.tab.c" /* yacc.c:1646  */
+#line 1467 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
 #line 181 "menu.yacc" /* yacc.c:1646  */
     { strcpy((yyval.str),A4GL_char_val((yyvsp[0].str)));}
-#line 1471 "y.tab.c" /* yacc.c:1646  */
+#line 1473 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
 #line 182 "menu.yacc" /* yacc.c:1646  */
     { sprintf((yyval.str),"%s\n%s",acl_strdup(A4GL_char_val((yyvsp[-1].str))),acl_strdup(A4GL_char_val((yyvsp[0].str))));}
-#line 1477 "y.tab.c" /* yacc.c:1646  */
+#line 1479 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
 #line 185 "menu.yacc" /* yacc.c:1646  */
     {strcpy((yyval.str),"");}
-#line 1483 "y.tab.c" /* yacc.c:1646  */
+#line 1485 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
 #line 189 "menu.yacc" /* yacc.c:1646  */
     {
 	strcpy((yyval.str),A4GL_char_val((yyvsp[0].str)));}
-#line 1490 "y.tab.c" /* yacc.c:1646  */
+#line 1492 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
 #line 193 "menu.yacc" /* yacc.c:1646  */
     {strcpy((yyval.str),"");}
-#line 1496 "y.tab.c" /* yacc.c:1646  */
+#line 1498 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
 #line 194 "menu.yacc" /* yacc.c:1646  */
     {strcpy((yyval.str),(yyvsp[-1].str));}
-#line 1502 "y.tab.c" /* yacc.c:1646  */
+#line 1504 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
@@ -1506,7 +1508,7 @@ yyreduce:
     {
 		img_val="";
 	}
-#line 1510 "y.tab.c" /* yacc.c:1646  */
+#line 1512 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
@@ -1514,11 +1516,11 @@ yyreduce:
     {
 		img_val=acl_strdup(A4GL_char_val((yyvsp[0].str)));
 	}
-#line 1518 "y.tab.c" /* yacc.c:1646  */
+#line 1520 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1522 "y.tab.c" /* yacc.c:1646  */
+#line 1524 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
