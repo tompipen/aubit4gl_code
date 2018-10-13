@@ -57,7 +57,7 @@ then
 	A4GL_SQLPACK="infx"
 fi
 
-bison_version=`bison --version | grep '[0-9]\.[0-9]\.[0-9]' | sed 's/^.* //g'`
+bison_version=`bison --version | grep '^bison.*[0-9]\.[0-9]' | sed 's/^.* //g'`
 if echo $bison_version | egrep -q '^3'
 then
 	oneReqd=1_bison3.reqd
