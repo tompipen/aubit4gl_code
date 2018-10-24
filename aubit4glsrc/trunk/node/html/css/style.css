@@ -38,8 +38,10 @@ h1{
 }
 
 .x-form-readonly .x-form-text{
- background-color:#dde8f4 !important;
+ /*background-color:#dde8f4 !important; */
+ background-color:#f4faff !important; 
  background-image:none !important;
+border-width: 0px;
  color:#000 !important;
 }
 
