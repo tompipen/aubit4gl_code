@@ -1,5 +1,6 @@
 // publically editable file to set the icons for buttons..
 
+var menuPosition='top'; // 'top'
 
 function getProgramName(nm) {
 if (Ext.String.endsWith(nm,"fgldemo.4ae")) {
