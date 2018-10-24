@@ -36,6 +36,7 @@ var win=Ext.create('Ext.window.Window', {
 						'fgldemo/fgldemo',
 						'fgldemo/hideShowMenu',
 						'fgldemo/dArrTest',
+						'c1',
 						'fgldemo/window'
 					],
 					value:'ge_query',

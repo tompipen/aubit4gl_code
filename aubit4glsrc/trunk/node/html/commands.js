@@ -327,10 +327,19 @@ switch (d.type) {
 
 
 	case "SLEEPING":
+		try {
 		currentApplication.windows["screen"].setLoading("Application is sleeping..");
+		} catch (Err) {
+			// they might have closed the screen window..
+		}
 		break;
+
 	case "SLEPT":
+		try {
 		currentApplication.windows["screen"].setLoading(false);
+		} catch (Err) {
+			// they might have closed the screen window..
+		}
 		break;
 
 	case "REPORTPAUSE": 
