@@ -78,7 +78,7 @@ function convertTriggerJsonToXML(json) {
 function convertXMLEnvelopeToObject(xml) {
 console.log("XML="+xml);
 try { 
-var x=xml2json.toJson(xml,  toJsonOptions );
+	var x=xml2json.toJson(xml,  toJsonOptions );
 } catch (Err) {
 console.log("Error reading XML : " );
 console.log(xml);
@@ -135,7 +135,7 @@ var callbackServer = net.createServer((c) => {
     // to the socket associated with the connection GUID we detected in our stream
     var processLine=function(d) { 
 				allLines+=d;
-	//console.log("d="+d);
+console.log("d="+d);
 				// The protocol for Json should send the whole object with a trailing } + newline...
 				// We'll do a test for that..
 				if (d=="}\n" || d=="</ENVELOPE>\n") {
@@ -180,8 +180,17 @@ var callbackServer = net.createServer((c) => {
     	c.on('data', function(x) {
 		if (connGuid==null && execGuid==null) { 
     			console.log("data:");
-    			console.log(""+x);
-			var o=convertXMLEnvelopeToObject(x);
+			var str="";
+					for (a=0;a<pendingData.length;a++) { 
+						console.log("Pending @ "+a+" = "+pendingData[a]);
+						if (pendingData[a].indexOf("</ENVELOPE")>=0) {
+							break;
+						}
+						str+=pendingData[a];
+					}
+    			console.log("x="+x);
+			console.log("str="+str);
+			var o=convertXMLEnvelopeToObject(str);
 			console.log("o=");
 			console.dir(o, { depth :null} );
 
