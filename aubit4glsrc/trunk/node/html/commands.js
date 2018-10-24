@@ -310,8 +310,19 @@ switch (d.type) {
 		break;
 		
 	case "OPENWINDOWWITHFORM":
-		var frm=createForm(d.form.Data,"fixme",currentApplication);
-		createWindow(currentApplication, d,frm);
+		var owwf=Ext.JSON.decode(d.data);
+			var dt="";
+			if (Ext.isArray(owwf.Data)) {
+				dt=owwf.Data.join("");
+			} else {
+				dt=owwf.Data;
+			}
+		try { 
+			var frm=createForm(dt,"fixme",currentApplication);
+			createWindow(currentApplication, d,frm);
+		} catch (Err) {
+			console.error(Err);
+		}
 		break;
 
 

@@ -13,7 +13,7 @@ var win=Ext.create('Ext.window.Window', {
 					xtype:'textfield',
                 			fieldLabel:'Username', 
                 			itemId:'loginUsername', 
-					value:'aubit4gl',
+					value:'mike',
                 			name:'loginUsername', 
                 			allowBlank:false 
             			},
@@ -32,12 +32,13 @@ var win=Ext.create('Ext.window.Window', {
                 			itemId:'loginProgram', 
                 			name:'loginProgram', 
 					store: [
+						'ge_query',
 						'fgldemo/fgldemo',
 						'fgldemo/hideShowMenu',
 						'fgldemo/dArrTest',
 						'fgldemo/window'
 					],
-					value:'fgldemo/fgldemo',
+					value:'ge_query',
                 			allowBlank:false 
             			},
 		]}

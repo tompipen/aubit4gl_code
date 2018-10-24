@@ -143,10 +143,13 @@ var flds=[];
 	if (currentApplication.currentWindow==null) return null;
 	if (currentApplication.currentWindow.activeForm==null) return null;
 	var i=fld.NAME.indexOf(".*")
+	var screenRecord;
+
 	if (i!=-1) {
 		matchAllWithPrefix=fld.NAME.substr(0,i);
 		console.log("MATCH : " + matchAllWithPrefix);
 	}
+
 	var fld_1=getAllFields(currentApplication); 
 	var a;
 	for ( a=0;a<fld_1.length;a++) {
@@ -174,13 +177,14 @@ function displayTo(currentApplication, fields, values) {
 	var Flds=findFields(currentApplication, fields);
 
 	if (values[0].TEXT.length!=Flds.length) {
+		alert("Internal error - field/values mismatch");
 		console.log("Internal error - field/values mismatch");
 		return;
 	}
 	var a;
 
 	for (a=0;a<Flds.length;a++) {
-		Flds[a].setFormFieldValue(Flds[a], values[0].TEXT[a].Data, 
-					values[0].TEXT[a].TYPE);
+		Flds[a].setFormFieldValue(Flds[a], values[0].TEXT[a].Data, values[0].TEXT[a].TYPE);
+		console.log("Setting "+Flds[a].A4GL_fullname+" to "+values[0].TEXT[a].Data);
 	}
 }

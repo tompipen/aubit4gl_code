@@ -7,15 +7,15 @@ if (frm) {
 
 if (d==null) {
 	d={ 
-		NAME:'screen',
-		H:25,
-		W:80
+		name:'screen',
+		h:25,
+		w:80
 	};
 }
 
 
 
-var menuLine=Ext.widget("toolbar",{dock:'top', hidden:false, flex:1,height:60 }  );
+var menuLine=Ext.widget("toolbar",{dock:menuPosition, hidden:false, flex:1,height:60, resizable:true }  );
 
 
 var tbMsg=Ext.widget('tbtext', {cls:'msg',  text:''});
@@ -55,7 +55,7 @@ var cfg={
 	items : [
 		formArea
 	],
-	activeForm: null,
+	activeForm: frm,
 	setActiveForm: function (frm) {
 		win.activeForm=frm;
 		var hasForm=false;
@@ -313,10 +313,12 @@ if (fullScreen) {
    win= Ext.widget("panel", cfg);
 } else {
    if (!frm) {
-   	Ext.apply(cfg,{
-		height: d.h*yMultiplier,
-		width: d.w*xMultiplier,
-   	});
+	if (d.h) {
+   		Ext.apply(cfg,{
+			height: d.h*yMultiplier,
+			width: d.w*xMultiplier,
+   		});
+	}
    } else {
    	Ext.apply(cfg,{
 		layout: 'fit'

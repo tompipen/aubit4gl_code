@@ -150,6 +150,8 @@ function generateToolbar(context, events, callback) {
 		originalEvents: events,
         	flex:1,
 		items: items,
+layout:menuPosition=="right"?'vbox':'hbox',
+//resizable:true,
 		//height:90,
 		//minWidth:100,
 

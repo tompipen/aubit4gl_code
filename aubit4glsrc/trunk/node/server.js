@@ -99,16 +99,19 @@ if (x && x.ENVELOPE) {
 			if (k=="$t" || k=="Data") {
 				continue;
 			}
-                        var cmd={ type:k};
-                        for (var k2 in x.ENVELOPE[0].COMMANDS[a][k][0]) {
-				var newName=k2.toLowerCase();
-				if (cmd[newName]) {
-                                	cmd["_"+newName]= x.ENVELOPE[0].COMMANDS[a][k][0][k2];
-				} else {
-                                	cmd[newName]= x.ENVELOPE[0].COMMANDS[a][k][0][k2];
-				}
-                        }
-                        y.commands.push( cmd);
+			console.dir(x.ENVELOPE[0].COMMANDS[a][k]);
+			for (var oCnt=0;oCnt<x.ENVELOPE[0].COMMANDS[a][k].length; oCnt++) { 
+                        	var cmd={ type:k};
+                        	for (var k2 in x.ENVELOPE[0].COMMANDS[a][k][oCnt]) {
+					var newName=k2.toLowerCase();
+					if (cmd[newName]) {
+                                		cmd["_"+newName]= x.ENVELOPE[0].COMMANDS[a][k][oCnt][k2];
+					} else {
+                                		cmd[newName]= x.ENVELOPE[0].COMMANDS[a][k][oCnt][k2];
+					}
+                        	}
+                        	y.commands.push( cmd);
+			}
                 }
         }
 	return y;
@@ -140,6 +143,7 @@ var callbackServer = net.createServer((c) => {
 					try {
 
 						if (connGuid) {
+							console.log("allLines="+allLines);
 							var x=convertXMLEnvelopeToObject(allLines);
 							x.connGuid=connGuid;
 							x.execGuid=execGuid;

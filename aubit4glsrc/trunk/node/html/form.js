@@ -96,7 +96,7 @@ var cfg= {
       getErrors: function(t1)  {
 		var txt;
 		var me=this;
-	console.log("getErrors...");
+	//console.log("getErrors...");
 		
 		if (t1===undefined) {
 			txt=me.getFormFieldValue(me);
@@ -125,11 +125,11 @@ var cfg= {
 	    var s_d=d;
 	    var currentContextType=me.currentContext.contextType;
 
-		console.log("currentContextType="+currentContextType);
+		//console.log("currentContextType="+currentContextType);
             if (currentContextType == AubitDesktop.FGLContextType.contextConstruct)
             {
                 var cstr=AubitDesktop.FGLConstruct.getConstructString(me.constructName, txt, me.datatype, me.datatype_length);
-		console.log("cstr="+cstr);
+		//console.log("cstr="+cstr);
                 if (cstr==null) 
                 {
                     var ign = false;
@@ -335,6 +335,7 @@ switch (d.widget.type) {
 	case "DateEdit":
 	case "SpinEdit":
 	case "Edit": 
+	case "TextEdit":
 		var minWidth= d.widget.gridWidth*xMultiplier;
 		if (d.widget.gridWidth<=3) {
 			minWidth+=10;
@@ -351,6 +352,9 @@ switch (d.widget.type) {
 
 		if (d.widget.type=="SpinEdit") {
 			fieldType="numberfield";
+		}
+		if (d.widget.type=="TextEdit") {
+			fieldType="textarea";
 		}
 
 		if (d.widget.type=="DateEdit") {
@@ -398,11 +402,15 @@ switch (d.widget.type) {
 
 	default:
 		console.log("Unable to generate widget type : "+d.widget.type );	
+		alert("Unable to generate widget type : "+d.widget.type );	
 		break;
 	
 }
-
-item.disableField();
+if (!item) {
+	console.log("Unable to generate widget type : "+d.widget.type );	
+} else {
+	item.disableField();
+}
 
 return item;
 }
@@ -785,6 +793,11 @@ win.show();
 */
 
 rval.A4GL_name=frmDefinition.name;
+rval.Records={};
+
+Ext.Array.each(formDefinition.Records, function(rec) {
+	rval.Records[rec.tabName]=rec.items;
+});
 
 return rval;
 }

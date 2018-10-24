@@ -62,6 +62,9 @@ menucommands=Ext.Array.merge(menucommands, Aubit4GL.client.convertToType(d.menuc
 			//activeApplication: currentApplication,
 			//icon:d.IMAGE,
 			//title:d.TITLE,
+			layout:menuPosition=="right"?'vbox':'hbox',
+//resizable:true,
+
 			A4GLContext: d.context,
 			items : itms
 			
