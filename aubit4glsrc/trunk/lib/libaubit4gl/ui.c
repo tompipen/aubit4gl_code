@@ -315,11 +315,11 @@ A4GL_display_at (int n, int a)
   //A4GL_assertion(tos_ptr==0,"Invalid pointer passed to display_at");
   if ((tos_dtype & 0xff) == 0 && tos_size == 0)
     {
-      char *ctos_ptr;
+      //char *ctos_ptr;
 #ifdef DEBUG
       A4GL_debug ("Maybe null....");
 #endif
-      ctos_ptr = (char *) tos_ptr;
+      //ctos_ptr = (char *) tos_ptr;
       clr_end_of_line = 1;
     }
 
@@ -624,6 +624,8 @@ A4GL_pull_off_data_for_display (int n, int display_type)
   s = acl_malloc2 (2);
   s[0] = 0;
 
+A4GL_debug("In A4GL_pull_off_data_for_display");
+A4GL_debug_print_stack();
   for (z = n - 1; z >= 0; z--)
     {
 #ifdef DEBUG
@@ -658,6 +660,7 @@ A4GL_pull_off_data_for_display (int n, int display_type)
 
       if (ptr == 0)
 	{
+	//A4GL_pause_execution();
 	  A4GL_push_param (tos_ptr, (tos_dtype & DTYPE_MASK) + ENCODE_SIZE (tos_size));
 	  ptr = A4GL_char_pop ();
 	}
@@ -708,6 +711,11 @@ A4GL_pull_off_data_for_display (int n, int display_type)
 #ifdef DEBUG
   A4GL_debug ("pull_off_data_for_display returns %s", s);
 #endif
+
+
+A4GL_debug("In A4GL_pull_off_data_for_display");
+A4GL_debug_print_stack();
+
   for (z = 0; z < n; z++)
     {
       A4GL_drop_param ();
@@ -863,7 +871,19 @@ A4GL_chk_for_screen_print (int a)
 
 }
 
+int aclfgl_aclfgl_window_is_open(int _nargs) {
+if (_nargs!=1) {A4GL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction_nl(0,1);return -1;}
 
+char *_s;
+  _s=A4GL_char_pop();A4GL_trim(_s);
+  if (A4GL_has_pointer (_s, WINCODE)) {
+		A4GL_push_int(1);
+  } else {
+		A4GL_push_int(0);
+  }
+  acl_free (_s);
+  return 1;
+}
 
 
 // Key mappings..
@@ -1696,7 +1716,7 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
 {
   char colname[40];
   char tabname[40];
-  int aa;
+  //int aa;
   int ab;
   char s[256];
 
@@ -1722,7 +1742,7 @@ A4GL_assertion(!field->tabname,"field->tabname not set") ;
 A4GL_assertion(!field->colname,"field->colname not set") ;
 //A4GL_assertion(!tabname,"tabname not set") ;
 //A4GL_assertion(!colname,"colname not set") ;
-  aa = strcmp (field->tabname, tabname);
+  //aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
   if ((ab == 0) || (colname[0] == '*'))
     {
@@ -1877,7 +1897,7 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 #endif
     }
 
-  if (dtype != DTYPE_CHAR && dtype != DTYPE_VCHAR &&  dtype != DTYPE_NCHAR   &&dtype != DTYPE_NVCHAR )
+  if (dtype != DTYPE_CHAR && dtype != DTYPE_VCHAR &&  dtype != DTYPE_NCHAR   &&dtype != DTYPE_NVCHAR && dtype != DTYPE_LVARCHAR )
     {
       int dim = 0;
 
@@ -2324,9 +2344,9 @@ A4GL_split_config (char *str)
   char *ptr;
   char *s;
   int a;
-  char *orig_ptr;
+  //char *orig_ptr;
   ptr = strdup (str);
-  orig_ptr = ptr;
+  //orig_ptr = ptr;
   args_cnt = 0;
 
   while (1)
