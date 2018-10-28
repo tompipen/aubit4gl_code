@@ -607,7 +607,7 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
     A4GL_debug ("let_substr");
   }
 #endif
-  if ((dtype&DTYPE_MASK)==DTYPE_VCHAR) {
+  if ((dtype&DTYPE_MASK)==DTYPE_VCHAR || (dtype&DTYPE_MASK)==DTYPE_LVARCHAR) {
 	int max_sz;
 	int curr_sz;
 	curr_sz=strlen(ca);
@@ -1197,7 +1197,7 @@ aclfgli_extend (void)
 	  A4GL_push_dtime (&c);
 	  return;
 	}
-      if ((d2 & DTYPE_MASK) == DTYPE_CHAR  || (d2 & DTYPE_MASK) == DTYPE_VCHAR  || (d2 & DTYPE_MASK) == DTYPE_NCHAR  || (d2 & DTYPE_MASK) == DTYPE_NVCHAR )
+      if ((d2 & DTYPE_MASK) == DTYPE_CHAR  || (d2 & DTYPE_MASK) == DTYPE_VCHAR  || (d2 & DTYPE_MASK) == DTYPE_NCHAR  || (d2 & DTYPE_MASK) == DTYPE_NVCHAR || (d2&DTYPE_MASK)==DTYPE_LVARCHAR )
 	{
 	  // Can't extend a non-datetime!
 	  pi = 0;

@@ -384,6 +384,16 @@ dtype :
 			add_feature("DEFINE_VARCHAR");
 		   
 		} 
+	|	LVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+			$$=new_simple_variable(NULL,DTYPE_LVARCHAR,atol($<str>3),0);
+			add_feature("DEFINE_VARCHAR");
+		   
+		} 
+	|	LVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			$$=new_simple_variable(NULL,DTYPE_LVARCHAR,atol($<str>3),0);
+			add_feature("DEFINE_VARCHAR");
+		   
+		} 
 	|	NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 			$$=new_simple_variable(NULL,DTYPE_CHAR,atol($<str>3),0);
 			add_feature("DEFINE_NVARCHAR");

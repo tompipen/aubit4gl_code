@@ -858,7 +858,16 @@ A4GL_char_pop_size (int *sz)
       else
 	{
 	  int dtype_alloc_size;
+
+	  if (f<sizeof(dtype_alloc_char_size)/sizeof(dtype_alloc_char_size[0])) { 
 		dtype_alloc_size=dtype_alloc_char_size[f];
+	  } else {
+		int(*function) (int,void*);
+		function=A4GL_get_datatype_function_i(f,"ALLOCATECHARPOP");
+		A4GL_assertion(!function,"No allocation function");
+		dtype_alloc_size=function(params[params_cnt - 1].dtype,  params[params_cnt - 1].ptr);
+	  }
+	  
 
 
 	  if (f==DTYPE_DECIMAL || f==DTYPE_MONEY) {
@@ -911,6 +920,21 @@ A4GL_char_pop_size (int *sz)
 		      d = params[params_cnt - 1].size;
 		    }
 		}
+	      if (f == DTYPE_LVARCHAR)
+		{
+		  if (params[params_cnt - 1].ptr)
+		    {
+		      d = strlen (params[params_cnt - 1].ptr);
+		    }
+		  else
+		    {
+		      d = 1;
+		    }
+		  if (d > params[params_cnt - 1].size)
+		    {
+		      d = params[params_cnt - 1].size;
+		    }
+		}
 
 	      if (f == DTYPE_NVCHAR)
 		{
@@ -932,7 +956,7 @@ A4GL_char_pop_size (int *sz)
 	      A4GL_pop_char (s2, d);
 	    }
 
-	  if (dtype_alloc_char_size[f] == 40 || f == DTYPE_VCHAR)	//@FIXME - shouldnt need to trim VARCHARs
+	  if (dtype_alloc_char_size[f] == 40 || f == DTYPE_VCHAR || f==DTYPE_LVARCHAR)	//@FIXME - shouldnt need to trim VARCHARs
 	    {
 	      A4GL_trim (s2);
 	    }
@@ -1086,24 +1110,9 @@ A4GL_pop_param (void *p, int d, int size)
 
   if ((params[params_cnt].dtype & DTYPE_MALLOCED) && params[params_cnt].ptr)
     {
-      if ((params[params_cnt].dtype & DTYPE_MASK) != DTYPE_CHAR)
-	{
-	  void *ptr;
-	  //A4GL_debug ("7 Not Char.. %p", params[params_cnt].ptr);
+	A4GL_debug("%x %d\n", params[params_cnt].dtype , params[params_cnt].dtype );
 	  ptr = origptr;	//params[params_cnt].ptr;
 	  acl_free (ptr);
-	  //params[params_cnt].ptr=0;
-
-	}
-      else
-	{
-	  ptr = origptr;	//params[params_cnt].ptr;
-	  //A4GL_debug ("7 Not Char..%p", ptr);
-	  acl_free (ptr);
-
-	  /* params[params_cnt].ptr=0; */
-
-	}
     }
 
   //A4GL_debug("99 return %d",b);
@@ -1175,7 +1184,7 @@ static void A4GL_pop_params_internal (struct BINDING *b, int n,int isFcall)
       }
 
 
-      if (dtype == DTYPE_CHAR || dtype == DTYPE_VCHAR)
+      if (dtype == DTYPE_CHAR || dtype == DTYPE_VCHAR || dtype==DTYPE_LVARCHAR)
 	{
 	  if (b[a].start_char_subscript == 0 && b[a].end_char_subscript == 0)
 	    {
@@ -1261,7 +1270,7 @@ A4GL_push_param (void *p, int d)
   char buff[400];
   int zzz;
 
-  int doing_dt_or_int = 0;
+  //int doing_dt_or_int = 0;
   int d1;
   int d2;
   int s1;
@@ -1368,8 +1377,8 @@ int r;
 	{
 #ifdef DEBUG
 	  {
-	    char *cp;
-	    cp = (char *) p;
+	    //char *cp;
+	    //cp = (char *) p;
 	    /*
 	       if (cp) {
 	       A4GL_debug ("40 Adding string '%s' size %d %d %d", A4GL_null_as_null(p), size,cp[0],cp[1]);
@@ -1504,7 +1513,7 @@ int r;
 	  function = A4GL_find_op_function (dtype_2, dtype_1, OP_MATH);
 
 
-	  if (function == 0 && ((dtype_1 & DTYPE_MASK) == DTYPE_CHAR || (dtype_1 & DTYPE_MASK) == DTYPE_VCHAR))
+	  if (function == 0 && ((dtype_1 & DTYPE_MASK) == DTYPE_CHAR || (dtype_1 & DTYPE_MASK) == DTYPE_VCHAR || (dtype_1 & DTYPE_MASK) == DTYPE_LVARCHAR))
 	    {
 	      int dx;
 	      int sx;
@@ -1816,7 +1825,7 @@ int r;
 	}
       else
 	{
-	  doing_dt_or_int = 1;
+	  //doing_dt_or_int = 1;
 	}
     }
 
@@ -2714,7 +2723,7 @@ A4GL_opboolean (void)
 #endif
 	  return cmp;
 	}
-      if (d1 == DTYPE_VCHAR || d2 == DTYPE_VCHAR)
+      if (d1 == DTYPE_VCHAR || d2 == DTYPE_VCHAR  )
 	{
 	  if ((d1 == DTYPE_VCHAR || d1 == DTYPE_CHAR) && (d2 == DTYPE_VCHAR || d2 == DTYPE_CHAR))
 	    {
@@ -3162,6 +3171,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 		case DTYPE_BYTE:
 		case DTYPE_TEXT:
 		case DTYPE_VCHAR:
+		case DTYPE_LVARCHAR:
 		case DTYPE_INTERVAL :
 		case DTYPE_NCHAR:
 		case DTYPE_NVCHAR:
@@ -3292,6 +3302,7 @@ ibind=vibind;
 		case DTYPE_BYTE:
 		case DTYPE_TEXT:
 		case DTYPE_VCHAR:
+		case DTYPE_LVARCHAR:
 		case DTYPE_INTERVAL :
 		case DTYPE_NCHAR:
 		case DTYPE_NVCHAR:

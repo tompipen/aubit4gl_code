@@ -3750,7 +3750,7 @@ static int have_slots[MAX_CONV_SLOTS][MAX_CONV_SLOTS];
       return 1;
     }
 
-  if (dtype1 == DTYPE_CHAR && (dtype2 != DTYPE_CHAR && dtype2 != DTYPE_VCHAR && dtype2 != DTYPE_NCHAR && dtype2 != DTYPE_NVCHAR ))
+  if (dtype1 == DTYPE_CHAR && (dtype2 != DTYPE_CHAR && dtype2 != DTYPE_VCHAR && dtype2 != DTYPE_NCHAR && dtype2 != DTYPE_NVCHAR && dtype2!=DTYPE_LVARCHAR))
     {
       A4GL_trim (p1);
       if (strlen (p1) == 0)

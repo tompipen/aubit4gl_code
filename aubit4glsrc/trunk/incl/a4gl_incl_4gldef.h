@@ -107,6 +107,9 @@ extern "C"
   }
   sqlca_struct;
 
+
+ #define LVARCHARLENGTH  32740
+#define a4gl_lvarchar char
 #define fglvarchar char
 
 
@@ -562,6 +565,7 @@ void A4GL_setemail_address(void) ;
 #define int8 long long
 #define serial8 long long
 #endif
+
 
 
 #ifndef A4GL_aubit_strcasecmp

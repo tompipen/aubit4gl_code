@@ -5715,6 +5715,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 
       if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR
 	  || v->var_data.variable_data_u.v_simple.datatype == DTYPE_VCHAR
+	  || v->var_data.variable_data_u.v_simple.datatype == DTYPE_LVARCHAR
 	  || v->var_data.variable_data_u.v_simple.datatype == DTYPE_NCHAR
 	  || v->var_data.variable_data_u.v_simple.datatype == DTYPE_NVCHAR)
 	{			/* Its a 'char' (may need varchar & friends too... */
@@ -5726,7 +5727,11 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 	    }
 	  else
 	    {
+	  	if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_LVARCHAR) { 
 		  	print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);
+		} else {
+		  	print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);
+		}
 	    }
 	}
       else
@@ -5833,6 +5838,32 @@ local_rettype (char *s)
     "fglvarchar",		// NVARCHAR
     "int8",			// 17
     "serial8",			// 18
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0
   };
   int i;
@@ -5846,7 +5877,7 @@ local_rettype (char *s)
 #ifdef DEBUG
       A4GL_debug ("In rettype - initializing type names");
 #endif
-      for (i = 0; vals[i]; i++)
+      for (i = 0; i< sizeof(vals)/sizeof(vals[i]); i++)
 	{
 	  if (A4GL_has_datatype_function_i (i, "OUTPUT"))
 	    {

@@ -1967,7 +1967,7 @@ A4GL_convert_to_pdf_x (void)
 static int
 get_inc_quotes (int a)
 {
-  if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR)
+  if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR || (a & DTYPE_MASK) == DTYPE_LVARCHAR)
     return 1;
   if ((a & DTYPE_MASK) == DTYPE_NCHAR || (a & DTYPE_MASK) == DTYPE_NVCHAR)
     return 1;

@@ -53,7 +53,7 @@ CMODS_API   =${API_SPEC:.spec=.c}
 COMMONSRC= \
 	attributes.c \
 	builtin.c builtin_d.c \
-	calldll.c mem.c assert.c fglextra.c net.c object.c ui_window.c ui_interface.c basechannel.c passreference.c int8.c conv.c compat.c corba_server_util.c class.c \
+	calldll.c mem.c assert.c fglextra.c net.c object.c ui_window.c ui_interface.c basechannel.c passreference.c lvarchar.c int8.c conv.c compat.c corba_server_util.c class.c \
 	data_if.c common_ui.c dates.c dir.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
 	err.c error.c errfile.c sqlexpr.c expr.c  extfile.c eval_field.c  \
 	mapm/mapmutil.c mapm/mapmutl1.c mapm/mapmutl2.c mapm/mapm_add.c mapm/mapm_div.c mapm/mapm_mul.c \

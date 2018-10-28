@@ -539,6 +539,7 @@ int A4GL_aubit_strcasecmp_internal (char *a, char *b);
 #define DTYPE_NVCHAR  16
 #define DTYPE_INT8         17
 #define DTYPE_SERIAL8      18
+#define DTYPE_LVARCHAR 43
 // If adding more datatypes -make sure we add to A4GL_add_default_datatypes in lib/libaubit4gl/datatypes.c
 
 #define DTYPE_OBJECT    99
@@ -1073,6 +1074,7 @@ struct s_std_attr
     {"nchar", DTYPE_NCHAR, 0, 0},
     {"int8", DTYPE_INT8, 0, 0},
     {"serial8", DTYPE_SERIAL8, 0, 0},
+    {"lvarchar", DTYPE_LVARCHAR, 0, 0},
     {0, 0, 0, 0}
   };
 #else
@@ -2812,6 +2814,7 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 //int aclfgl_aclfgl_set_pdf_encoding(int n);
 //int aclfgl_aclfgl_get_pdf_encoding(int n);
 void add_int8_support(void);
+void add_lvarchar_support(void);
 void add_reference_support(void);
 int A4GL_dttoc (void *a, void *b, int size);
 int A4GL_wcswidth(char *mbs);

@@ -1281,6 +1281,7 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   double float_var, *float_ptr;
   float smfloat_var, *smfloat_ptr;
   void *vptr;
+  lvarchar *lvptr=0; // https://github.com/sergle/DBD-Informix/blob/master/dbdimp.ec
   dec_t decimal_var;
   long date_var;
   dec_t money_var;
@@ -1288,6 +1289,7 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 int d_scale=0;
 int d_prec=0;
   intrvl_t interval_var;
+char lvBuff[40000];
   byte byte_var;
   /*
      fglbyte byte_var;
@@ -1352,6 +1354,14 @@ int d_prec=0;
       length++;			/* Add space for the \0 */
 
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, LENGTH =: length, DATA =:char_var;
+      break;
+
+    case DTYPE_LVARCHAR:
+      //lvptr = (lvarchar*)bind[idx].ptr;
+	//char_var=((a4gl_lvarchar *)bind[idx].ptr)->data;
+      //length++;			/* Add space for the \0 */
+
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index  LENGTH =: length, DATA =:lvptr, TYPE=124;
       break;
 
     case DTYPE_SMINT:
@@ -1574,6 +1584,8 @@ bindOutputValue (struct s_sid *sid, char *descName, int idx, struct BINDING *bin
   long int_var;
   int8 int8_var;
   int8 *iptr;
+  char *lvBuff; // [40000];
+  lvarchar *lvptr=0;
   double float_var;
   float smfloat_var;
   dec_t decimal_var;
@@ -1703,6 +1715,16 @@ int dstype;
 	}
       free (char_var);
       break;
+
+
+    case DTYPE_LVARCHAR:
+        EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:lvptr = DATA;
+	//strcpy("testing", ((a4gl_lvarchar*)bind[idx].ptr)->data);
+      break;
+
+
+
+
     case DTYPE_SMINT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
 	DATA;
@@ -3308,6 +3330,7 @@ dataType=p_datatype;
     case DTYPE_VCHAR:
     case DTYPE_NCHAR:
     case DTYPE_NVCHAR:
+    case DTYPE_LVARCHAR:
 		length=p_len;
 
 
@@ -3615,7 +3638,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 			index=colcnt+1;
   		EXEC SQL GET DESCRIPTOR 'descUnload' VALUE:index:indicator = INDICATOR,:dataType = TYPE;
 		column_types[colcnt]=dataType;
-		if (dataType==DTYPE_CHAR || dataType==DTYPE_VCHAR || dataType==DTYPE_NCHAR ||dataType==DTYPE_NVCHAR) {
+		if (dataType==DTYPE_CHAR || dataType==DTYPE_VCHAR || dataType==DTYPE_NCHAR ||dataType==DTYPE_NVCHAR || dataType==DTYPE_LVARCHAR) {
     			EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length = LENGTH;
 			column_sizes [colcnt]=length;
 		} else {
@@ -3970,6 +3993,8 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
   if (dataType==15) dataType=DTYPE_CHAR; /* NCHAR */
   if (dataType==16) dataType=DTYPE_VCHAR; /* NCHAR */
+  if (dataType==43) dataType=DTYPE_LVARCHAR; /* NCHAR */
+
 if (nullable) {
   *dtype = dataType;
 } else {

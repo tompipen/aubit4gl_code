@@ -1288,6 +1288,7 @@ A4GL_func_using ()
     case DTYPE_DTIME:
     case DTYPE_TEXT:
     case DTYPE_VCHAR:
+    case DTYPE_LVARCHAR:
     case DTYPE_INTERVAL:
     case DTYPE_NVCHAR:
     case DTYPE_NCHAR:
@@ -1487,6 +1488,8 @@ int dtype_masked;
       return;
 
     case DTYPE_VCHAR:
+    case DTYPE_LVARCHAR:
+
     case DTYPE_NVCHAR:
       A4GL_push_char (ptr);
       return;

@@ -339,6 +339,7 @@ char *getDatatypeSig(int dtype,int size,char *objectType) {
 		
 		case DTYPE_STRING   :
 		case DTYPE_VCHAR  :
+		case DTYPE_LVARCHAR  :
 		case DTYPE_NCHAR  :
 		case DTYPE_NVCHAR :
 		case DTYPE_CHAR  : return "S";

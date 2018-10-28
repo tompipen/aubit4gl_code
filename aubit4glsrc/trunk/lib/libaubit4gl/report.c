@@ -1491,6 +1491,8 @@ nm (int n)
       return "TEXT";
     case DTYPE_VCHAR:
       return "VARCHAR";
+    case DTYPE_LVARCHAR:
+      return "LVARCHAR";
     case DTYPE_INTERVAL:
       return "INTERVAL ";
     }
@@ -1599,6 +1601,7 @@ sz (int d, int s)
 
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
+    case DTYPE_LVARCHAR:
     case DTYPE_NCHAR:
     case DTYPE_NVCHAR:
       SPRINTF1 (buff_1, "(%d)", s);
@@ -2054,6 +2057,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	case 12:
 	  sz = sizeof (fgltext);
 	  break;
+	case DTYPE_LVARCHAR:
 	case DTYPE_VCHAR:
 	case DTYPE_NVCHAR:
 	  	sz = b[a].size + 1;
@@ -2307,6 +2311,11 @@ A4GL_report_char_pop (void)
 
 
       if ((tos_dtype & DTYPE_MASK) == DTYPE_VCHAR && strlen (ptr) == 0)
+	{
+	  free (ptr);
+	  ptr = strdup (" ");
+	}
+      if ((tos_dtype & DTYPE_MASK) == DTYPE_LVARCHAR && strlen (ptr) == 0)
 	{
 	  free (ptr);
 	  ptr = strdup (" ");
@@ -3125,6 +3134,7 @@ A4GL_set_agg (char type, long *agg_type, void **aggptr, long *aggused)
 	{
 	case DTYPE_CHAR:
 	case DTYPE_VCHAR:
+	case DTYPE_LVARCHAR:
 	  agg = malloc (s1 + 1);
 	  break;
 
