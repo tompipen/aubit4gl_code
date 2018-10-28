@@ -615,6 +615,10 @@ A4GL_add_default_datatypes (void)
   A4GL_add_datatype ("NVCHAR", 16, 0);
   A4GL_add_datatype ("INT8", 17, 0);
   A4GL_add_datatype ("SERIAL8", 18, 0);
+
+  A4GL_add_datatype ("LVARCHAR", 43, 0);
+
+
   A4GL_add_default_operations ();
 
 #ifdef DEBUG
