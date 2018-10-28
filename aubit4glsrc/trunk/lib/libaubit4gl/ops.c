@@ -58,7 +58,8 @@
 =====================================================================
 */
 
-static void push_dec_op_from_int_int (int a, int b, char op);
+void add_ui_dashboard_support(void) ;
+void push_dec_op_from_int_int (int a, int b, char op);
 void A4GL_push_dec_from_apm (M_APM tmp);
 void A4GL_date_date_ops (int op);
 void A4GL_date_int_ops (int op);
@@ -3369,7 +3370,7 @@ A4GL_int_in_ops (int op)
   int se2;
   int d2;
   int s2;
-  int ok = 0;
+  //int ok = 0;
   char buff_6[256];
   int isneg_ival;
 
@@ -3448,7 +3449,7 @@ A4GL_int_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3459,7 +3460,7 @@ A4GL_int_in_ops (int op)
 
 	  double f;
 	  f = ival_data[1] + a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3471,7 +3472,7 @@ A4GL_int_in_ops (int op)
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 	  f = f - a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3481,7 +3482,7 @@ A4GL_int_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[1] - a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3492,7 +3493,7 @@ A4GL_int_in_ops (int op)
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 	  f = f / a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3502,7 +3503,7 @@ A4GL_int_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[1] / a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3514,7 +3515,7 @@ A4GL_int_in_ops (int op)
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 	  f = f * a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3524,7 +3525,7 @@ A4GL_int_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[1] * a;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3638,7 +3639,7 @@ A4GL_double_in_ops (int op)
   int se2;
   int d2;
   int s2;
-  int ok = 0;
+  //int ok = 0;
   char buff_6[256];
   int isneg_ival;
 
@@ -3709,7 +3710,7 @@ A4GL_double_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3720,7 +3721,7 @@ A4GL_double_in_ops (int op)
 
 	  double f;
 	  f = ival_data[1] + a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3732,7 +3733,7 @@ A4GL_double_in_ops (int op)
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 	  f = f - a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3742,7 +3743,7 @@ A4GL_double_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[1] - a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3753,7 +3754,7 @@ A4GL_double_in_ops (int op)
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 	  f = f / a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3763,7 +3764,7 @@ A4GL_double_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[1] / a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -3775,7 +3776,7 @@ A4GL_double_in_ops (int op)
 	  double f;
 	  f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 	  f = f * a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%lf", f);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_6, 0x867);
@@ -3785,7 +3786,7 @@ A4GL_double_in_ops (int op)
 	{
 	  double f;
 	  f = ival_data[1] * a_double;
-	  ok = 1;
+	  //ok = 1;
 	  SPRINTF1 (buff_6, "%d", (int) f);
 	  acli_interval (buff_6, 0x822);
 	  return;
@@ -5326,7 +5327,7 @@ A4GL_in_in_ops (int op)
   //void *ptr1;
   struct ival *pi1;
   struct ival *pi2;
-  struct ival in;
+  //struct ival in;
   //int ok = 0;
   //char buff[256];
   //int start;
@@ -5444,8 +5445,8 @@ A4GL_in_in_ops (int op)
       in1.ltime = 2;		// MONTH
       in2.stime = 0x82;
       in2.ltime = 2;
-      in.stime = in1.stime;
-      in.ltime = in1.ltime;
+      //in.stime = in1.stime;
+      //in.ltime = in1.ltime;
 
     }
   else
@@ -5454,8 +5455,8 @@ A4GL_in_in_ops (int op)
       in1.ltime = 11;		// FRACTION(5)
       in2.stime = 0x86;
       in2.ltime = 11;
-      in.stime = in1.stime;
-      in.ltime = in1.ltime;
+      //in.stime = in1.stime;
+      //in.ltime = in1.ltime;
     }
 
 #ifdef DEBUG
@@ -5636,7 +5637,7 @@ A4GL_in_char_ops (int op)
 {
   struct ival in1;
   //struct ival in2;
-  int ival_data1[10];
+  //int ival_data1[10];
   int d1, d2;
   int s1;
   struct ival *pi1;
@@ -5644,15 +5645,15 @@ A4GL_in_char_ops (int op)
   //int se1;
   //double d_i1;
   int s2;
-  int a;
+  //int a;
   char *ptr;
   int done1;
 //extern int params_cnt;
-
+/*
   for (a = 0; a < 10; a++)
     {
       ival_data1[a] = 0;
-    }
+    } */
 
 #ifdef DEBUG
   A4GL_debug ("in_in_ops - op=%d", op);
@@ -5666,7 +5667,7 @@ A4GL_in_char_ops (int op)
     {
       A4GL_assertion (1, "Confused... Expecting an interval");
     }
-  if ((d2 & DTYPE_MASK) != DTYPE_CHAR && (d2 & DTYPE_MASK) != DTYPE_VCHAR)
+  if ((d2 & DTYPE_MASK) != DTYPE_CHAR && (d2 & DTYPE_MASK) != DTYPE_VCHAR &&  (d2 & DTYPE_MASK) != DTYPE_LVARCHAR)
     {
       A4GL_assertion (1, "Confused... Expecting a string");
     }
@@ -5920,7 +5921,7 @@ int minSpec=-1;
       int inverted;
       s1 = -1;
       s2 = -1;
-	int a;
+	//int a;
 
 if (dt1.stime>0) {
 	s1=dt1.stime-1;
@@ -7497,8 +7498,8 @@ return 1;
 
 static int A4GL_conv_object_to_object(int d1, void *p1,int d2,void *p2, int size) {
 // Copy the Object ID across...
-int p;
-p=*(int *)p2;
+//int p;
+//p=*(int *)p2;
 memcpy(p2,p1,sizeof(long));
 freeOrphanObjects();
 return 1;
@@ -7567,9 +7568,9 @@ int szp1;
 
 
 static int A4GL_conv_obj_to_char(int dtype_src,void *p1, int dtype2, void *dest, int size  ) {
-	struct sObject *obj;
+	//struct sObject *obj;
 	char *s;
-	obj=(struct sObject*)(p1);
+	//obj=(struct sObject*)(p1);
 
 	s=A4GL_conv_obj_to_string(p1,dtype2, 0,0);
 	A4GL_push_char(s);
@@ -7897,6 +7898,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_VCHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
 
 
+
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_99", (void *) A4GL_conv_char_to_object);
   A4GL_add_datatype_function_i (DTYPE_INT, "CONVTO_99", (void *) A4GL_conv_int_to_object);
 
@@ -7942,6 +7944,7 @@ DTYPE_SERIAL
 
 
   add_int8_support ();
+  add_lvarchar_support();
   add_reference_support ();
   add_base_channel_support();
   add_ui_interface_support();
@@ -8042,11 +8045,11 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   int a;
   int c;
   int l;
-int orig_sz;
+//int orig_sz;
 #ifdef DEBUG
   A4GL_debug ("make_using_sz - size=%d num dec = %d dig=%d", sz, dec, dig);
 #endif
-  orig_sz=sz;
+  //orig_sz=sz;
 
 
   if (dec==255) dec=2;
@@ -8369,7 +8372,7 @@ if ((t==0 && dtype_hint==DTYPE_INTERVAL) || t==2) {
 }
 
 
-static void
+void
 push_dec_op_from_int_int (int a, int b, char op)
 {
   M_APM a1;
