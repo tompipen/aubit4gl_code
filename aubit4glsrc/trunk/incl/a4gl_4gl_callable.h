@@ -248,6 +248,8 @@ int send_report_to_ui(char *filename, int lineInFile);
 char *A4GL_get_tmp_rep(char *mod,char *f);
 
 void* A4GL_declare_cursor(int upd_hold,void* sid,int scroll,char* cursname) ;
+int A4GL_add_prepare (char *pname, void *vsid);
+
 int A4GL_open_cursor(char* s,int no,void* vibind) ;
 int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) ;
 int A4GL_close_cursor(char* currname,int explicit_) ;

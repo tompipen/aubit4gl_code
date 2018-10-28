@@ -25,6 +25,10 @@ int aclfgl_aclfgl_get_pdf_encoding(int n);
 int aclfgl_aclfgl_get_sql_requirement(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
 int aclfgl_aclfgl_get_user(int n);
+int aclfgl_aclfgl_get_userid (int n);
+int aclfgl_fgl_userid (int n);
+
+
 int aclfgl_aclfgl_object_gc(int n);
 int aclfgl_aclfgl_getclientfile(int _nargs);
 int aclfgl_aclfgl_getcwd (int a);
@@ -68,6 +72,10 @@ int aclfgl_aclfgl_md5_file (int n);
 /* DLM added */
 int aclfgl_aclfgl_trace(int n);
 
+
+int aclfgl_aclfgl_roundup(int n);
+int aclfgl_aclfgl_ceil(int n);
+int aclfgl_aclfgl_floor(int n);
 
 
 

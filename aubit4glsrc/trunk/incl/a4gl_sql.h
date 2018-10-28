@@ -101,6 +101,7 @@ void A4GL_set_sqlerrm (char *m, char *p);
 void A4GL_free_cursor(char* cursor_name,int partOfAnotherCommand) ;
 int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) ;
 int A4GL_open_cursor(char* s,int no,void* vibind) ;
+int A4GL_add_prepare (char *pname, void *vsid);
 void A4GL_flush_cursor(char* cursor) ;
 int A4GL_close_cursor(char* currname,int explicit_) ;
 void* A4GL_declare_cursor(int upd_hold,void* sid,int scroll,char* cursname) ;

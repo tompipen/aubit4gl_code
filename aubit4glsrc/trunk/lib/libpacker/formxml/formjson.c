@@ -1212,7 +1212,7 @@ int printed=0;
 		printed=1;
 	
 		get_attribs(f, attr_no, buff_tabcol,0,a);
-	fprintf(stderr, "Find label : %d %d\n", f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
+	//fprintf(stderr, "Find label : %d %d\n", f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		txt=find_label (f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		if (txt) {
 			sprintf(nmbuff,",\"text\":\"%s\"",xml_escape( txt));
@@ -1559,10 +1559,10 @@ void make_screen (struct_form * f,int scr)
 static char * find_label (int x, int y)
 {
   int a;
-fprintf(stderr, "nfields=%d\n",nfields);
+//fprintf(stderr, "nfields=%d\n",nfields);
   for (a = 0; a < nfields; a++)
     {
-	fprintf(stderr, "%s - %d %d\n",  screen_convert_fields[a].label,screen_convert_fields[a].y, screen_convert_fields[a].field_start );
+	//fprintf(stderr, "%s - %d %d\n",  screen_convert_fields[a].label,screen_convert_fields[a].y, screen_convert_fields[a].field_start );
       if (screen_convert_fields[a].y == y && screen_convert_fields[a].field_start == x)
         {
           return screen_convert_fields[a].label;
@@ -2086,7 +2086,7 @@ static char * xml_escape (char *s)
     }
 if (b>=allocated) {
 
-fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
+//fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
 }
   A4GL_assertion (b >= allocated, "XML escape buffer too small");
   buff[b] = 0;

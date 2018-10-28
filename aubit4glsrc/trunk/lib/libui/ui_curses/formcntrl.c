@@ -1480,7 +1480,7 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 	    {
 		char buff[200];
 	      PRINTF ("RVAL=%d\n", rval);
-		SPRINTF1(buff,"Unable to set current tield... rval=%d", rval);
+		SPRINTF1(buff,"Unable to set current field... rval=%d", rval);
 	      A4GL_assertion (1, buff);
 	    }
 	  sio->currform->currentfield = sio->currentfield;
