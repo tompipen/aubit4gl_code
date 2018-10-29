@@ -3187,7 +3187,7 @@ set_suppress_lines("E29");
 		  printc ("\"%s\"", cmd_data->collist->str_list_entry.str_list_entry_val[a]);
 		}
 	    }
-	  printc (",0);\n");
+	  printc (",(void *)0);\n");
 		issql=0;
 	  clr_nonewlines ();
 	}

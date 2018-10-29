@@ -974,7 +974,7 @@ print_load_cmd (struct_load_cmd * cmd_data)
 	      printc ("\"%s\"", cmd_data->collist->str_list_entry.str_list_entry_val[a]);
 	    }
 	}
-      printc (",0);\n");
+      printc (",(void*)0);\n");
       clr_nonewlines ();
     }
 
