@@ -43,6 +43,7 @@ static char const module_id[] = "$Id: formcntrl.c,v 1.178 2016-05-24 10:13:08 mi
 
 
 #include "a4gl_lib_ui_tui_int.h"
+#include <errno.h>
 #include <ctype.h>
 //#define CONTROL_STACK_LENGTH 10
 //void A4GL_fgl_die_with_msg(int n,char *s);
@@ -752,8 +753,14 @@ copyCurrentFieldDataToVariable (struct s_screenio *sio, int NormalMode_notSyncMo
 		    }
 		}
 
-
-	      set_current_field (sio->currform->form, sio->currform->currentfield);
+		int rval;
+	      rval=set_current_field (sio->currform->form, sio->currform->currentfield);
+	  if (rval != E_OK)
+	    {
+		char buff[200];
+		SPRINTF2(buff,"Unable to set current field[2]... rval=%d errno=%d", rval, errno);
+	        A4GL_assertion (1, buff);
+	    }
 	      A4GL_init_control_stack (sio, 0);
 	      return 0;
 	    }
@@ -1246,7 +1253,14 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 			}
 		      else
 			{
-			  set_current_field (curses_form, sio->currentfield);
+			int rval;
+			  rval=set_current_field (curses_form, sio->currentfield);
+	  if (rval != E_OK)
+	    {
+		char buff[200];
+		SPRINTF2(buff,"Unable to set current field[3]... rval=%d errno=%d", rval, errno);
+	        A4GL_assertion (1, buff);
+	    }
 			  A4GL_newMovement (sio, sio->curr_attrib + 1);
 			}
 		    }
@@ -1479,9 +1493,8 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 	  if (rval != E_OK)
 	    {
 		char buff[200];
-	      PRINTF ("RVAL=%d\n", rval);
-		SPRINTF1(buff,"Unable to set current field... rval=%d", rval);
-	      A4GL_assertion (1, buff);
+		SPRINTF2(buff,"Unable to set current field... rval=%d errno=%d", rval, errno);
+	        A4GL_assertion (1, buff);
 	    }
 	  sio->currform->currentfield = sio->currentfield;
 	  A4GL_mja_pos_form_cursor (sio->currform->form);
